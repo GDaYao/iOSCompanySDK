@@ -1,0 +1,20 @@
+PODS:
+  - iOSCompanySDK (1.0.0):
+    - iOSCompanySDK/CreativeWallpapers (= 1.0.0)
+    - iOSCompanySDK/NewWallpapersFull (= 1.0.0)
+  - iOSCompanySDK/CreativeWallpapers (1.0.0)
+  - iOSCompanySDK/NewWallpapersFull (1.0.0)
+
+DEPENDENCIES:
+  - iOSCompanySDK (from `../`)
+
+EXTERNAL SOURCES:
+  iOSCompanySDK:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  iOSCompanySDK: a98b2dceaa268104de11a354a011d3fe67430e8d
+
+PODFILE CHECKSUM: 22add7f03cd124e3b191c85d05542205e5237e1f
+
+COCOAPODS: 1.7.0.beta.3
