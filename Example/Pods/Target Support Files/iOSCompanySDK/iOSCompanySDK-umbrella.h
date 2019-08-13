@@ -12,6 +12,7 @@
 
 #import "UIButton+CWUIButton.h"
 #import "UILabel+CWUILabel.h"
+#import "NWFSubCollectionView.h"
 #import "UIButton+NWFUIButton.h"
 #import "UILabel+NWFUILabel.h"
 
