@@ -23,8 +23,12 @@ static NSString * const kGDYSDKDefaultCellIdentifier = @"GDYSDKUICollectionViewC
     if(isNeed){
         layout.headerReferenceSize = HSize;
         layout.footerReferenceSize = FSize;
-        [self registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:HID];
-        [self registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:FID];
+        if (HID) {
+            [self registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:HID];
+        }
+        if (FID) {
+            [self registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:FID];
+        }
     }
     if (cellId == nil || cellId.length == 0) {
         [self registerNib:[UINib nibWithNibName:NibName bundle:nil] forCellWithReuseIdentifier:kGDYSDKDefaultCellIdentifier];
