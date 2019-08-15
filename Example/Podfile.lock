@@ -19,7 +19,8 @@ PODS:
     - iOSCompanySDK/NewWallpapersFull (= 1.0.0)
   - iOSCompanySDK/CreativeWallpapers (1.0.0):
     - AFNetworking
-  - iOSCompanySDK/NewWallpapersFull (1.0.0)
+  - iOSCompanySDK/NewWallpapersFull (1.0.0):
+    - AFNetworking
 
 DEPENDENCIES:
   - iOSCompanySDK (from `../`)
@@ -34,7 +35,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  iOSCompanySDK: 48725d15e62679e7b2abd01f552ac9f6268afdbf
+  iOSCompanySDK: 547a27f5fce9ef178f9bf8fc2dd670b3c89238a0
 
 PODFILE CHECKSUM: 22add7f03cd124e3b191c85d05542205e5237e1f
 

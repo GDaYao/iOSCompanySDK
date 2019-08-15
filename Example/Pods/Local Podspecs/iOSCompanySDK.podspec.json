@@ -25,6 +25,11 @@
       "libraries": "sqlite3",
       "source_files": "iOSCompanySDK/Classes/NewWallpapersFull/**/*",
       "public_header_files": "iOSCompanySDK/Classes/NewWallpapersFull/**/*.h",
+      "dependencies": {
+        "AFNetworking": [
+
+        ]
+      },
       "xcconfig": {
         "FRAMEWORK_SEARCH_PATHS": "$(inherited)",
         "LIBRARY_SEARCH_PATHS": "$(inherited)",
