@@ -1,19 +1,40 @@
 PODS:
+  - AFNetworking (3.2.1):
+    - AFNetworking/NSURLSession (= 3.2.1)
+    - AFNetworking/Reachability (= 3.2.1)
+    - AFNetworking/Security (= 3.2.1)
+    - AFNetworking/Serialization (= 3.2.1)
+    - AFNetworking/UIKit (= 3.2.1)
+  - AFNetworking/NSURLSession (3.2.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.2.1)
+  - AFNetworking/Security (3.2.1)
+  - AFNetworking/Serialization (3.2.1)
+  - AFNetworking/UIKit (3.2.1):
+    - AFNetworking/NSURLSession
   - iOSCompanySDK (1.0.0):
     - iOSCompanySDK/CreativeWallpapers (= 1.0.0)
     - iOSCompanySDK/NewWallpapersFull (= 1.0.0)
-  - iOSCompanySDK/CreativeWallpapers (1.0.0)
+  - iOSCompanySDK/CreativeWallpapers (1.0.0):
+    - AFNetworking
   - iOSCompanySDK/NewWallpapersFull (1.0.0)
 
 DEPENDENCIES:
   - iOSCompanySDK (from `../`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - AFNetworking
 
 EXTERNAL SOURCES:
   iOSCompanySDK:
     :path: "../"
 
 SPEC CHECKSUMS:
-  iOSCompanySDK: a98b2dceaa268104de11a354a011d3fe67430e8d
+  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  iOSCompanySDK: 48725d15e62679e7b2abd01f552ac9f6268afdbf
 
 PODFILE CHECKSUM: 22add7f03cd124e3b191c85d05542205e5237e1f
 

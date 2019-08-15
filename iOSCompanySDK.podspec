@@ -62,7 +62,7 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
     creativewallpapers.libraries = 'sqlite3'
     creativewallpapers.source_files = 'iOSCompanySDK/Classes/CreativeWallpapers/**/*'
     creativewallpapers.public_header_files = 'iOSCompanySDK/Classes/CreativeWallpapers/**/*.h'
-    #creativewallpapers.dependency 'AFNetworking','3.2.1'
+    creativewallpapers.dependency 'AFNetworking' # ,'3.2.1'
     #creativewallpapers.dependency 'MBProgressHUD'
     #creativewallpapers.resource_bundles = {
     #    'GDYSDK-newwallpapersfull' => ['GDYSDK/Assets/Core/*.png', 'GDYSDK/Assets/Core/*.xib', 'GDYSDK/Assets/Core/LocalizedStrings/*.lproj/*']

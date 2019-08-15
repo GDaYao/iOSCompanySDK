@@ -12,7 +12,10 @@
 
 #import "UIButton+CWUIButton.h"
 #import "UILabel+CWUILabel.h"
+#import "NWFCustomAFNetHTTPSessionMgr.h"
+#import "NWFNetworkMgr.h"
 #import "NWFSubCollectionView.h"
+#import "NWFSystemMgr.h"
 #import "UIButton+NWFUIButton.h"
 #import "UILabel+NWFUILabel.h"
 
