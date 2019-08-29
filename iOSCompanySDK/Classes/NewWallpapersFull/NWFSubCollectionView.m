@@ -3,7 +3,7 @@
 #import "NWFSubCollectionView.h"
 
 
-static NSString * const kGDYSDKDefaultCellIdentifier = @"GDYSDKUICollectionViewCellIdentifier";
+static NSString * const kNWFDefaultCellIdentifier = @"NWFUICollectionViewCellIdentifier";
 
 @implementation NWFSubCollectionView
 
@@ -31,7 +31,7 @@ static NSString * const kGDYSDKDefaultCellIdentifier = @"GDYSDKUICollectionViewC
         }
     }
     if (cellId == nil || cellId.length == 0) {
-        [self registerNib:[UINib nibWithNibName:NibName bundle:nil] forCellWithReuseIdentifier:kGDYSDKDefaultCellIdentifier];
+        [self registerNib:[UINib nibWithNibName:NibName bundle:nil] forCellWithReuseIdentifier:kNWFDefaultCellIdentifier];
     }else if(NibName.length !=0 ){
         [self registerNib:[UINib nibWithNibName:NibName bundle:nil] forCellWithReuseIdentifier:cellId];
     }else if(cellClass){

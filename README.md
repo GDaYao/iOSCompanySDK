@@ -25,7 +25,7 @@ If you want to  use specific tag version.
 pod 'iOSCompanySDK','1.0.0'
 ```
 
-If GDYSDK only exist personal GitHub,I can this
+If iOSCompanySDK only exist personal GitHub,I can this
 
 ```ruby
 >>>

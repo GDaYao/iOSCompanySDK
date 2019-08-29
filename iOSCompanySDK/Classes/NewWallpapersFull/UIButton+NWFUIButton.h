@@ -1,5 +1,3 @@
-////  UIButton+GDYSDKUIButton.h
-//  Created on 2019/8/10.
 //  
 //
 

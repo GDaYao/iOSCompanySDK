@@ -8,12 +8,12 @@
  */
 
 /** Usage:
- * 1. first to import class. #import "GDYSDKSubCollectionView.h"
+ * 1. first to import class. #import "NWFSubCollectionView.h"
  
  * 2. start relaized.
  
      UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
- GDYSDKSubCollectionView *mainCV = [[GDYSDKSubCollectionView alloc]initWithFrame:<#CGRectZero-after set frame/set frame now#> collectionViewLayout:layout];
+ NWFSubCollectionView *mainCV = [[NWFSubCollectionView alloc]initWithFrame:<#CGRectZero-after set frame/set frame now#> collectionViewLayout:layout];
  [mainCV initCVWithBGColor:<#bgColor#> withNeedHeaderFooter:<#YES/NO#> withHSize:<#CGSizeZero/set size#> withFSize:<#CGSizeZero/set size#> withHID:<#set header id string#> withFID:<#set footer id string#> withRegisterNib:<#UICollectionViewCell.nib file name#> registerClas:<#cellClass#> withCellId:<#UICollectionViewCell id#>];
      [self.view addSubview:mainCV];
  >>>>

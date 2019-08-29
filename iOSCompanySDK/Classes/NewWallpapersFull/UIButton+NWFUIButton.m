@@ -1,6 +1,3 @@
-////  UIButton+GDYSDKUIButton.m
-//  GDYSDK
-//
 //  Created on 2019/8/10.
 //  
 //
