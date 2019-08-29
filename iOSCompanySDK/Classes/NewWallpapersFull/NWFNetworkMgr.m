@@ -12,10 +12,10 @@
 
 
 #pragma mark ---- 'POST' net request data ----
-+ (void)AFHttpDataTaskPostMethodWithURLString:(NSString *)URLString
-                                   parameters:(id)parameters
-                                      success:(void (^)(id _Nullable responseObject))success
-                                      failure:(void (^)(NSError * _Nullable error))failure {
++ (void)AFHttpDataTaskPostMethodInNWFWithURLString:(NSString *)URLString
+                                        parameters:(id)parameters
+                                           success:(void (^)(id _Nullable responseObject))success
+                                           failure:(void (^)(NSError * _Nullable error))failure {
     NWFCustomAFNetHTTPSessionMgr *sessionMgr = [NWFCustomAFNetHTTPSessionMgr manager];
     [sessionMgr POST:URLString parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -32,7 +32,7 @@
 
 
 #pragma mark - AFNet implete 'download'
-+ (void)createDownloadTaskWithDownloadStr:(NSString *)downloadStr parameters:(id)parameters downloadSpecifilyPath:(NSString *)specifilyPath  httpHeaderTicket:(NSString *)ticketStr  downloadProgress:(void(^)(NSProgress * _Nonnull downloadProgress))progress destination:(void(^)(NSURL *targetPath))destination completionHandler:(void (^)(NSURL *filePath, NSError *error))completionHandler {
++ (void)createDownloadTaskInNWFWithDownloadStr:(NSString *)downloadStr parameters:(id)parameters downloadSpecifilyPath:(NSString *)specifilyPath  httpHeaderTicket:(NSString *)ticketStr  downloadProgress:(void(^)(NSProgress * _Nonnull downloadProgress))progress destination:(void(^)(NSURL *targetPath))destination completionHandler:(void (^)(NSURL *filePath, NSError *error))completionHandler {
     // 1. create manager
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
