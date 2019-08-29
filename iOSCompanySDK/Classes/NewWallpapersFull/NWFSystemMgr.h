@@ -27,8 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 /*获取当前App的名称信息*/
 + (NSString *)getAppDisplayName;
 
-
-
+/* 获取当前设备的UDID-存储到KeyChain中  */
++ (NSString *)getDeviceUDIDValueFromKeychainInNWF;
 // 获取设备型号
 + (NSString*)getDeviceTypeInNWF;
 // 获取当前设备的操作系统版本号
