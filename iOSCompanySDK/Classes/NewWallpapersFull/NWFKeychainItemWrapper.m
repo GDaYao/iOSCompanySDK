@@ -4,28 +4,6 @@
 #import "NWFKeychainItemWrapper.h"
 #import <Security/Security.h>
 
-/*
- 
- These are the default constants and their respective types,
- available for the kSecClassGenericPassword Keychain Item class:
- 
- kSecAttrAccessGroup            -        CFStringRef
- kSecAttrCreationDate        -        CFDateRef
- kSecAttrModificationDate    -        CFDateRef
- kSecAttrDescription            -        CFStringRef
- kSecAttrComment                -        CFStringRef
- kSecAttrCreator                -        CFNumberRef
- kSecAttrType                -        CFNumberRef
- kSecAttrLabel                -        CFStringRef
- kSecAttrIsInvisible            -        CFBooleanRef
- kSecAttrIsNegative            -        CFBooleanRef
- kSecAttrAccount                -        CFStringRef
- kSecAttrService                -        CFStringRef
- kSecAttrGeneric                -        CFDataRef
- 
- See the header file Security/SecItem.h for more details.
- 
- */
 
 @interface NWFKeychainItemWrapper (PrivateMethods)
 /*

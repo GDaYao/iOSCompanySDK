@@ -11,10 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UILabel (NWFUILabel)
 
-
-/**
- init lab
- */
 + (UILabel *)InitLabWithBGColor:(UIColor *)bgColor textColor:(UIColor *)txColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)fontSize labText:(NSString *)labText txAlignment:(NSTextAlignment)txAlignment;
 
 
