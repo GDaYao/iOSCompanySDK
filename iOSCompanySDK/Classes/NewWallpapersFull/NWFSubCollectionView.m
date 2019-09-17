@@ -147,6 +147,18 @@ static NSString * const kNWFDefaultCellIdentifier = @"NWFUICollectionViewCellIde
         self.scrollViewDidScrollInCV(scrollView);
     }
 }
+// scrollView
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if (self.scrollViewDidEndDraggingInNWF) {
+        self.scrollViewDidEndDraggingInNWF(scrollView, decelerate);
+    }
+}
+// scrollview 开始减速
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+    if (self.scrollViewWillBegingDeceleratingInNWF) {
+        self.scrollViewWillBegingDeceleratingInNWF(scrollView);
+    }
+}
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     if (self.scrollViewDidEndDecelerating) {
         self.scrollViewDidEndDecelerating(scrollView);
