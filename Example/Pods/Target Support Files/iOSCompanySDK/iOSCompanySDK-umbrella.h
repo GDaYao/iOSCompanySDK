@@ -15,6 +15,7 @@
 #import "NWFKeychainItemWrapper.h"
 #import "NWFNetworkMgr.h"
 #import "NWFSubCollectionView.h"
+#import "NWFSubTableView.h"
 #import "NWFSystemMgr.h"
 #import "UIButton+NWFUIButton.h"
 #import "UILabel+NWFUILabel.h"
