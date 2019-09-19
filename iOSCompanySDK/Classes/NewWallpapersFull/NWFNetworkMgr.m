@@ -61,25 +61,24 @@
     
     // 4. download file
     NSURLSessionDownloadTask *downloadTask = [manager downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull downloadProgress){
-        // downloadProgress.completedUnitCount --- current download count
-        // downloadProgress.totalUnitCount  --- totle count
-        //NSLog(@"%f", 1.0 * downloadProgress.completedUnitCount / downloadProgress.totalUnitCount);
+        // test teset teste
         progress(downloadProgress);
     } destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
-        // targetPath -- temp file path
-        //NSLog(@"targetPath:%@",targetPath);
         NSString *path =[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+        // test teset teste
         if (specifilyPath) {
+            // test teset teste
             path = specifilyPath;
         }
+        // test teset teste
         NSString *filePath = [path stringByAppendingPathComponent:response.suggestedFilename];
         NSURL *url = [NSURL fileURLWithPath:filePath];
         
         destination(targetPath);
-        
+        // test teset teste
         return url;
     } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
-        //NSLog(@"completion downloaded to: %@", filePath);
+        
         completionHandler(filePath,error);
     }];
     [downloadTask resume];

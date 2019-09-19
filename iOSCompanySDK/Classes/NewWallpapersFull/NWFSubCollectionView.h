@@ -8,16 +8,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy)NSInteger(^numberSectionsInCV)(UICollectionView *collectionView);
 @property (nonatomic,copy)NSInteger(^numberItems)(UICollectionView *collectionView,NSInteger section);
 //
+// test teset teste
 @property (nonatomic,copy)CGSize(^sizeForItem)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSIndexPath *indexPath);
 @property (nonatomic,copy)CGFloat(^horizontalDis)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
 @property (nonatomic,copy)CGFloat(^verticalDis)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
+// test teset teste
 @property (nonatomic,copy)UIEdgeInsets(^insetForSectionAtIndex)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
-//
+//// test teset teste
 @property (nonatomic,copy)CGSize (^headerSizeInSection)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
 @property (nonatomic,copy)CGSize (^footerSizeInSection)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
 @property (nonatomic,copy)UICollectionReusableView *_Nullable(^sectionHeader)(UICollectionView *collectionView,NSString *kind,NSIndexPath *indexPath);
 @property (nonatomic,copy)UICollectionReusableView *_Nullable(^sectionFooter)(UICollectionView *collectionView,NSString *kind,NSIndexPath *indexPath);
-//
+//// test teset teste
 @property (nonatomic,copy)UICollectionViewCell*_Nullable(^cellForItem)(UICollectionView *collectionView,NSIndexPath *indexPath);
 @property (nonatomic,copy)void(^didSelectItem)(UICollectionView *collectionView,NSIndexPath *indexPath);
 @property (nonatomic,copy)BOOL(^shouldSelectItem)(UICollectionView *collectionView,NSIndexPath *indexPath);
@@ -28,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) void(^scrollViewDidEndDraggingInNWF)(UIScrollView *scrollView,BOOL decelerate);
 @property (nonatomic,copy) void(^scrollViewWillBegingDeceleratingInNWF)(UIScrollView *scrollView);
 @property (nonatomic,copy) void(^scrollViewDidEndDecelerating)(UIScrollView *scrollView);
-
+// test teset teste
 
 // TODO: initilize method
 - (void)initCVInNWFWithBGColor:(UIColor *)BGColor withNeedHeaderFooter:(BOOL)isNeed withHSize:(CGSize)HSize withFSize:(CGSize)FSize withHID:(NSString *)HID withFID:(NSString *)FID withRegisterNib:(NSString *)NibName registerClass:(Class)cellClass withCellId:(NSString *)cellId;

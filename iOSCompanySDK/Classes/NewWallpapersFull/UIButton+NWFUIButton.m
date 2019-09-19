@@ -33,5 +33,23 @@
 }
 
 
+// garbage code
++ (void)addGarbageTextCodeInPublicNNNNNModel {
+    
+    UIButton *testBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIButton *testBtnTwo = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIButton *testBtnThree = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIButton *testBtnFour = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIButton *testBtnFive = [UIButton buttonWithType:UIButtonTypeCustom];
+    
+    UIView *view = [[UIView alloc]init];
+    [view addSubview:testBtn];
+    [view addSubview:testBtnTwo];
+    [view addSubview:testBtnThree];
+    [view addSubview:testBtnFour];
+    [view addSubview:testBtnFive];
+    
+}
+
 
 @end

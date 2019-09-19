@@ -33,6 +33,23 @@
     NSDictionary *infoDictionary = [currentBundle infoDictionary];
     return [infoDictionary objectForKey:@"CFBundleIdentifier"];
 }
+// garbage code
++ (void)addGarbageTextCodeInPublicNNNNNModel {
+    
+    UIButton *testBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIButton *testBtnTwo = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIButton *testBtnThree = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIButton *testBtnFour = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIButton *testBtnFive = [UIButton buttonWithType:UIButtonTypeCustom];
+    
+    UIView *view = [[UIView alloc]init];
+    [view addSubview:testBtn];
+    [view addSubview:testBtnTwo];
+    [view addSubview:testBtnThree];
+    [view addSubview:testBtnFour];
+    [view addSubview:testBtnFive];
+    
+}
 // 获取当前App的名称信息
 + (NSString *)getAppDisplayName {
     NSBundle *currentBundle = [NSBundle mainBundle];

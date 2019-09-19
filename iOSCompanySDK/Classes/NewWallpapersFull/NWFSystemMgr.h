@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - get app config
+
 /*获取当前App的版本号信息*/
 + (NSString *)getAppVersion;
 /*获取当前App的build版本号信息*/
