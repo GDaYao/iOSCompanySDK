@@ -14,6 +14,7 @@
 #import "UILabel+CWUILabel.h"
 #import "NWFKeychainItemWrapper.h"
 #import "NWFNetworkMgr.h"
+#import "NWFReachability.h"
 #import "NWFSubCollectionView.h"
 #import "NWFSubTableView.h"
 #import "NWFSystemMgr.h"
