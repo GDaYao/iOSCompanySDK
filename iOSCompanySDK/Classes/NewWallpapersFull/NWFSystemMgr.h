@@ -35,6 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 // 获取当前设备的操作系统版本号
 + (NSString *)getDeviceOSVersionInNWF;
 
+// get current设备的idfa
++ (NSString *)nwfGetDeviceIDFA;
+
+
 
 #pragma mark - get system languages/ 获的当前系统使用语言
 /**

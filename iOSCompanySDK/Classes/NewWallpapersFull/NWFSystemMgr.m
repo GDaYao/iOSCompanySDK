@@ -8,6 +8,8 @@
 #import "NWFSystemMgr.h"
 #import "NWFKeychainItemWrapper.h"
 
+// use get idfa
+#import <AdSupport/AdSupport.h>
 
 // 获取当前设备型号名称
 #import "sys/utsname.h"
@@ -70,6 +72,27 @@
     }
     return UUID[0];
 }
+
+// get current设备的idfa
++ (NSString *)nwfGetDeviceIDFA {
+    
+    NSString *nwfIdentifier = @"NWFKeychainItemWrapper_idfa";
+    NWFKeychainItemWrapper *keyChainWrapper = [[NWFKeychainItemWrapper alloc]initWithIdentifier:nwfIdentifier accessGroup:nil];
+    NSArray *user = [keyChainWrapper objectForKey:(__bridge id)kSecValueRef];
+    if (user == nil || user.count == 0)
+    {
+        [keyChainWrapper setObject:[[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]
+                     forKey:(__bridge id)kSecValueRef];
+        return [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+    }
+    else
+    {
+        return user[0];
+    }
+}
+
+
+
 // 获取设备型号
 + (NSString*)getDeviceTypeInNWF {
     struct utsname systemInfo;
