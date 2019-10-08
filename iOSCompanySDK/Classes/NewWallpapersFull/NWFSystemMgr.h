@@ -38,6 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
 // get current设备的idfa
 + (NSString *)nwfGetDeviceIDFA;
 
+// 获取手机品牌
++ (NSString *)nwfGetDeviceBand;
+// 获取网络名称
++ (NSString *)nwfGetDeviceNetworkStatus;
 
 
 #pragma mark - get system languages/ 获的当前系统使用语言

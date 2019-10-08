@@ -101,7 +101,7 @@
     return [[UIDevice currentDevice]model];
 }
 
-#pragma mark - 获取网络名称
+// 获取网络名称
 + (NSString *)nwfGetDeviceNetworkStatus
 {
     NSString *netconnType = @"";
