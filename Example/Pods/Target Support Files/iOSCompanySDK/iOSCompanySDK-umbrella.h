@@ -12,6 +12,7 @@
 
 #import "UIButton+CWUIButton.h"
 #import "UILabel+CWUILabel.h"
+#import "NWFInAppPurchase.h"
 #import "NWFKeychainItemWrapper.h"
 #import "NWFNetworkMgr.h"
 #import "NWFReachability.h"
