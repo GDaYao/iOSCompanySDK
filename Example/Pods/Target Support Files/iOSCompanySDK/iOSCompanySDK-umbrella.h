@@ -15,6 +15,7 @@
 #import "CWNetworkAccessibity.h"
 #import "CWNetworkMgr.h"
 #import "CWPhotoMgr.h"
+#import "CWReachability.h"
 #import "CWSubCollectionView.h"
 #import "CWSystemMgr.h"
 #import "UIButton+CWUIButton.h"
