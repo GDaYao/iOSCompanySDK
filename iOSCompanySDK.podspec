@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'iOSCompanySDK'
-  s.version          = '1.0.0'
+  s.version          = '1.0.3'
   s.summary          = 'iOSCompanySDK in use company all project from GDYSDK --- iOSCompanySDK是用于添加公共各个项目的方法'
 
 # This description is used to generate tags and improve search results.
