@@ -1,57 +1,22 @@
-////  NWFInAppPurchase.m
-//  iOSCompanySDK
-//
-//  Created on 2019/10/9.
-//  
-//
 
-#import "NWFInAppPurchase.h"
+
+#import "CWInAppPurchaseMgr.h"
 #import <StoreKit/StoreKit.h>
 
 
-
-@interface NWFInAppPurchase() <SKProductsRequestDelegate,SKPaymentTransactionObserver>
+@interface CWInAppPurchaseMgr () <SKProductsRequestDelegate,SKPaymentTransactionObserver>
 
 @property (nonatomic,copy)NSString *productId;
 
 @end
 
-
-@implementation NWFInAppPurchase
-
-
-#pragma mark - app request view
-+ (void)appRequestReviewWithAppId:(NSString *)appIdStr {
-    if (@available(iOS 10.3, *))
-    {
-        //iOS 10.3 以上支持
-        if([SKStoreReviewController respondsToSelector:@selector(requestReview)])
-        {
-            [SKStoreReviewController requestReview];
-        }
-    }
-    else
-    {
-        // iOS 10.3 之前的使用这个
-        NSString  * nsStringToOpen = [NSString  stringWithFormat: @"itms-apps://itunes.apple.com/app/id%@?action=write-review",appIdStr];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nsStringToOpen]];
-    }
-}
+@implementation CWInAppPurchaseMgr
 
 
 #pragma mark - In-App purchase
 // add transaction observer
 - (void)addTransactionObserver:(id)observer {
     [[SKPaymentQueue defaultQueue]addTransactionObserver:self];
-}
-// remove transaction observer
-- (void)removeTransactionObserver:(id)observer {
-    [[SKPaymentQueue defaultQueue]removeTransactionObserver:self];
-}
-
-// restore product
-- (void)restoreProductId {
-    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 // 内购数据请求
 - (void)requestProductIdData:(NSString *)productId {
@@ -61,6 +26,15 @@
     SKProductsRequest   *productRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:nsset];
     productRequest.delegate = self;
     [productRequest start];
+}
+// remove transaction observer
+- (void)removeTransactionObserver:(id)observer {
+    [[SKPaymentQueue defaultQueue]removeTransactionObserver:self];
+}
+
+// restore product
+- (void)restoreProductId {
+    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
 #pragma mark <SKProductsRequestDelegate>
@@ -95,22 +69,6 @@
         }
     }
 
-}
-#pragma mark <SKRequestDelegate>
-// call in request finish with success
-- (void)requestDidFinish:(SKRequest *)request {
-    NSLog(@"CreativePapers-内购购买请求成功");
-    if ([self.deleagte respondsToSelector:@selector(SKRequestInDidFinish)]) {
-        [self.deleagte SKRequestInDidFinish];
-    }
-    
-}
-// call in request fail with error
-- (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
-    NSLog(@"CreativePapers-内购购买请求失败-error:%@",error);
-    if ([self.deleagte respondsToSelector:@selector(SKRequestInDidFailWithError:)]) {
-        [self.deleagte SKRequestInDidFailWithError:error];
-    }
 }
 
 
@@ -176,7 +134,22 @@
 
 
 
-
+#pragma mark <SKRequestDelegate>
+// call in request finish with success
+- (void)requestDidFinish:(SKRequest *)request {
+    NSLog(@"CreativePapers-内购购买请求成功");
+    if ([self.deleagte respondsToSelector:@selector(SKRequestInDidFinish)]) {
+        [self.deleagte SKRequestInDidFinish];
+    }
+    
+}
+// call in request fail with error
+- (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
+    NSLog(@"CreativePapers-内购购买请求失败-error:%@",error);
+    if ([self.deleagte respondsToSelector:@selector(SKRequestInDidFailWithError:)]) {
+        [self.deleagte SKRequestInDidFailWithError:error];
+    }
+}
 
 
 @end

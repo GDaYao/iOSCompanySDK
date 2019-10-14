@@ -1,18 +1,13 @@
-////  UILabel+CWUILabel.m
-//  iOSCompanySDK
-//
-//  Created on 2019/8/10.
-//  
-//
-
-#import "UILabel+CWUILabel.h"
-
-@implementation UILabel (CWUILabel)
 
 
-#pragma mark - `UILabel` init method
-+ (UILabel *)InitLabWithBGColor:(UIColor *)bgColor textColor:(UIColor *)txColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)fontSize labText:(NSString *)labText txAlignment:(NSTextAlignment)txAlignment
-{
+#import "UILabel+CWLabel.h"
+
+
+
+@implementation UILabel (CWLabel)
+
+
++ (UILabel *)cwInitLabWithBGColor:(UIColor *)bgColor textColor:(UIColor *)txColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)fontSize labText:(NSString *)labText txAlignment:(NSTextAlignment)txAlignment {
     UILabel *lab = [[UILabel alloc]init];
     if (bgColor == nil) {
         lab.backgroundColor = [UIColor clearColor];
@@ -32,8 +27,5 @@
     lab.numberOfLines = 0;
     return lab;
 }
-
-
-
 
 @end

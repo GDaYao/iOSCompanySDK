@@ -10,8 +10,16 @@
 #endif
 #endif
 
+#import "CWInAppPurchaseMgr.h"
+#import "CWKeychainItemWrapper.h"
+#import "CWNetworkAccessibity.h"
+#import "CWNetworkMgr.h"
+#import "CWPhotoMgr.h"
+#import "CWSubCollectionView.h"
+#import "CWSystemMgr.h"
 #import "UIButton+CWUIButton.h"
-#import "UILabel+CWUILabel.h"
+#import "UIColor+CWColor.h"
+#import "UILabel+CWLabel.h"
 #import "NWFInAppPurchase.h"
 #import "NWFKeychainItemWrapper.h"
 #import "NWFNetworkMgr.h"

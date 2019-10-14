@@ -1,4 +1,4 @@
-//  GDYSDKSubTableView.m
+
 
 #import "NWFSubTableView.h"
 

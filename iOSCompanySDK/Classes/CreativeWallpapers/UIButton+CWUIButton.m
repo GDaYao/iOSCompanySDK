@@ -1,16 +1,10 @@
-////  UIButton+CWUIButton.m
-//  iOSCompanySDK
-//
-//  Created on 2019/8/10.
-//  
-//
 
 #import "UIButton+CWUIButton.h"
 
 @implementation UIButton (CWUIButton)
 
 #pragma mark - init button.
-+ (UIButton *)initWithBGName:(NSString *)imgStr title:(NSString *)titleStr titleColor:(UIColor *)titleColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)sizeFont btnBGColor:(UIColor *)bgColor {
++ (UIButton *)cwInitBtnWithBGName:(NSString *)imgStr title:(NSString *)titleStr titleColor:(UIColor *)titleColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)sizeFont btnBGColor:(UIColor *)bgColor {
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     if (imgStr.length != 0) {
         [btn setBackgroundImage:[UIImage imageNamed:imgStr] forState:UIControlStateNormal];

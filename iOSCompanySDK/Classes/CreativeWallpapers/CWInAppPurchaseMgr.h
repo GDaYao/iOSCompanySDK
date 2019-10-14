@@ -1,24 +1,12 @@
-////  NWFInAppPurchase.h
-//  iOSCompanySDK
-//
-//  Created on 2019/10/9.
-//  
-//
+
 
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol NWFInAppPurchaseDelegate <NSObject>
 
-#pragma mark <SKProductsRequestDelegate>
-// no product information 未收到产品信息 -- 产品内购id为空 <SKProductsRequestDelegate>
-- (void)productRequestInReceiveResponseWithNullProduct;
+@protocol CWInAppPurchaseMgrDelegate <NSObject>
 
-#pragma mark <SKRequestDelegate>
-// SKRequest <SKRequestDelegate>
-- (void)SKRequestInDidFinish;
-- (void)SKRequestInDidFailWithError:(NSError *)error;
 
 #pragma mark <SKPaymentTransactionObserver>
 // transaction observer <SKPaymentTransactionObserver>
@@ -30,10 +18,19 @@ NS_ASSUME_NONNULL_BEGIN
  @param transactionId transaction identifier.
  */
 - (void)completeTransactionWithProductId:(NSString *)productId transactionReceipt:(NSString *)receiptString transactionId:(NSString *)transactionId;
+#pragma mark <SKProductsRequestDelegate>
+// no product information 未收到产品信息 -- 产品内购id为空 <SKProductsRequestDelegate>
+- (void)productRequestInReceiveResponseWithNullProduct;
+
 /**
  内购商品加入购物车
  */
 - (void)purchasingTransactionInSKPayment;
+
+#pragma mark <SKRequestDelegate>
+// SKRequest <SKRequestDelegate>
+- (void)SKRequestInDidFinish;
+- (void)SKRequestInDidFailWithError:(NSError *)error;
 /**
  restore transaction
 
@@ -50,25 +47,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)failTransactionWithProductId:(NSString *)productId;
 
 
+
 @end
 
 
 
-@interface NWFInAppPurchase : NSObject
+@interface CWInAppPurchaseMgr : NSObject
 
-@property (nonatomic,weak)id <NWFInAppPurchaseDelegate> deleagte;
-
-
-#pragma mark - app request review
-/**
- 好评方法掉调用使用
- 
- @param appIdStr app-id应用id，用于低版本下好评跳转
- */
-+ (void)appRequestReviewWithAppId:(NSString *)appIdStr;
+@property (nonatomic,weak)id <CWInAppPurchaseMgrDelegate> deleagte;
 
 
-#pragma mark - In-App purchase
 /**
  add transaction observer -- 设置内购监听
 
@@ -83,20 +71,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeTransactionObserver:(id)observer;
 /**
  传入对应productId-内购id进行app内验证
- 实现相应的内购监听，实现CreativePapersInAppPurchaseDelegate代理方法即可。
+ 
 
  @param productId 应用内购id-注意区分多个内购id
  */
 - (void)requestProductIdData:(NSString *)productId;
 
+
 /**
  restore product - 恢复购买
  */
 - (void)restoreProductId;
-
-
-
-
 
 
 
