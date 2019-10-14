@@ -26,6 +26,52 @@
 
 
 
++ (void)cwCreateDownloadTaskWithDownloadStr:(NSString *)downloadStr parameters:(id)parameters downloadSpecifilyPath:(NSString *)specifilyPath  httpHeaderTicket:(NSString *)ticketStr  downloadProgress:(void(^)(NSProgress * _Nonnull downloadProgress))progress destination:(void(^)(NSURL *targetPath))destination completionHandler:(void (^)(NSURL *filePath, NSError *error))completionHandler {
+    
+       NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+       AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+
+       if (parameters) {
+           downloadStr = [downloadStr stringByAppendingString:parameters];
+       }
+       NSURLRequest *request = nil;
+       if (ticketStr.length != 0) {
+           
+           manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+           NSMutableURLRequest *requestOne = [[AFHTTPRequestSerializer serializer] requestWithMethod:@"GET" URLString:downloadStr parameters:nil error:nil];
+           
+           [requestOne setValue:ticketStr forHTTPHeaderField:@"ticket"];
+           request = requestOne;
+       }else{
+           NSURL *URL = [NSURL URLWithString:downloadStr];
+           NSURLRequest *requestTwo = [NSURLRequest requestWithURL:URL];
+           request = requestTwo;
+       }
+       
+       NSURLSessionDownloadTask *downloadTask = [manager downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull downloadProgress){
+///
+           //// progress
+           progress(downloadProgress);
+       } destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
+           NSString *path =[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+           if (specifilyPath) {
+               path = specifilyPath;
+           }
+           NSString *filePath = [path stringByAppendingPathComponent:response.suggestedFilename];
+           NSURL *url = [NSURL fileURLWithPath:filePath];
+           
+           destination(targetPath);
+           
+           return url;
+       } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
+           completionHandler(filePath,error);
+       }];
+       [downloadTask resume];
+    
+    
+    
+}
+
 
 
 @end
