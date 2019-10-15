@@ -55,12 +55,16 @@
 }
 // 内购数据请求
 - (void)requestProductIdData:(NSString *)productId {
-    self.productId = productId;
-    NSArray *product = [[NSArray alloc] initWithObjects:[NSString stringWithFormat:@"%@",productId], nil];
-    NSSet *nsset = [NSSet setWithArray:product];
-    SKProductsRequest   *productRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:nsset];
-    productRequest.delegate = self;
-    [productRequest start];
+    if([SKPaymentQueue canMakePayments]){
+        self.productId = productId;
+        NSArray *product = [[NSArray alloc] initWithObjects:[NSString stringWithFormat:@"%@",productId], nil];
+        NSSet *nsset = [NSSet setWithArray:product];
+        SKProductsRequest   *productRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:nsset];
+        productRequest.delegate = self;
+        [productRequest start];
+    }else{
+        NSLog(@"CreativePapers-不允许程序内付费");
+    }
 }
 
 #pragma mark <SKProductsRequestDelegate>
