@@ -63,7 +63,7 @@
         productRequest.delegate = self;
         [productRequest start];
     }else{
-        NSLog(@"CreativePapers-不允许程序内付费");
+        NSLog(@"CreativePapers-用户不允许程序内付费");
     }
 }
 
