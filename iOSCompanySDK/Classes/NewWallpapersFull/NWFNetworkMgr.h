@@ -1,5 +1,5 @@
 ////  NWFNetworkMgr.h
-//  iOSCompanySDK
+//  
 //
 //  Created on 2019/8/15.
 //  

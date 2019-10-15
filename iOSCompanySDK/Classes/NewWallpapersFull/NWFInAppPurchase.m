@@ -1,5 +1,5 @@
 ////  NWFInAppPurchase.m
-//  iOSCompanySDK
+//  
 //
 //  Created on 2019/10/9.
 //  
@@ -63,7 +63,7 @@
         productRequest.delegate = self;
         [productRequest start];
     }else{
-        NSLog(@"CreativePapers-用户不允许程序内付费");
+        NSLog(@"NWFInAppPurchase-用户不允许程序内付费");
     }
 }
 
@@ -73,7 +73,7 @@
     NSArray *product = response.products;
     if (!product.count)
     {
-        NSLog(@"CreativePapers-未收到内购产品信息");
+        NSLog(@"NWFInAppPurchase-未收到内购产品信息");
         if ([self.deleagte respondsToSelector:@selector(productRequestInReceiveResponseWithNullProduct)]) {
             [self.deleagte productRequestInReceiveResponseWithNullProduct];
         }
@@ -92,7 +92,7 @@
     if (currentProduct != nil)
     {
         SKPayment *payMent = [SKPayment paymentWithProduct:currentProduct];
-        NSLog(@"CreativePapers-加入内购购买队列-开始发送购买请求");
+        NSLog(@"NWFInAppPurchase-加入内购购买队列-开始发送购买请求");
         if (payMent)
         {
             [[SKPaymentQueue defaultQueue] addPayment:payMent];
@@ -103,7 +103,7 @@
 #pragma mark <SKRequestDelegate>
 // call in request finish with success
 - (void)requestDidFinish:(SKRequest *)request {
-    NSLog(@"CreativePapers-内购购买请求成功");
+    NSLog(@"NWFInAppPurchase-内购购买请求成功");
     if ([self.deleagte respondsToSelector:@selector(SKRequestInDidFinish)]) {
         [self.deleagte SKRequestInDidFinish];
     }
@@ -111,7 +111,7 @@
 }
 // call in request fail with error
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
-    NSLog(@"CreativePapers-内购购买请求失败-error:%@",error);
+    NSLog(@"NWFInAppPurchase-内购购买请求失败-error:%@",error);
     if ([self.deleagte respondsToSelector:@selector(SKRequestInDidFailWithError:)]) {
         [self.deleagte SKRequestInDidFailWithError:error];
     }
@@ -127,7 +127,7 @@
         {
                 case SKPaymentTransactionStatePurchased:
             {
-                NSLog(@"CreativePapers-内购产品购买成功");
+                NSLog(@"NWFInAppPurchase-内购产品购买成功");
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];//记得关闭交易事件
                 
                 NSString *productId = tran.payment.productIdentifier;
@@ -147,12 +147,12 @@
                 break;
                 case SKPaymentTransactionStatePurchasing:
             {
-                NSLog(@"CreativePapers-内购商品加入购物车");
+                NSLog(@"NWFInAppPurchase-内购商品加入购物车");
             }
                 break;
                 case SKPaymentTransactionStateRestored:
             {
-                NSLog(@"CreativePapers-内购商品恢复购买成功");
+                NSLog(@"NWFInAppPurchase-内购商品恢复购买成功");
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];
                 
                 NSString *productId = tran.payment.productIdentifier;
@@ -164,7 +164,7 @@
                 break;
                 case SKPaymentTransactionStateFailed:
             {
-                NSLog(@"CreativePapers-内购商品购买失败");
+                NSLog(@"NWFInAppPurchase-内购商品购买失败");
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];
                 NSString *productId = tran.payment.productIdentifier;
                 if ([self.deleagte respondsToSelector:@selector(failTransactionWithProductId:)]) {

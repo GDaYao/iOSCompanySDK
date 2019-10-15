@@ -1,5 +1,5 @@
 ////  NWFInAppPurchase.h
-//  iOSCompanySDK
+//  
 //
 //  Created on 2019/10/9.
 //  
@@ -12,23 +12,16 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol NWFInAppPurchaseDelegate <NSObject>
 
 #pragma mark <SKProductsRequestDelegate>
-// no product information 未收到产品信息 -- 产品内购id为空 <SKProductsRequestDelegate>
+
 - (void)productRequestInReceiveResponseWithNullProduct;
 
 #pragma mark <SKRequestDelegate>
-// SKRequest <SKRequestDelegate>
+
 - (void)SKRequestInDidFinish;
 - (void)SKRequestInDidFailWithError:(NSError *)error;
 
 #pragma mark <SKPaymentTransactionObserver>
-// transaction observer <SKPaymentTransactionObserver>
-/**
- complete transcation
 
- @param productId 内购产品id.
- @param receiptString receipt string with base64 encoded string.
- @param transactionId transaction identifier.
- */
 - (void)completeTransactionWithProductId:(NSString *)productId transactionReceipt:(NSString *)receiptString transactionId:(NSString *)transactionId;
 /**
  内购商品加入购物车
@@ -61,9 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - app request review
 /**
- 好评方法掉调用使用
+
  
- @param appIdStr app-id应用id，用于低版本下好评跳转
+ /// test test test
  */
 + (void)appRequestReviewWithAppId:(NSString *)appIdStr;
 
