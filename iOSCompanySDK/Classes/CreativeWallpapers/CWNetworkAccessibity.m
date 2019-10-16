@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, NetworkType) {
     [[self sharedInstance] cleanNetworkAccessibity];
 }
 
-+ (void)setStateDidUpdateNotifier:(void (^)(CWNetworkAccessibleState))block {
++ (void)cwSetStateDidUpdateNotifier:(void (^)(CWNetworkAccessibleState))block {
     [[self sharedInstance] monitorNetworkAccessibleStateWithCompletionBlock:block];
 }
 
