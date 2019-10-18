@@ -39,8 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
  内购商品购买失败
 
  @param productId product id-内购商品id
- */
-- (void)failTransactionWithProductId:(NSString *)productId;
+  @param errorLocalizedDescription 失败错误描述
+  */
+ - (void)nwfIAPFailTransactionWithProductId:(NSString *)productId errorLocalizedDescription:(NSString *)errorLocalizedDescription;
 
 
 @end

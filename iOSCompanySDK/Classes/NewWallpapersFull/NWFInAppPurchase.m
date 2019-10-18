@@ -162,13 +162,13 @@
                 }
             }
                 break;
-                case SKPaymentTransactionStateFailed:
+            case SKPaymentTransactionStateFailed:
             {
                 NSLog(@"NWFInAppPurchase-内购商品购买失败");
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];
                 NSString *productId = tran.payment.productIdentifier;
-                if ([self.deleagte respondsToSelector:@selector(failTransactionWithProductId:)]) {
-                    [self.deleagte failTransactionWithProductId:productId];
+                if ([self.deleagte respondsToSelector:@selector(nwfIAPFailTransactionWithProductId:errorLocalizedDescription:)]) {
+                    [self.deleagte nwfIAPFailTransactionWithProductId:productId errorLocalizedDescription:tran.error.localizedDescription];
                 }
             }
             default:

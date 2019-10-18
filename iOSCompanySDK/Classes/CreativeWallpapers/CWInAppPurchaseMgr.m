@@ -118,11 +118,11 @@
                 break;
                 case SKPaymentTransactionStateFailed:
             {
-                NSLog(@"CreativePapers-内购商品购买失败");
+                NSLog(@"CreativePapers-内购商品购买失败:%@",tran.error.localizedDescription);
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];
                 NSString *productId = tran.payment.productIdentifier;
-                if ([self.deleagte respondsToSelector:@selector(failTransactionWithProductId:)]) {
-                    [self.deleagte failTransactionWithProductId:productId];
+                if ([self.deleagte respondsToSelector:@selector(cwIAPFailTransactionWithProductId:errorLocalizedDescription:)]) {
+                    [self.deleagte cwIAPFailTransactionWithProductId:productId errorLocalizedDescription:tran.error.localizedDescription];
                 }
             }
             default:
