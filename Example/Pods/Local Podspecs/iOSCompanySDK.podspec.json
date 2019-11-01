@@ -1,7 +1,7 @@
 {
   "name": "iOSCompanySDK",
-  "version": "1.0.0",
-  "summary": "iOSCompanySDK in use company all project from GDYSDK --- iOSCompanySDK是用于添加公共各个项目的方法",
+  "version": "1.0.3",
+  "summary": "iOSCompanySDK in use company all project from SDK --- iOSCompanySDK是用于添加公共各个项目的方法",
   "description": "TODO: 用于公司的各个项目添加公共方法使用；每个项目都会建立一个文件夹用于区分项目.--iOSCompanySDK in use company all project from GDYSDK --- iOSCompanySDK是用于添加公共各个项目的方法.",
   "homepage": "https://github.com/GDaYao/iOSCompanySDK",
   "license": {
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/GDaYao/iOSCompanySDK.git",
-    "tag": "1.0.0"
+    "tag": "1.0.3"
   },
   "platforms": {
     "ios": "8.0"
