@@ -16,8 +16,11 @@ PODS:
     - AFNetworking/NSURLSession
   - iOSCompanySDK (1.0.3):
     - iOSCompanySDK/CreativeWallpapers (= 1.0.3)
+    - iOSCompanySDK/NewPhotoTranslation (= 1.0.3)
     - iOSCompanySDK/NewWallpapersFull (= 1.0.3)
   - iOSCompanySDK/CreativeWallpapers (1.0.3):
+    - AFNetworking
+  - iOSCompanySDK/NewPhotoTranslation (1.0.3):
     - AFNetworking
   - iOSCompanySDK/NewWallpapersFull (1.0.3):
     - AFNetworking
@@ -35,7 +38,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  iOSCompanySDK: 0914c66af33f4d4d2d959cc05951db81ecfc4b81
+  iOSCompanySDK: 94b22f4d7cd1a75406ce63bb2c5ce7ef7c38ce91
 
 PODFILE CHECKSUM: 22add7f03cd124e3b191c85d05542205e5237e1f
 
