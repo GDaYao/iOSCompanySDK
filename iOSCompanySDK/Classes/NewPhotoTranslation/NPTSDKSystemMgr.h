@@ -1,4 +1,4 @@
-////  NPTSystemMgr.h
+////  NPTSDKSystemMgr.h
 //  iOSCompanySDK
 //  Created on 2019/11/15.
 //
@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NPTSystemMgr : NSObject
+@interface NPTSDKSystemMgr : NSObject
 
 
 
