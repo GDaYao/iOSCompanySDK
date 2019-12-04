@@ -333,25 +333,25 @@
     NSArray* languages = [defs objectForKey:@"AppleLanguages"];
     NSString* preferredLang = [languages objectAtIndex:0];
     
-    if (preferredLang.length>=2) {
-        if( [[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"en"]  ){
-            return @"en";
-        }
+    if ( (preferredLang.length>=2) && ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"en"]) ) {
+        return @"en";
+    }else if ((preferredLang.length>=7) && ([[preferredLang substringWithRange:NSMakeRange(0, 7)] isEqualToString:@"zh-Hans"]) ) {
+        return @"zh-Hans";
+    } else if ((preferredLang.length>=7) && ([[preferredLang substringWithRange:NSMakeRange(0, 7)] isEqualToString:@"zh-Hant"]) ) {
+        return @"zh-Hant";
+    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ja"]) ) {
+        return @"ja";
+    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ko"]) ) {
+        return @"ko";
+    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ru"]) ) {
+        return @"ru";
+    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"de"]) ) {
+        return @"de";
+    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"fr"]) ) {
+        return @"fr";
     }
-    if (preferredLang.length>=7) {
-        if( [[preferredLang substringWithRange:NSMakeRange(0, 7)] isEqualToString:@"zh-Hans"]  ){
-            return @"zh-Hans";
-        }
-    }
-    if (preferredLang.length>=7) {
-        if( [[preferredLang substringWithRange:NSMakeRange(0, 7)] isEqualToString:@"zh-Hant"]  ){
-            return @"zh-Hant";
-        }
-    }
-    if (preferredLang.length>=2) {
-        if( [[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ja"]  ){
-            return @"ja";
-        }
+    else{
+        return @"en";
     }
     // NSLog(@"Preferred Language:%@", preferredLang);
     return preferredLang;
