@@ -23,6 +23,7 @@
 #import "UILabel+CWLabel.h"
 #import "NPTSDKNetworkMgr.h"
 #import "NPTSDKSystemMgr.h"
+#import "NPTSubCollectionView.h"
 #import "UIButton+NPTUIButton.h"
 #import "UIColor+NPTSDKUIColor.h"
 #import "UILabel+NPTUILabel.h"
