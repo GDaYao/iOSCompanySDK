@@ -62,8 +62,8 @@ static NSString * const kNPTDefaultCellIdentifier = @"NPTDefaultCellIdentifier";
     }
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
-    //self.delegate = self;
-    //self.dataSource = self;
+    self.delegate = self;
+    self.dataSource = self;
     self.bounces = YES;
 }
 
