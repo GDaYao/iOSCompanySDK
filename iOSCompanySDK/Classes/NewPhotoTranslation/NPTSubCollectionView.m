@@ -114,13 +114,13 @@ static NSString * const kNPTDefaultCellIdentifier = @"NPTDefaultCellIdentifier";
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
-        if (self.npsdkSectionHeader) {
-            return self.npsdkSectionHeader(collectionView,kind,indexPath);
+        if (self.nptsdkSectionHeader) {
+            return self.nptsdkSectionHeader(collectionView,kind,indexPath);
         }
     }
     if([kind isEqualToString:UICollectionElementKindSectionFooter]){
-        if (self.npsdkSectionFooter) {
-            return self.npsdkSectionFooter(collectionView,kind,indexPath);
+        if (self.nptsdkSectionFooter) {
+            return self.nptsdkSectionFooter(collectionView,kind,indexPath);
         }
     };
     return nil;
