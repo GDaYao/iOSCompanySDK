@@ -22,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 //// test teset teste
 @property (nonatomic,copy)CGSize (^nptsdkHeaderSizeInSection)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
 @property (nonatomic,copy)CGSize (^nptsdkFooterSizeInSection)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
-@property (nonatomic,copy)UICollectionReusableView *_Nullable(^sectionHeader)(UICollectionView *collectionView,NSString *kind,NSIndexPath *indexPath);
-@property (nonatomic,copy)UICollectionReusableView *_Nullable(^sectionFooter)(UICollectionView *collectionView,NSString *kind,NSIndexPath *indexPath);
+@property (nonatomic,copy)UICollectionReusableView *_Nullable(^npsdkSectionHeader)(UICollectionView *collectionView,NSString *kind,NSIndexPath *indexPath);
+@property (nonatomic,copy)UICollectionReusableView *_Nullable(^npsdkSectionFooter)(UICollectionView *collectionView,NSString *kind,NSIndexPath *indexPath);
 //// test teset teste
 @property (nonatomic,copy)UICollectionViewCell*_Nullable(^nptsdkCellForItem)(UICollectionView *collectionView,NSIndexPath *indexPath);
 @property (nonatomic,copy)void(^nptsdkDidSelectItem)(UICollectionView *collectionView,NSIndexPath *indexPath);
