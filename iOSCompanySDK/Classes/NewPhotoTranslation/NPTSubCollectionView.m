@@ -39,7 +39,7 @@ static NSString * const kNPTDefaultCellIdentifier = @"NPTDefaultCellIdentifier";
 }
 
 #pragma mark  - init config method
-- (void)initCVInNWFWithBGColor:(UIColor *)BGColor withNeedHeaderFooter:(BOOL)isNeed withHSize:(CGSize)HSize withFSize:(CGSize)FSize withHID:(NSString *)HID withFID:(NSString *)FID withRegisterNib:(NSString *)NibName registerClass:(Class)cellClass withCellId:(NSString *)cellId {
+- (void)NPTSDKInitCVFWithBGColor:(UIColor *)BGColor withNeedHeaderFooter:(BOOL)isNeed withHSize:(CGSize)HSize withFSize:(CGSize)FSize withHID:(NSString *)HID withFID:(NSString *)FID withRegisterNib:(NSString *)NibName registerClass:(Class)cellClass withCellId:(NSString *)cellId {
     self.backgroundColor = BGColor;
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
     self.collectionViewLayout = layout;
@@ -62,8 +62,8 @@ static NSString * const kNPTDefaultCellIdentifier = @"NPTDefaultCellIdentifier";
     }
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
-    self.delegate = self;
-    self.dataSource = self;
+    //self.delegate = self;
+    //self.dataSource = self;
     self.bounces = YES;
 }
 
