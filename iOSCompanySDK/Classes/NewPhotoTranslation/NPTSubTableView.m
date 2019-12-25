@@ -30,7 +30,7 @@ static NSString *const kNPTDefaultCellIdentifier = @"NPTDefaultCellIdentifier";
 
 
 #pragma mark - init config method
-- (void)InitTVWithBGColor:(UIColor *)BGColor registerTableViewCell:(UITableViewCell *)tableViewCell tableViewCellID:(NSString *)kCellIdentifier showVerticalSI:(BOOL)showV showHorizontalSI:(BOOL)showH separatorStyle:(UITableViewCellSeparatorStyle)separatorStyle{
+- (void)initNPTTVWithBGColor:(UIColor *)BGColor registerTableViewCell:(UITableViewCell *)tableViewCell tableViewCellID:(NSString *)kCellIdentifier showVerticalSI:(BOOL)showV showHorizontalSI:(BOOL)showH separatorStyle:(UITableViewCellSeparatorStyle)separatorStyle {
     self.backgroundColor = BGColor;
     // register cell class
     if ((kCellIdentifier==nil) || (kCellIdentifier.length == 0)) {
