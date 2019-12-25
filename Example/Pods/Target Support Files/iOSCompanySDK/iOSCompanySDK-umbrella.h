@@ -24,6 +24,7 @@
 #import "NPTSDKNetworkMgr.h"
 #import "NPTSDKSystemMgr.h"
 #import "NPTSubCollectionView.h"
+#import "NPTSubTableView.h"
 #import "NSArray+NPTSDKSafeArray.h"
 #import "NSMutableArray+NPTSDKSafeMutableArray.h"
 #import "UIButton+NPTUIButton.h"
