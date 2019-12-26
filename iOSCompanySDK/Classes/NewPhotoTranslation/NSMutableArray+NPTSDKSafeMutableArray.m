@@ -10,7 +10,7 @@
 @implementation NSMutableArray (NPTSDKSafeMutableArray)
 
 
-#pragma mark - 可变数组防越界分类方法
+#pragma mark - 可变数组插入数据
 /**
  *  数组中插入数据
  */
@@ -26,6 +26,27 @@
     if (object) {
         [self addObject:object];
     }
+}
+
+#pragma mark - 可变数组移除数据
+- (void)nptsdkSafetyMutableArrDeleteWithObject:(id)object {
+    if (object) {
+        [self removeObject:object];
+    }
+}
+- (void)nptsdkSafetyMutableArrDeleteWithIndex:(NSUInteger)index {
+    if (self.count>index) {
+        [self removeObjectAtIndex:index];        
+    }
+}
+
+
+#pragma mark - 可变数组取数据
+- (id)nptsdkSafetyMutableArrObjectAtIndex:(NSUInteger)index {
+    if (self.count>index) {
+        return [self objectAtIndex:index];
+    }
+    return nil;
 }
 
 

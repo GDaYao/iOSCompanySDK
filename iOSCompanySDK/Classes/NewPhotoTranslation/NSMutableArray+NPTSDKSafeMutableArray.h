@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-#pragma mark - NSMubaleArray可变数组分类添加方法
+#pragma mark - 可变数组插入数据
 /**
  数组中插入数据
 
@@ -28,6 +28,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)nptsdkSafetyMutableArrAddObjectVerify:(id)object;
 
+
+#pragma mark - 可变数组移除数据
+- (void)nptsdkSafetyMutableArrDeleteWithObject:(id)object;
+- (void)nptsdkSafetyMutableArrDeleteWithIndex:(NSUInteger)index;
+
+#pragma mark - 可变数组取数据
+- (id)nptsdkSafetyMutableArrObjectAtIndex:(NSUInteger)index;
 
 
 @end
