@@ -116,6 +116,7 @@ static NSString *const kNPTDefaultCellIdentifier = @"NPTDefaultCellIdentifier";
     return self.nptDidSelectInTV(tableView,indexPath);
 }
 // TODO: edit cell
+/*
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete)
@@ -129,7 +130,7 @@ static NSString *const kNPTDefaultCellIdentifier = @"NPTDefaultCellIdentifier";
         
     }
 }
-
+*/
 
 
 
