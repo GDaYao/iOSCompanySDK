@@ -22,6 +22,7 @@
 #import "UIColor+CWColor.h"
 #import "UILabel+CWLabel.h"
 #import "NPTSDKKeychainItemWrapper.h"
+#import "NPTSDKNetworkAccessibity.h"
 #import "NPTSDKNetworkMgr.h"
 #import "NPTSDKReachabilityMgr.h"
 #import "NPTSDKSystemMgr.h"
