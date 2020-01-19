@@ -18,10 +18,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
++ (NSString *)nptGetAppVersion;
++ (NSString *)nptGetAppBundleId;
++ (NSString *)nptGetAppDisplayName;
 
++ (NSString *)nptsdkGetDeviceUDIDValueFromKeychain;
++ (NSString *)nptsdkGetDeviceIDFA;
 
++ (NSString *)nptsdkGetDeviceNetworkStatus;
 
+// 获取设备型号
++ (NSString*)nptsdkGetDeviceType;
 
+// 获取当前设备操作系统版本号
++ (NSString *)nptsdkGetDeviceOSVersion;
+
+// 获取系统语言码
++ (NSString*)nptsdkGetPreferredLanguage;
 
 @end
 
