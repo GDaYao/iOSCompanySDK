@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 // 获取设备型号
 + (NSString*)nptsdkGetDeviceType;
 
+// 设备品牌
++ (NSString *)nptsdkGetDeviceBand;
+
 // 获取当前设备操作系统版本号
 + (NSString *)nptsdkGetDeviceOSVersion;
 
