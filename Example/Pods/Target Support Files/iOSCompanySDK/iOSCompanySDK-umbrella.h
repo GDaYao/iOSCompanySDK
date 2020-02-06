@@ -21,6 +21,7 @@
 #import "UIButton+CWUIButton.h"
 #import "UIColor+CWColor.h"
 #import "UILabel+CWLabel.h"
+#import "NPTInAppPurchase.h"
 #import "NPTSDKKeychainItemWrapper.h"
 #import "NPTSDKNetworkAccessibity.h"
 #import "NPTSDKNetworkMgr.h"

@@ -11,6 +11,7 @@
 
 
 extern NSString * const nptNetworkAccessibityChangedNotification;
+                        
 
 typedef NS_ENUM(NSUInteger, ZYNetworkAccessibleState) {
     ZYNetworkChecking  = 0,

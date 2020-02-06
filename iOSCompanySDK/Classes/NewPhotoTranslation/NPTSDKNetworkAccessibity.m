@@ -25,7 +25,7 @@
 
 
 NSString * const nptNetworkAccessibityChangedNotification = @"nptNetworkAccessibityChangedNotification";
-
+                 
 typedef NS_ENUM(NSInteger, ZYNetworkType) {
     ZYNetworkTypeUnknown ,
     ZYNetworkTypeOffline ,
