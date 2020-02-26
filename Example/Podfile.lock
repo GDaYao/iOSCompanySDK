@@ -18,12 +18,52 @@ PODS:
     - iOSCompanySDK/CreativeWallpapers (= 1.0.3)
     - iOSCompanySDK/NewPhotoTranslation (= 1.0.3)
     - iOSCompanySDK/NewWallpapersFull (= 1.0.3)
+    - iOSCompanySDK/VideoPlayerClip (= 1.0.3)
   - iOSCompanySDK/CreativeWallpapers (1.0.3):
     - AFNetworking
   - iOSCompanySDK/NewPhotoTranslation (1.0.3):
     - AFNetworking
   - iOSCompanySDK/NewWallpapersFull (1.0.3):
     - AFNetworking
+  - iOSCompanySDK/VideoPlayerClip (1.0.3):
+    - SJBaseVideoPlayer
+  - Masonry (1.1.0)
+  - Reachability (3.2)
+  - SJBaseVideoPlayer (3.1.8):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/AVPlayer (= 3.1.8)
+    - SJBaseVideoPlayer/Common (= 3.1.8)
+    - SJUIKit/AttributesFactory (>= 0.0.0.38)
+    - SJUIKit/ObserverHelper (>= 0.0.0.38)
+    - SJUIKit/Queues (>= 0.0.0.38)
+  - SJBaseVideoPlayer/AVPlayer (3.1.8):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/Common
+    - SJUIKit/AttributesFactory (>= 0.0.0.38)
+    - SJUIKit/ObserverHelper (>= 0.0.0.38)
+    - SJUIKit/Queues (>= 0.0.0.38)
+  - SJBaseVideoPlayer/Common (3.1.8):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/ResourceLoader
+    - SJUIKit/AttributesFactory (>= 0.0.0.38)
+    - SJUIKit/ObserverHelper (>= 0.0.0.38)
+    - SJUIKit/Queues (>= 0.0.0.38)
+  - SJBaseVideoPlayer/ResourceLoader (3.1.8):
+    - Masonry
+    - Reachability
+    - SJUIKit/AttributesFactory (>= 0.0.0.38)
+    - SJUIKit/ObserverHelper (>= 0.0.0.38)
+    - SJUIKit/Queues (>= 0.0.0.38)
+  - SJUIKit/AttributesFactory (0.0.0.39):
+    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.39)
+    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.39)
+  - SJUIKit/AttributesFactory/Deprecated (0.0.0.39)
+  - SJUIKit/AttributesFactory/UIKitText (0.0.0.39)
+  - SJUIKit/ObserverHelper (0.0.0.39)
+  - SJUIKit/Queues (0.0.0.39)
 
 DEPENDENCIES:
   - iOSCompanySDK (from `../`)
@@ -31,6 +71,10 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AFNetworking
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer
+    - SJUIKit
 
 EXTERNAL SOURCES:
   iOSCompanySDK:
@@ -38,7 +82,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  iOSCompanySDK: 94b22f4d7cd1a75406ce63bb2c5ce7ef7c38ce91
+  iOSCompanySDK: 1f355f7bb68864954aa3ab34c3461b3082434611
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  SJBaseVideoPlayer: 7c3d6d0e8c9cbd731143d2ddb53a2157e74479de
+  SJUIKit: 5479a150083e606937a796801ecaae6317e046f5
 
 PODFILE CHECKSUM: 22add7f03cd124e3b191c85d05542205e5237e1f
 

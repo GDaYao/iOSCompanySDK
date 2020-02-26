@@ -43,6 +43,7 @@
 #import "NWFSystemMgr.h"
 #import "UIButton+NWFUIButton.h"
 #import "UILabel+NWFUILabel.h"
+#import "UILabel+VPLabel.h"
 
 FOUNDATION_EXPORT double iOSCompanySDKVersionNumber;
 FOUNDATION_EXPORT const unsigned char iOSCompanySDKVersionString[];
