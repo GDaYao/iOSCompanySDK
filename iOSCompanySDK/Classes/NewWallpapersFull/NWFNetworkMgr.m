@@ -25,6 +25,12 @@
             success(responseObject);
             // in this success,you can add NSNotificationCenter to refresh view when data update
             // [[NSNotificationCenter defaultCenter] postNotificationName:@"requestSuccessRefreshData" object:nil];
+        }else{
+            NSString *domain = @"domain with response object null";
+            NSString *desc = NSLocalizedString(@"response object null", @"response object null");
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : desc };
+            NSError *error = [NSError errorWithDomain:domain code:-0000 userInfo:userInfo];
+            failure(error);
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         failure(error);
