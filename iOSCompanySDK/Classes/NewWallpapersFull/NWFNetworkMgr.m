@@ -28,8 +28,8 @@
         }else{
             NSString *domain = @"domain with response object null";
             NSString *desc = NSLocalizedString(@"response object null", @"response object null");
-            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : desc };
-            NSError *error = [NSError errorWithDomain:domain code:-0000 userInfo:userInfo];
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObject:desc forKey:NSLocalizedDescriptionKey];
+            NSError *error = [NSError errorWithDomain:domain code:0000 userInfo:userInfo];
             failure(error);
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
