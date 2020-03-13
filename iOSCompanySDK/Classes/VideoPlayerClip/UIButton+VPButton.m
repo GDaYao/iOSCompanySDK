@@ -14,7 +14,7 @@
 
 
 // init button.
-+ (UIButton *)CPInitWithBGName:(NSString *)imgStr title:(NSString *)titleStr titleColor:(UIColor *)titleColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)sizeFont btnBGColor:(UIColor *)bgColor {
++ (UIButton *)VPInitWithBGName:(NSString *)imgStr title:(NSString *)titleStr titleColor:(UIColor *)titleColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)sizeFont btnBGColor:(UIColor *)bgColor {
     UIButton *vpBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     if (imgStr.length != 0) {
         [vpBtn setBackgroundImage:[UIImage imageNamed:imgStr] forState:UIControlStateNormal];
