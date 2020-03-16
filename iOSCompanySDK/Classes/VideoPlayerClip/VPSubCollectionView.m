@@ -53,6 +53,8 @@ static NSString * const kVPDefaultCellIdentifier = @"VPDefaultCellIdentifier";
     }
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
+    self.delegate = self;
+    self.dataSource = self;
     self.bounces = YES;
 }
 
