@@ -13,7 +13,7 @@ static NSString * const kVPDefaultCellIdentifier = @"VPDefaultCellIdentifier";
 
 
 
-@interface VPSubCollectionView ()  <UIScrollViewDelegate> 
+@interface VPSubCollectionView ()  <UIScrollViewDelegate,UICollectionViewDataSource,UICollectionViewDelegate> 
 
 @end
 
