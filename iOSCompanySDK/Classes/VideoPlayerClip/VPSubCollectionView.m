@@ -30,13 +30,11 @@ static NSString * const kVPDefaultCellIdentifier = @"VPDefaultCellIdentifier";
 
 
 #pragma mark  - init config method
-- (void)VPSDKInitCVFWithBGColor:(UIColor *)BGColor withNeedHeaderFooter:(BOOL)isNeed withHSize:(CGSize)HSize withFSize:(CGSize)FSize withHID:(NSString *)HID withFID:(NSString *)FID withRegisterNib:(NSString *)NibName registerClass:(Class)cellClass withCellId:(NSString *)cellId {
+- (void)VPSDKInitCVFWithBGColor:(UIColor *)BGColor withNeedHeaderFooter:(BOOL)isNeed withHID:(NSString *)HID withFID:(NSString *)FID withRegisterNib:(NSString *)NibName registerClass:(Class)cellClass withCellId:(NSString *)cellId {
     self.backgroundColor = BGColor;
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
     self.collectionViewLayout = layout;
     if(isNeed){
-        layout.headerReferenceSize = HSize;
-        layout.footerReferenceSize = FSize;
         if (HID) {
             [self registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:HID];
         }
