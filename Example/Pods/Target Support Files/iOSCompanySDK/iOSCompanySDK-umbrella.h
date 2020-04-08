@@ -50,6 +50,7 @@
 #import "UIColor+VPUIColor.h"
 #import "UILabel+VPLabel.h"
 #import "VPSubCollectionView.h"
+#import "VPSubTableView.h"
 
 FOUNDATION_EXPORT double iOSCompanySDKVersionNumber;
 FOUNDATION_EXPORT const unsigned char iOSCompanySDKVersionString[];
