@@ -26,7 +26,11 @@
 + (NSString *)getAppDisplayName {
     NSBundle *currentBundle = [NSBundle mainBundle];
     NSDictionary *infoDictionary = [currentBundle infoDictionary];
-    return [infoDictionary objectForKey:@"CFBundleDisplayName"];
+    NSString *appName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
+    if (appName.length==0 || appName ==nil) {
+        appName =    [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
+    }
+    return appName;
 }
 
 
