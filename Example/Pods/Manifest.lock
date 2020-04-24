@@ -26,7 +26,7 @@ PODS:
   - iOSCompanySDK/NewWallpapersFull (1.0.3):
     - AFNetworking
   - iOSCompanySDK/VideoPlayerClip (1.0.3):
-    - AFNetworking
+    - AFNetworking (= 3.2.1)
 
 DEPENDENCIES:
   - iOSCompanySDK (from `../`)
@@ -41,7 +41,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  iOSCompanySDK: ca51ce9c6bf42bb180bf78bf764f8d71545c76ea
+  iOSCompanySDK: fd5c7cc302fa6d1e6494edad633fd3ea2741072c
 
 PODFILE CHECKSUM: 22add7f03cd124e3b191c85d05542205e5237e1f
 

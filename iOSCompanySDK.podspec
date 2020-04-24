@@ -84,7 +84,7 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
     videoplayerclip.libraries = 'sqlite3'
     videoplayerclip.source_files = 'iOSCompanySDK/Classes/VideoPlayerClip/**/*';
     videoplayerclip.public_header_files = 'iOSCompanySDK/Classes/VideoPlayerClip/**/*.h';
-    videoplayerclip.dependency 'AFNetworking' # ,'3.2.1'
+    videoplayerclip.dependency 'AFNetworking','3.2.1'
     #videoplayerclip.dependency 'SJBaseVideoPlayer',:git=>'git@github.com:GDaYao/SJBaseVideoPlayer.git' // 取消依赖
     videoplayerclip.xcconfig = { "FRAMEWORK_SEARCH_PATHS" => '$(inherited)', "LIBRARY_SEARCH_PATHS" => '$(inherited)', "HEADER_SEARCH_PATHS" => '$(inherited)', "OTHER_CFLAGS" => '$(inherited)', "OTHER_LDFLAGS" => '$(inherited)', "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited)' }
     end
