@@ -16,7 +16,7 @@
 #import "sys/utsname.h"
 
 // judge network status
-#import "VPSDKReachability.h"
+#import "RCSDKReachability.h"
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
@@ -96,7 +96,7 @@
 + (NSString *)getDeviceNetworkStatus {
     NSString *netconnType = @"";
     
-    VPSDKReachability *reach = [VPSDKReachability reachabilityWithHostName:@"www.apple.com"];
+    RCSDKReachability *reach = [RCSDKReachability reachabilityWithHostName:@"www.apple.com"];
     
     switch ([reach currentReachabilityStatus]) {
         case NotReachable:// 没有网络

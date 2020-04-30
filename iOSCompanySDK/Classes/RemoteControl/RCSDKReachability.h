@@ -42,10 +42,10 @@ typedef void (^NetworkUnreachable)(RCSDKReachability * reachability);
 +(RCSDKReachability*)reachabilityWithHostname:(NSString*)hostname;
 // This is identical to the function above, but is here to maintain
 //compatibility with Apples original code. (see .m)
-    +(RCSDKReachability*)reachabilityWithHostName:(NSString*)hostname;
-+(RCSDKReachability*)reachabilityForInternetConnection;
-+(RCSDKReachability*)reachabilityWithAddress:(void *)hostAddress;
-+(RCSDKReachability*)reachabilityForLocalWiFi;
++ (RCSDKReachability*)reachabilityWithHostName:(NSString*)hostname;
++ (RCSDKReachability*)reachabilityForInternetConnection;
++ (RCSDKReachability*)reachabilityWithAddress:(void *)hostAddress;
++ (RCSDKReachability*)reachabilityForLocalWiFi;
 
 -(RCSDKReachability *)initWithReachabilityRef:(SCNetworkReachabilityRef)ref;
 
