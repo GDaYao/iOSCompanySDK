@@ -1,15 +1,13 @@
-////  VPSDKSystemMgr.m
+////  RCSDKSystemMgr.m
 //  iOSCompanySDK
 //
-//  Created on 2020/4/24.
+//  Created on 2020/4/30.
 //  
 //
 
-#import "VPSDKSystemMgr.h"
+#import "RCSDKSystemMgr.h"
 
-
-#import "VPKeychainItemWrapper.h"
-
+#import "RCSDKKeychainItemWrapper.h"
 
 // use get idfa
 #import <AdSupport/AdSupport.h>
@@ -24,11 +22,24 @@
 
 
 
-
-@implementation VPSDKSystemMgr
+@implementation RCSDKSystemMgr
 
 
 #pragma mark - get app config
++ (NSString *)getAppBundleId {
+    NSBundle *currentBundle = [NSBundle mainBundle];
+    NSDictionary *infoDictionary = [currentBundle infoDictionary];
+    return [infoDictionary objectForKey:@"CFBundleIdentifier"];
+}
++ (NSString *)getAppDisplayName {
+    NSBundle *currentBundle = [NSBundle mainBundle];
+    NSDictionary *infoDictionary = [currentBundle infoDictionary];
+    NSString *appName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
+    if (appName.length==0 || appName ==nil) {
+        appName =    [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
+    }
+    return appName;
+}
 + (NSString *)getAppVersion {
     NSBundle *currentBundle = [NSBundle mainBundle];
     NSDictionary *infoDictionary = [currentBundle infoDictionary];
@@ -39,34 +50,20 @@
     NSDictionary *infoDictionary = [currentBundle infoDictionary];
     return [infoDictionary objectForKey:@"CFBundleVersion"];
 }
-
-// garbage code.
-+ (void)vpSystemMgrGarbageCodeMethod {
-    NSString *str = @"this is garbage code method";
-    UILabel *testLab = [[UILabel alloc]init];
+// 获取手机品牌
++ (NSString *)getDeviceBand {
+    return [[UIDevice currentDevice]model];
+}
+// 获取当前设备的操作系统版本号
++ (NSString *)getDeviceOSVersion {
+    return [[UIDevice currentDevice] systemVersion];
 }
 
-+ (NSString *)getAppBundleId {
-    NSBundle *currentBundle = [NSBundle mainBundle];
-    NSDictionary *infoDictionary = [currentBundle infoDictionary];
-    return [infoDictionary objectForKey:@"CFBundleIdentifier"];
-}
-
-+ (NSString *)getAppDisplayName {
-    NSBundle *currentBundle = [NSBundle mainBundle];
-    NSDictionary *infoDictionary = [currentBundle infoDictionary];
-    NSString *appName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
-    if (appName.length==0 || appName ==nil) {
-        appName =    [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
-    }
-    return appName;
-}
-
-
+#pragma mark - 获取UDID + idfa
 // 获取当前设备的UDID-存储到KeyChain中
 + (NSString *)getDeviceUDIDValueFromKeychain {
-    NSString *identifier = @"VPGetUDIDIdentifier";
-    VPKeychainItemWrapper *keyChainWrapper = [[VPKeychainItemWrapper alloc] initWithIdentifier:identifier accessGroup:nil];
+    NSString *identifier = @"RCSDKGetUDIDIdentifier";
+    RCSDKKeychainItemWrapper *keyChainWrapper = [[RCSDKKeychainItemWrapper alloc] initWithIdentifier:identifier accessGroup:nil];
     NSArray *UUID = [keyChainWrapper objectForKey:(__bridge id)kSecValueData];
     if (UUID == nil || UUID.count == 0) {
         UUID = @[ [[[UIDevice currentDevice] identifierForVendor] UUIDString] ];
@@ -79,8 +76,8 @@
 // get current设备的idfa
 + (NSString *)getDeviceIDFA {
     
-    NSString *nwfIdentifier = @"VPKeychainItemWrapper_idfa";
-    VPKeychainItemWrapper *keyChainWrapper = [[VPKeychainItemWrapper alloc]initWithIdentifier:nwfIdentifier accessGroup:nil];
+    NSString *nwfIdentifier = @"RCSDKKeychainItemWrapper_idfa";
+    RCSDKKeychainItemWrapper *keyChainWrapper = [[RCSDKKeychainItemWrapper alloc]initWithIdentifier:nwfIdentifier accessGroup:nil];
     NSArray *user = [keyChainWrapper objectForKey:(__bridge id)kSecValueRef];
     if (user == nil || user.count == 0)
     {
@@ -94,12 +91,8 @@
     }
 }
 
-// 获取手机品牌
-+ (NSString *)getDeviceBand {
-    return [[UIDevice currentDevice]model];
-}
 
-// 获取网络名称
+#pragma mark - 获取网络类型
 + (NSString *)getDeviceNetworkStatus {
     NSString *netconnType = @"";
     
@@ -171,7 +164,7 @@
 }
 
 
-// 获取设备型号
+#pragma mark -  获取设备型号
 + (NSString*)getDeviceType {
     struct utsname systemInfo;
     
@@ -313,43 +306,12 @@
     
     return platform;
 }
-// 获取当前设备的操作系统版本号
-+ (NSString *)getDeviceOSVersion {
-    return [[UIDevice currentDevice] systemVersion];
-}
 
 
 
 
-#pragma mark - get system languages
-/**   en:英文  zh-Hans:简体中文   zh-Hant:繁体中文    ja:日本  ...... */
-+ (NSString*)getPreferredLanguage {
-    NSUserDefaults* defs = [NSUserDefaults standardUserDefaults];
-    NSArray* languages = [defs objectForKey:@"AppleLanguages"];
-    NSString* preferredLang = [languages objectAtIndex:0];
-    
-    if ( (preferredLang.length>=2) && ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"en"]) ) {
-        return @"en";
-    }else if ((preferredLang.length>=7) && ([[preferredLang substringWithRange:NSMakeRange(0, 7)] isEqualToString:@"zh-Hans"]) ) {
-        return @"zh-Hans";
-    } else if ((preferredLang.length>=7) && ([[preferredLang substringWithRange:NSMakeRange(0, 7)] isEqualToString:@"zh-Hant"]) ) {
-        return @"zh-Hant";
-    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ja"]) ) {
-        return @"ja";
-    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ko"]) ) {
-        return @"ko";
-    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ru"]) ) {
-        return @"ru";
-    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"de"]) ) {
-        return @"de";
-    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"fr"]) ) {
-        return @"fr";
-    }
-    else{
-        return @"en";
-    }
-    return preferredLang;
-}
+
+
 
 
 

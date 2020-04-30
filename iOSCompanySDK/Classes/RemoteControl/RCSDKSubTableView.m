@@ -1,15 +1,17 @@
-////  VPSubTableView.m
+////  RCSDKSubTableView.m
 //  iOSCompanySDK
 //
-//  Created on 2020/4/8.
+//  Created on 2020/4/30.
 //  
 //
 
-#import "VPSubTableView.h"
+#import "RCSDKSubTableView.h"
 
-static NSString *  const kVPDefaultCellIdentifier = @"VPSubUITableViewCellIdentifier";
 
-@implementation VPSubTableView
+static NSString *  const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentifier";
+
+
+@implementation RCSDKSubTableView
 
 #pragma mark - init life
 - (instancetype)initWithFrame:(CGRect)frame style:(UITableViewStyle)style{
@@ -20,12 +22,13 @@ static NSString *  const kVPDefaultCellIdentifier = @"VPSubUITableViewCellIdenti
 }
 
 
-#pragma mark - init config method
+
+#pragma mark - init method
 - (void)initTVWithBGColor:(UIColor *)BGColor registerTableViewCell:(UITableViewCell *)tableViewCell tableViewCellID:(NSString *)kCellIdentifier showVerticalSI:(BOOL)showV showHorizontalSI:(BOOL)showH separatorStyle:(UITableViewCellSeparatorStyle)separatorStyle{
     self.backgroundColor = BGColor;
     // register cell class
     if ((kCellIdentifier==nil) || (kCellIdentifier.length == 0)) {
-        [self registerClass:[tableViewCell class] forCellReuseIdentifier:kVPDefaultCellIdentifier];
+        [self registerClass:[tableViewCell class] forCellReuseIdentifier:kRCSDKDefaultCellIdentifier];
     }else{
         [self registerClass:[tableViewCell class] forCellReuseIdentifier:kCellIdentifier];
     }
@@ -92,7 +95,6 @@ static NSString *  const kVPDefaultCellIdentifier = @"VPSubUITableViewCellIdenti
     return self.didSelectInTV(tableView,indexPath);
 }
 // TODO: edit cell
-/*
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete)
@@ -100,14 +102,10 @@ static NSString *  const kVPDefaultCellIdentifier = @"VPSubUITableViewCellIdenti
         if (self.cellDeleteInTVInNWF) {
             self.cellDeleteInTVInNWF(tableView, indexPath);
         }
-    }
-    else
-    {
+    }else{
         
     }
 }
-*/
-
 
 #pragma mark - scrollView delegate
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
