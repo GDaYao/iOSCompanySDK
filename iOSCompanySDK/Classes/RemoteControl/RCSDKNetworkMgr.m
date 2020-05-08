@@ -11,8 +11,8 @@
 
 @implementation RCSDKNetworkMgr
 
-#pragma mark - RCSDK net request data
-+ (void)RCSDKAFHttpDataTaskPostMethodWithUrlString:(NSString *)UrlString parameters:(id)parameters successBlock:(void (^)(id _Nullable responseObject))successBlock failureBlock:(void (^)(NSError * _Nullable error))failureBlock {
+#pragma mark - 'POST' net request data
++ (void)RCSDKAFHttpDataTaskPOSTMethodWithUrlString:(NSString *)UrlString parameters:(id)parameters successBlock:(void (^)(id _Nullable responseObject))successBlock failureBlock:(void (^)(NSError * _Nullable error))failureBlock {
     AFHTTPSessionManager *sessionMgr = [AFHTTPSessionManager manager];
         sessionMgr.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"application/xhtml+xml", @"application/xml", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", @"video/mp4", @"text/plain",@"charset=utf-8",nil];
         sessionMgr.requestSerializer.timeoutInterval = 6.f;  // 60.0s request->response default time out
@@ -31,6 +31,29 @@
             failureBlock(error);
         }];
 }
+
+#pragma mark  - 'GET' net request data ----
++ (void)RCSDKAFHttpDataTaskGETMethodWithUrlString:(NSString *)UrlString parameters:(id)parameters success:(void (^)(id _Nullable responseObject))success failure:(void (^)(NSError * _Nullable error))failure {
+    AFHTTPSessionManager *sessionMgr = [AFHTTPSessionManager manager];
+    sessionMgr.responseSerializer = [AFHTTPResponseSerializer serializer];
+    sessionMgr.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"application/xhtml+xml", @"application/xml", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", @"video/mp4", @"text/plain",@"charset=utf-8",nil];
+    sessionMgr.requestSerializer.timeoutInterval = 6.f;
+    [sessionMgr GET:UrlString parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (responseObject) {
+            success(responseObject);
+        }else{
+            NSString *domain = @"domain with response object null";
+            NSString *desc = NSLocalizedString(@"response object null", @"response object null");
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObject:desc forKey:NSLocalizedDescriptionKey];
+            NSError *error = [NSError errorWithDomain:domain code:0000 userInfo:userInfo];
+            failure(error);
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        failure(error);
+    }];
+}
+
 
 
 #pragma mark - RCSDK net implete download

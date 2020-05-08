@@ -15,8 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-#pragma mark - RCSDK net request data
-+ (void)RCSDKAFHttpDataTaskPostMethodWithUrlString:(NSString *)UrlString parameters:(id)parameters successBlock:(void (^)(id _Nullable responseObject))successBlock failureBlock:(void (^)(NSError * _Nullable error))failureBlock;
+#pragma mark - 'POST' net request data
++ (void)RCSDKAFHttpDataTaskPOSTMethodWithUrlString:(NSString *)UrlString parameters:(id)parameters successBlock:(void (^)(id _Nullable responseObject))successBlock failureBlock:(void (^)(NSError * _Nullable error))failureBlock;
+
+
+#pragma mark  - 'GET' net request data ----
++ (void)RCSDKAFHttpDataTaskGETMethodWithUrlString:(NSString *)UrlString parameters:(id)parameters success:(void (^)(id _Nullable responseObject))success failure:(void (^)(NSError * _Nullable error))failure;
 
 
 
