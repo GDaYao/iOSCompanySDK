@@ -80,6 +80,16 @@ static NSString *  const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentif
     return nil;
 }
 
+
+// TODO: section index
+- (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+    if (self.sectionIndexTitles) {
+        return self.sectionIndexTitles(tableView);
+    }
+    return [NSArray array];
+}
+
+
 // TODO: cell for row
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     return self.cellForRow(tableView,indexPath);
@@ -94,6 +104,8 @@ static NSString *  const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentif
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     return self.didSelectInTV(tableView,indexPath);
 }
+
+/*
 // TODO: edit cell
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -106,6 +118,8 @@ static NSString *  const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentif
         
     }
 }
+ */
+
 
 #pragma mark - scrollView delegate
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
@@ -123,5 +137,7 @@ static NSString *  const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentif
         self.scrollViewDidScrollInTV(scrollView);
     }
 }
+
+
 
 @end
