@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 //
 @property (nonatomic,copy)NSArray<NSString *>*(^sectionIndexTitles)(UITableView *tableView);
-
+@property (nonatomic,copy)NSInteger(^sectionForSectionIndexTitle)(NSString *title,NSInteger index);
 
 //
 @property(nonatomic,copy) UITableViewCell*_Nullable(^cellForRow)(UITableView *tableView,NSIndexPath *indexPath);
@@ -42,6 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,copy) void(^scrollViewDidScrollToTopInTV)(UIScrollView *scrollView);
 @property(nonatomic,copy) void(^scrollViewDidScrollInTV)(UIScrollView *scrollView);
 
+
+
+// edit cell
+@property (nonatomic,copy) BOOL (^canEditRowAtIndexPathBlock)(NSIndexPath *indexpath);
 
 
 // initilize method

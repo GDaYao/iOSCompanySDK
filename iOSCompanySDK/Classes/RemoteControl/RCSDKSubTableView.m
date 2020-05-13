@@ -88,6 +88,14 @@ static NSString *  const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentif
     }
     return [NSArray array];
 }
+// 提供tableView的section和索引Index的对应关系
+//- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
+//    if (self.sectionForSectionIndexTitle) {
+//        return self.sectionForSectionIndexTitle(title, index);
+//    }
+//    return 0;
+//}
+
 
 
 // TODO: cell for row
@@ -105,20 +113,29 @@ static NSString *  const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentif
     return self.didSelectInTV(tableView,indexPath);
 }
 
-/*
 // TODO: edit cell
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete)
-    {
-        if (self.cellDeleteInTVInNWF) {
-            self.cellDeleteInTVInNWF(tableView, indexPath);
-        }
-    }else{
-        
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.canEditRowAtIndexPathBlock) {
+        return self.canEditRowAtIndexPathBlock(indexPath);
     }
+    return NO;
 }
- */
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return UITableViewCellEditingStyleDelete | UITableViewCellEditingStyleInsert;
+}
+// 系统自带删除方法
+//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    if (editingStyle == UITableViewCellEditingStyleDelete)
+//    {
+//        if (self.cellDeleteInTVInNWF) {
+//            self.cellDeleteInTVInNWF(tableView, indexPath);
+//        }
+//    }else{
+//
+//    }
+//}
+
 
 
 #pragma mark - scrollView delegate
