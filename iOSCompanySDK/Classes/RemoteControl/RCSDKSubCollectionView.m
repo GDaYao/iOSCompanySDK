@@ -26,7 +26,7 @@ static NSString * const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentifi
 
 
 #pragma mark  - init config method
-- (void)RCSDkInitCVFWithBGColor:(UIColor *)BGColor withNeedHeaderFooter:(BOOL)isNeed withHID:(NSString *)HID withFID:(NSString *)FID withRegisterNib:(NSString *)NibName registerClass:(Class)cellClass withCellId:(NSString *)cellId {
+- (void)RCSDKInitCVWithBGColor:(UIColor *)BGColor withNeedHeaderFooter:(BOOL)isNeed withHID:(NSString *)HID withFID:(NSString *)FID withRegisterNib:(NSString *)NibName registerClass:(Class)cellClass withCellId:(NSString *)cellId {
     self.backgroundColor = BGColor;
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
     self.collectionViewLayout = layout;
