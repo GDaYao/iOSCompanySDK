@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,copy) UITableViewCell*_Nullable(^cellForRow)(UITableView *tableView,NSIndexPath *indexPath);
 @property(nonatomic,copy) void(^willDisplayCellBlock)(UITableView *tableView,UITableViewCell *cell,NSIndexPath *indexPath);
 @property(nonatomic,copy) void(^didSelectInTV)(UITableView *tableView,NSIndexPath *indexPath);
-@property (nonatomic,copy) void(^cellDeleteInTVInNWF)(UITableView *tableView,NSIndexPath *indexPath);
+
 
 
 
@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // edit cell
 @property (nonatomic,copy) BOOL (^canEditRowAtIndexPathBlock)(NSIndexPath *indexpath);
+@property (nonatomic,copy) void(^cellDeleteInTVInNWF)(UITableView *tableView,NSIndexPath *indexPath);
 
 
 // initilize method

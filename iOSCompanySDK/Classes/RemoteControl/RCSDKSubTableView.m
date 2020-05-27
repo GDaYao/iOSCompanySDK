@@ -121,20 +121,20 @@ static NSString *  const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentif
     return NO;
 }
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return UITableViewCellEditingStyleDelete | UITableViewCellEditingStyleInsert;
+    return UITableViewCellEditingStyleDelete; // UITableViewCellEditingStyleInsert
 }
 // 系统自带删除方法
-//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    if (editingStyle == UITableViewCellEditingStyleDelete)
-//    {
-//        if (self.cellDeleteInTVInNWF) {
-//            self.cellDeleteInTVInNWF(tableView, indexPath);
-//        }
-//    }else{
-//
-//    }
-//}
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete)
+    {
+        if (self.cellDeleteInTVInNWF) {
+            self.cellDeleteInTVInNWF(tableView, indexPath);
+        }
+    }else{
+
+    }
+}
 
 
 
