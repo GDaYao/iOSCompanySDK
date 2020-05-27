@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // edit cell
 @property (nonatomic,copy) BOOL (^canEditRowAtIndexPathBlock)(NSIndexPath *indexpath);
-@property (nonatomic,copy) void(^cellDeleteInTVInNWF)(UITableView *tableView,NSIndexPath *indexPath);
+@property (nonatomic,copy) void(^rcsdkCellDeleteInTVBlock)(UITableView *tableView,NSIndexPath *indexPath);
 
 
 // initilize method

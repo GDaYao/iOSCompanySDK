@@ -128,8 +128,8 @@ static NSString *  const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentif
 {
     if (editingStyle == UITableViewCellEditingStyleDelete)
     {
-        if (self.cellDeleteInTVInNWF) {
-            self.cellDeleteInTVInNWF(tableView, indexPath);
+        if (self.rcsdkCellDeleteInTVBlock) {
+            self.rcsdkCellDeleteInTVBlock(tableView, indexPath);
         }
     }else{
 
