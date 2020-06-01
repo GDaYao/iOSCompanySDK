@@ -54,8 +54,6 @@ typedef void (^NetworkUnreachable)(VPSDKReachability * reachability);
 -(BOOL)isReachableViaWiFi;
 
 // WWAN may be available, but not active until a connection has been established.
-// WiFi may require a connection for VPN on Demand.
--(BOOL)isConnectionRequired; // Identical DDG variant.
 -(BOOL)connectionRequired; // Apple's routine.
 // Dynamic, on demand connection?
 -(BOOL)isConnectionOnDemand;

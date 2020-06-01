@@ -309,7 +309,6 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 
 // WWAN may be available, but not active until a connection has been established.
-// WiFi may require a connection for VPN on Demand.
 -(BOOL)isConnectionRequired
 {
     return [self connectionRequired];
