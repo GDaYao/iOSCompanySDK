@@ -66,6 +66,8 @@
 #import "VPSDKSystemMgr.h"
 #import "VPSubCollectionView.h"
 #import "VPSubTableView.h"
+#import "UIButton+VRSDKBtn.h"
+#import "UILabel+VRSDKLab.h"
 
 FOUNDATION_EXPORT double iOSCompanySDKVersionNumber;
 FOUNDATION_EXPORT const unsigned char iOSCompanySDKVersionString[];

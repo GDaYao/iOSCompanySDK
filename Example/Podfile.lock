@@ -20,6 +20,7 @@ PODS:
     - iOSCompanySDK/NewWallpapersFull (= 1.0.3)
     - iOSCompanySDK/RemoteControl (= 1.0.3)
     - iOSCompanySDK/VideoPlayerClip (= 1.0.3)
+    - iOSCompanySDK/VoiceRecoder (= 1.0.3)
   - iOSCompanySDK/CreativeWallpapers (1.0.3):
     - AFNetworking
   - iOSCompanySDK/NewPhotoTranslation (1.0.3):
@@ -29,6 +30,8 @@ PODS:
   - iOSCompanySDK/RemoteControl (1.0.3):
     - AFNetworking (= 3.2.1)
   - iOSCompanySDK/VideoPlayerClip (1.0.3):
+    - AFNetworking (= 3.2.1)
+  - iOSCompanySDK/VoiceRecoder (1.0.3):
     - AFNetworking (= 3.2.1)
 
 DEPENDENCIES:
@@ -44,7 +47,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  iOSCompanySDK: 993dad7f2bbc8cb0c65ecd148a344686aaf0faa2
+  iOSCompanySDK: 4020656d4fd32cc16c5b560aae26a33476bfd68f
 
 PODFILE CHECKSUM: 22add7f03cd124e3b191c85d05542205e5237e1f
 
