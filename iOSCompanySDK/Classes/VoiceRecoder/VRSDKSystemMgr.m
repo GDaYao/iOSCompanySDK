@@ -16,7 +16,7 @@
 #import "sys/utsname.h"
 
 // judge network status
-#import "RCSDKReachability.h"
+#import "Reachability.h"
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
