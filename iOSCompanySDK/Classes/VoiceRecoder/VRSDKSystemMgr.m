@@ -97,7 +97,7 @@
 + (NSString *)getDeviceNetworkStatus {
     NSString *netconnType = @"";
     
-    RCSDKReachability *reach = [RCSDKReachability reachabilityWithHostName:@"www.apple.com"];
+    Reachability *reach = [Reachability reachabilityWithHostName:@"www.apple.com"];
     
     switch ([reach currentReachabilityStatus]) {
         case NotReachable:// 没有网络
