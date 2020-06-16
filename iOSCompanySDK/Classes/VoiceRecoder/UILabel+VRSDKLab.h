@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - label init
-+ (UILabel *)VRSDKInitLabWithBgColor:(UIColor *)bgColor textColor:(UIColor *)textColor isBold:(BOOL)isBold fontSize:(float)fontSize labText:(NSString *)labText labTxAlignment:(NSTextAlignment)labTxAlignment;
++ (UILabel *)VRSDKInitLabWithTextColor:(UIColor *)textColor isBold:(BOOL)isBold fontSize:(float)fontSize labText:(NSString *)labText labTxAlignment:(NSTextAlignment)labTxAlignment;
 
 @end
 
