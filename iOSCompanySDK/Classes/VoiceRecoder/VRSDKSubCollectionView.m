@@ -29,7 +29,8 @@
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
     self.bounces = YES;
-    // delegate | dataSource no set.
+    self.delegate = self;
+    self.dataSource = self;
 }
 
 #pragma mark - UICollectionView delegate/datasource

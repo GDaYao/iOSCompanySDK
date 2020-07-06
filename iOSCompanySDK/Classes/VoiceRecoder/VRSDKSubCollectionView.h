@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-@interface VRSDKSubCollectionView : UICollectionView
+@interface VRSDKSubCollectionView : UICollectionView <UICollectionViewDelegate,UICollectionViewDataSource,UIScrollViewDelegate>
 
 //
 @property (nonatomic,strong)NSInteger(^vrsdkNumberSections)(UICollectionView *collectionView);
