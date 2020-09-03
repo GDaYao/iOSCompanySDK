@@ -86,19 +86,19 @@
     NPTSDKReachabilityMgr *reach = [NPTSDKReachabilityMgr reachabilityWithHostName:@"www.apple.com"];
     
     switch ([reach currentReachabilityStatus]) {
-        case NotReachable:// 没有网络
+        case NPTNotReachable:// 没有网络
         {
             netconnType = @"no network";
         }
             break;
             
-        case ReachableViaWiFi:// Wifi
+        case NPTReachableViaWiFi:// Wifi
         {
             netconnType = @"Wifi";
         }
             break;
             
-        case ReachableViaWWAN: // 手机自带网络
+        case NPTReachableViaWWAN: // 手机自带网络
         {
             // 获取手机网络类型
             CTTelephonyNetworkInfo *info = [[CTTelephonyNetworkInfo alloc] init];

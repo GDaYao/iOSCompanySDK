@@ -106,20 +106,20 @@
     VPSDKReachability *reach = [VPSDKReachability reachabilityWithHostName:@"www.apple.com"];
     
     switch ([reach currentReachabilityStatus]) {
-        case NotReachable:// 没有网络
+        case VPNotReachable:// 没有网络
         {
             
             netconnType = @"no network";
         }
             break;
             
-        case ReachableViaWiFi:// Wifi
+        case VPReachableViaWiFi:// Wifi
         {
             netconnType = @"Wifi";
         }
             break;
             
-        case ReachableViaWWAN: // 手机自带网络
+        case VPReachableViaWWAN: // 手机自带网络
         {
             // 获取手机网络类型
             CTTelephonyNetworkInfo *info = [[CTTelephonyNetworkInfo alloc] init];

@@ -12,23 +12,23 @@
 // 注意const常量这里的监听名已改变
 extern NSString *const kReachabilityChangedNotificationInNPT;
 
-typedef NS_ENUM(NSInteger, NetworkStatus) {
-    NotReachable = 0,
-    ReachableViaWiFi = 2,
-    ReachableViaWWAN = 1
+typedef NS_ENUM(NSInteger, NPTNetworkStatus) {
+    NPTNotReachable = 0,
+    NPTReachableViaWiFi = 2,
+    NPTReachableViaWWAN = 1
 };
 
 @class NPTSDKReachabilityMgr;
 
-typedef void (^NetworkReachable)(NPTSDKReachabilityMgr * reachability);
-typedef void (^NetworkUnreachable)(NPTSDKReachabilityMgr * reachability);
+typedef void (^NPTNetworkReachable)(NPTSDKReachabilityMgr * reachability);
+typedef void (^NPTNetworkUnreachable)(NPTSDKReachabilityMgr * reachability);
 
 
 @interface NPTSDKReachabilityMgr : NSObject
 
 
-@property (nonatomic, copy) NetworkReachable    reachableBlock;
-@property (nonatomic, copy) NetworkUnreachable  unreachableBlock;
+@property (nonatomic, copy) NPTNetworkReachable    reachableBlock;
+@property (nonatomic, copy) NPTNetworkUnreachable  unreachableBlock;
 
 @property (nonatomic, assign) BOOL reachableOnWWAN;
 
@@ -59,7 +59,7 @@ typedef void (^NetworkUnreachable)(NPTSDKReachabilityMgr * reachability);
 // Is user intervention required?
 -(BOOL)isInterventionRequired;
 
--(NetworkStatus)currentReachabilityStatus;
+-(NPTNetworkStatus)currentReachabilityStatus;
 -(SCNetworkReachabilityFlags)reachabilityFlags;
 -(NSString*)currentReachabilityString;
 -(NSString*)currentReachabilityFlags;

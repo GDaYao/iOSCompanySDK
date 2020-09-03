@@ -10,6 +10,12 @@
 #endif
 #endif
 
+#import "AVSDKAlphaImgMakeVideo.h"
+#import "AVSDKAssetAlphaJoinBgImgExportVideo.h"
+#import "AVSDKAssetFrameDecoder.h"
+#import "AVSDKAVFrame.h"
+#import "AVSDKCGFrameBuffer.h"
+#import "AVSDKMovdata.h"
 #import "CWInAppPurchaseMgr.h"
 #import "CWKeychainItemWrapper.h"
 #import "CWNetworkAccessibity.h"

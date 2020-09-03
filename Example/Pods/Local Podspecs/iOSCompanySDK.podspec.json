@@ -133,6 +133,20 @@
         "OTHER_LDFLAGS": "$(inherited)",
         "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited)"
       }
+    },
+    {
+      "name": "AVAnimationSDK",
+      "libraries": "sqlite3",
+      "source_files": "iOSCompanySDK/Classes/AVAnimationSDK/**/*",
+      "public_header_files": "iOSCompanySDK/Classes/AVAnimationSDK/**/*.h",
+      "xcconfig": {
+        "FRAMEWORK_SEARCH_PATHS": "$(inherited)",
+        "LIBRARY_SEARCH_PATHS": "$(inherited)",
+        "HEADER_SEARCH_PATHS": "$(inherited)",
+        "OTHER_CFLAGS": "$(inherited)",
+        "OTHER_LDFLAGS": "$(inherited)",
+        "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited)"
+      }
     }
   ]
 }

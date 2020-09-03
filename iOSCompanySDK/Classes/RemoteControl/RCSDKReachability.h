@@ -19,22 +19,23 @@ NS_ASSUME_NONNULL_BEGIN
 // 注意const常量这里的监听名已改变
 extern NSString *const kRCSDKReachabilityChangedNotification;
 
-typedef NS_ENUM(NSInteger, NetworkStatus) {
-    NotReachable = 0,
-    ReachableViaWiFi = 2,
-    ReachableViaWWAN = 1
+
+typedef NS_ENUM(NSInteger, RCNetworkStatus) {
+    RCNotReachable = 0,
+    RCReachableViaWiFi = 2,
+    RCReachableViaWWAN = 1
 };
 
 
 @class RCSDKReachability;
 
-typedef void (^NetworkReachable)(RCSDKReachability * reachability);
-typedef void (^NetworkUnreachable)(RCSDKReachability * reachability);
+typedef void (^RCNetworkReachable)(RCSDKReachability * reachability);
+typedef void (^RCNetworkUnreachable)(RCSDKReachability * reachability);
 
 @interface RCSDKReachability : NSObject
 
-@property (nonatomic, copy) NetworkReachable    reachableBlock;
-@property (nonatomic, copy) NetworkUnreachable  unreachableBlock;
+@property (nonatomic, copy) RCNetworkReachable    reachableBlock;
+@property (nonatomic, copy) RCNetworkUnreachable  unreachableBlock;
 
 @property (nonatomic, assign) BOOL reachableOnWWAN;
 
@@ -65,7 +66,7 @@ typedef void (^NetworkUnreachable)(RCSDKReachability * reachability);
 // Is user intervention required?
 -(BOOL)isInterventionRequired;
 
--(NetworkStatus)currentReachabilityStatus;
+-(RCNetworkStatus)currentReachabilityStatus;
 -(SCNetworkReachabilityFlags)reachabilityFlags;
 -(NSString*)currentReachabilityString;
 -(NSString*)currentReachabilityFlags;

@@ -107,6 +107,15 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
     end
   
   
+  s.subspec 'AVAnimationSDK' do |avanimationsdk|
+    avanimationsdk.libraries = 'sqlite3'
+    avanimationsdk.source_files = 'iOSCompanySDK/Classes/AVAnimationSDK/**/*'
+    avanimationsdk.public_header_files = 'iOSCompanySDK/Classes/AVAnimationSDK/**/*.h'
+    #avanimationsdk.dependency
+    avanimationsdk.xcconfig = { "FRAMEWORK_SEARCH_PATHS" => '$(inherited)', "LIBRARY_SEARCH_PATHS" => '$(inherited)', "HEADER_SEARCH_PATHS" => '$(inherited)', "OTHER_CFLAGS" => '$(inherited)', "OTHER_LDFLAGS" => '$(inherited)', "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited)' }
+    
+    end
+  
 
   
   

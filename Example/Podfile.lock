@@ -15,12 +15,14 @@ PODS:
   - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
   - iOSCompanySDK (1.0.3):
+    - iOSCompanySDK/AVAnimationSDK (= 1.0.3)
     - iOSCompanySDK/CreativeWallpapers (= 1.0.3)
     - iOSCompanySDK/NewPhotoTranslation (= 1.0.3)
     - iOSCompanySDK/NewWallpapersFull (= 1.0.3)
     - iOSCompanySDK/RemoteControl (= 1.0.3)
     - iOSCompanySDK/VideoPlayerClip (= 1.0.3)
     - iOSCompanySDK/VoiceRecoder (= 1.0.3)
+  - iOSCompanySDK/AVAnimationSDK (1.0.3)
   - iOSCompanySDK/CreativeWallpapers (1.0.3):
     - AFNetworking
   - iOSCompanySDK/NewPhotoTranslation (1.0.3):
@@ -47,7 +49,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  iOSCompanySDK: 4020656d4fd32cc16c5b560aae26a33476bfd68f
+  iOSCompanySDK: 4f33adec5a1518cd5e924571b8c54f932afa88ed
 
 PODFILE CHECKSUM: 22add7f03cd124e3b191c85d05542205e5237e1f
 

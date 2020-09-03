@@ -17,21 +17,21 @@ NS_ASSUME_NONNULL_BEGIN
 // 注意const常量这里的监听名已改变
 extern NSString *const kVPReachabilityChangedNotification;
 
-typedef NS_ENUM(NSInteger, NetworkStatus) {
-    NotReachable = 0,
-    ReachableViaWiFi = 2,
-    ReachableViaWWAN = 1
+typedef NS_ENUM(NSInteger, VPNetworkStatus) {
+    VPNotReachable = 0,
+    VPReachableViaWiFi = 2,
+    VPReachableViaWWAN = 1
 };
 
 @class VPSDKReachability;
 
-typedef void (^NetworkReachable)(VPSDKReachability * reachability);
-typedef void (^NetworkUnreachable)(VPSDKReachability * reachability);
+typedef void (^VPNetworkReachable)(VPSDKReachability * reachability);
+typedef void (^VPNetworkUnreachable)(VPSDKReachability * reachability);
 
 @interface VPSDKReachability : NSObject
 
-@property (nonatomic, copy) NetworkReachable    reachableBlock;
-@property (nonatomic, copy) NetworkUnreachable  unreachableBlock;
+@property (nonatomic, copy) VPNetworkReachable    reachableBlock;
+@property (nonatomic, copy) VPNetworkUnreachable  unreachableBlock;
 
 @property (nonatomic, assign) BOOL reachableOnWWAN;
 
@@ -60,7 +60,7 @@ typedef void (^NetworkUnreachable)(VPSDKReachability * reachability);
 // Is user intervention required?
 -(BOOL)isInterventionRequired;
 
--(NetworkStatus)currentReachabilityStatus;
+-(VPNetworkStatus)currentReachabilityStatus;
 -(SCNetworkReachabilityFlags)reachabilityFlags;
 -(NSString*)currentReachabilityString;
 -(NSString*)currentReachabilityFlags;
