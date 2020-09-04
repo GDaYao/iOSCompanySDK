@@ -266,7 +266,7 @@
 		1B1F881424B0DDCF48E145DD111EB06A /* AFHTTPSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFHTTPSessionManager.h; path = AFNetworking/AFHTTPSessionManager.h; sourceTree = "<group>"; };
 		1BD13D8343008026EBD75AD5CFA5BCFF /* AVSDKAVFrame.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AVSDKAVFrame.h; path = iOSCompanySDK/Classes/AVAnimationSDK/AVSDKAVFrame.h; sourceTree = "<group>"; };
 		1BD5BA75B7C8A4E133DEB88106DE7B64 /* UIButton+RCSDKButton.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIButton+RCSDKButton.m"; path = "iOSCompanySDK/Classes/RemoteControl/UIButton+RCSDKButton.m"; sourceTree = "<group>"; };
-		1D74BFDC115D70146A05948484997000 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		1D74BFDC115D70146A05948484997000 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		2045E2CF3E851C1220361920FEB20AB7 /* UILabel+NPTUILabel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UILabel+NPTUILabel.h"; path = "iOSCompanySDK/Classes/NewPhotoTranslation/UILabel+NPTUILabel.h"; sourceTree = "<group>"; };
 		211FA99A4F66B7A2B58F3773094D72D5 /* NWFSystemMgr.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = NWFSystemMgr.m; path = iOSCompanySDK/Classes/NewWallpapersFull/NWFSystemMgr.m; sourceTree = "<group>"; };
 		228C2298D9A47D3D95E76A8F1414CB72 /* AVSDKAlphaImgMakeVideo.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AVSDKAlphaImgMakeVideo.h; path = iOSCompanySDK/Classes/AVAnimationSDK/AVSDKAlphaImgMakeVideo.h; sourceTree = "<group>"; };
@@ -292,12 +292,12 @@
 		395969C617B66D94315ED4AB8453E24B /* CWPhotoMgr.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = CWPhotoMgr.m; path = iOSCompanySDK/Classes/CreativeWallpapers/CWPhotoMgr.m; sourceTree = "<group>"; };
 		39C75F633E4EA8053D57CB08EE24D165 /* iOSCompanySDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "iOSCompanySDK-prefix.pch"; sourceTree = "<group>"; };
 		3A68C7E3B8FC80E77ED3F4891B72CF2B /* VRSDKKeychainItemWrapper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = VRSDKKeychainItemWrapper.m; path = iOSCompanySDK/Classes/VoiceRecoder/VRSDKKeychainItemWrapper.m; sourceTree = "<group>"; };
-		3A8F1C264488F418A3A7B83E0D275CEF /* iOSCompanySDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = iOSCompanySDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		3A8F1C264488F418A3A7B83E0D275CEF /* iOSCompanySDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = iOSCompanySDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		3D0E18ABB2786CC9BC3C52819D57F483 /* UILabel+NPTUILabel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UILabel+NPTUILabel.m"; path = "iOSCompanySDK/Classes/NewPhotoTranslation/UILabel+NPTUILabel.m"; sourceTree = "<group>"; };
 		3D714DA6348251A4E11ED87FB387C99F /* NPTSDKNetworkAccessibity.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = NPTSDKNetworkAccessibity.h; path = iOSCompanySDK/Classes/NewPhotoTranslation/NPTSDKNetworkAccessibity.h; sourceTree = "<group>"; };
 		3E2332D3B07D9E07D31ED3E5A7B873D0 /* CWSubCollectionView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = CWSubCollectionView.m; path = iOSCompanySDK/Classes/CreativeWallpapers/CWSubCollectionView.m; sourceTree = "<group>"; };
 		400146A3683AF1822FA3F57DFFE45211 /* CWSubCollectionView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CWSubCollectionView.h; path = iOSCompanySDK/Classes/CreativeWallpapers/CWSubCollectionView.h; sourceTree = "<group>"; };
-		40EC69BFE8320FB7F40315E07209FD94 /* iOSCompanySDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = iOSCompanySDK.framework; path = iOSCompanySDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		40EC69BFE8320FB7F40315E07209FD94 /* iOSCompanySDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = iOSCompanySDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		41DE091386F6D6C1D96C10CC0718D97C /* NSMutableArray+NPTSDKSafeMutableArray.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSMutableArray+NPTSDKSafeMutableArray.h"; path = "iOSCompanySDK/Classes/NewPhotoTranslation/NSMutableArray+NPTSDKSafeMutableArray.h"; sourceTree = "<group>"; };
 		42A43B9DF89A4E31BFDC979BDE2BC9BA /* Pods-iOSCompanySDK_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-iOSCompanySDK_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		42ED6B0FAD282A0D446943ECAFF3A8B4 /* RCSDKSubTableView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RCSDKSubTableView.m; path = iOSCompanySDK/Classes/RemoteControl/RCSDKSubTableView.m; sourceTree = "<group>"; };
@@ -306,7 +306,7 @@
 		44CF1A630EF48D9C4883F518C0C78937 /* NSArray+RCSDKSafetyArray.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSArray+RCSDKSafetyArray.m"; path = "iOSCompanySDK/Classes/RemoteControl/NSArray+RCSDKSafetyArray.m"; sourceTree = "<group>"; };
 		45E35E45DEEA398A4AEF204241B5A043 /* AVSDKMovdata.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AVSDKMovdata.h; path = iOSCompanySDK/Classes/AVAnimationSDK/AVSDKMovdata.h; sourceTree = "<group>"; };
 		4847B46BECE23BC96C9DA012D81B4B97 /* RCSDKSubTableView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RCSDKSubTableView.h; path = iOSCompanySDK/Classes/RemoteControl/RCSDKSubTableView.h; sourceTree = "<group>"; };
-		4977E591DB013129DFCB2A2578A7BE22 /* Pods_iOSCompanySDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_iOSCompanySDK_Tests.framework; path = "Pods-iOSCompanySDK_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4977E591DB013129DFCB2A2578A7BE22 /* Pods_iOSCompanySDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iOSCompanySDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		49A208DE3A9309F8BCD8EA68B02BB363 /* NSArray+VRSDKSafetyArray.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSArray+VRSDKSafetyArray.h"; path = "iOSCompanySDK/Classes/VoiceRecoder/NSArray+VRSDKSafetyArray.h"; sourceTree = "<group>"; };
 		49FD3143275327AE60D8636D3475AEEF /* AFNetworking-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "AFNetworking-Info.plist"; sourceTree = "<group>"; };
 		4D6E0F31F4EC5AEF83995B7DCAE7D406 /* AFSecurityPolicy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFSecurityPolicy.h; path = AFNetworking/AFSecurityPolicy.h; sourceTree = "<group>"; };
@@ -371,19 +371,19 @@
 		97F91BED7A34BF0EDABF38A03461265C /* AFAutoPurgingImageCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFAutoPurgingImageCache.m; path = "UIKit+AFNetworking/AFAutoPurgingImageCache.m"; sourceTree = "<group>"; };
 		9920B36F1C0F37D63622BDD270839864 /* VPKeychainItemWrapper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = VPKeychainItemWrapper.m; path = iOSCompanySDK/Classes/VideoPlayerClip/VPKeychainItemWrapper.m; sourceTree = "<group>"; };
 		9D5F97948AD70B308113F97A7058E96F /* UIButton+VPButton.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIButton+VPButton.h"; path = "iOSCompanySDK/Classes/VideoPlayerClip/UIButton+VPButton.h"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DF4E8AD7B2EFD67EB126F22691A6188 /* AFNetworkActivityIndicatorManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFNetworkActivityIndicatorManager.m; path = "UIKit+AFNetworking/AFNetworkActivityIndicatorManager.m"; sourceTree = "<group>"; };
 		9FCD07D31F7D83EA2447AA5176C6A5B0 /* UILabel+NWFUILabel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UILabel+NWFUILabel.m"; path = "iOSCompanySDK/Classes/NewWallpapersFull/UILabel+NWFUILabel.m"; sourceTree = "<group>"; };
 		9FCE22355A5B8D96DA3A50C3113DEA00 /* AVSDKAssetFrameDecoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AVSDKAssetFrameDecoder.m; path = iOSCompanySDK/Classes/AVAnimationSDK/AVSDKAssetFrameDecoder.m; sourceTree = "<group>"; };
-		A03FCC493411616B999CC75E31347EF3 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		A03FCC493411616B999CC75E31347EF3 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		A088B6699B63E6B5A98EAFE4F02E39B9 /* CWInAppPurchaseMgr.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CWInAppPurchaseMgr.h; path = iOSCompanySDK/Classes/CreativeWallpapers/CWInAppPurchaseMgr.h; sourceTree = "<group>"; };
 		A0FE763B46BA5F7B0D48FF00DEEBC1ED /* NSDictionary+VRSDKDictionary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSDictionary+VRSDKDictionary.h"; path = "iOSCompanySDK/Classes/VoiceRecoder/NSDictionary+VRSDKDictionary.h"; sourceTree = "<group>"; };
 		A1B96766BF7E17E541E61E53DE37C644 /* VPSDKNetworkMgr.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = VPSDKNetworkMgr.m; path = iOSCompanySDK/Classes/VideoPlayerClip/VPSDKNetworkMgr.m; sourceTree = "<group>"; };
-		A4FA15D44DF6BAC7550EDEED10862AA3 /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AFNetworking.framework; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4FA15D44DF6BAC7550EDEED10862AA3 /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A57E140B176D36742A26DD8991D6DE62 /* NWFKeychainItemWrapper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = NWFKeychainItemWrapper.h; path = iOSCompanySDK/Classes/NewWallpapersFull/NWFKeychainItemWrapper.h; sourceTree = "<group>"; };
 		A60F3DDB78790250AB9604F1D6522B9C /* UIColor+NPTSDKUIColor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIColor+NPTSDKUIColor.m"; path = "iOSCompanySDK/Classes/NewPhotoTranslation/UIColor+NPTSDKUIColor.m"; sourceTree = "<group>"; };
 		A6ECC9095ABCA6851393A9A4251C24E2 /* VPKeychainItemWrapper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = VPKeychainItemWrapper.h; path = iOSCompanySDK/Classes/VideoPlayerClip/VPKeychainItemWrapper.h; sourceTree = "<group>"; };
-		A92E6126AFDED329E7A2999B4006355D /* Pods_iOSCompanySDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_iOSCompanySDK_Example.framework; path = "Pods-iOSCompanySDK_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A92E6126AFDED329E7A2999B4006355D /* Pods_iOSCompanySDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iOSCompanySDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA28B5EFC0DB2E9E964D8FE22B04E298 /* UIActivityIndicatorView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIActivityIndicatorView+AFNetworking.h"; path = "UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.h"; sourceTree = "<group>"; };
 		AAFF9FE308C2EBA5B8BF79A9EAFD9E2D /* iOSCompanySDK.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = iOSCompanySDK.modulemap; sourceTree = "<group>"; };
 		AD817DBE088E82E12FDF1721579B2377 /* UIActivityIndicatorView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIActivityIndicatorView+AFNetworking.m"; path = "UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.m"; sourceTree = "<group>"; };
@@ -457,7 +457,7 @@
 		F6E68DD59A8A570371AD1ADA10355957 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		F704F2B73892B2A69AD3AE2F877DA9F9 /* NPTInAppPurchase.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = NPTInAppPurchase.h; path = iOSCompanySDK/Classes/NewPhotoTranslation/NPTInAppPurchase.h; sourceTree = "<group>"; };
 		F77D95E4905ADDF36A6005E235499625 /* Pods-iOSCompanySDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-iOSCompanySDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		FB5EEEE0674001CF4FA6886D376A3445 /* AVSDKMovdata.c */ = {isa = PBXFileReference; includeInIndex = 1; name = AVSDKMovdata.c; path = iOSCompanySDK/Classes/AVAnimationSDK/AVSDKMovdata.c; sourceTree = "<group>"; };
+		FB5EEEE0674001CF4FA6886D376A3445 /* AVSDKMovdata.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = AVSDKMovdata.c; path = iOSCompanySDK/Classes/AVAnimationSDK/AVSDKMovdata.c; sourceTree = "<group>"; };
 		FB83BA124485FE4C11CFA9351D50642C /* NWFNetworkMgr.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = NWFNetworkMgr.h; path = iOSCompanySDK/Classes/NewWallpapersFull/NWFNetworkMgr.h; sourceTree = "<group>"; };
 		FD524A319FC48FBDC7055CDACA15AED9 /* VPSDKNetworkMgr.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = VPSDKNetworkMgr.h; path = iOSCompanySDK/Classes/VideoPlayerClip/VPSDKNetworkMgr.h; sourceTree = "<group>"; };
 		FEF418ECF5919DC3A5D3EDF373D15BC2 /* RCSDKSubCollectionView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RCSDKSubCollectionView.h; path = iOSCompanySDK/Classes/RemoteControl/RCSDKSubCollectionView.h; sourceTree = "<group>"; };
@@ -879,7 +879,6 @@
 				5E7F5B7AF33675869C9653472B0198B8 /* Support Files */,
 				38E701F252488D714A137AD77A33436C /* UIKit */,
 			);
-			name = AFNetworking;
 			path = AFNetworking;
 			sourceTree = "<group>";
 		};
@@ -1403,6 +1402,10 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GCC_PREFIX_HEADER = "Target Support Files/iOSCompanySDK/iOSCompanySDK-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+				);
 				INFOPLIST_FILE = "Target Support Files/iOSCompanySDK/iOSCompanySDK-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1473,8 +1476,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};

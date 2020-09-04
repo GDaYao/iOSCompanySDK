@@ -37,11 +37,10 @@
 
 #pragma mark - action
 - (void)twotapNextBtnAction {
-    //[self selectAlbum];
+    [self selectAlbum];
     
 }
 
-/*
 #pragma mark - select Album + Delegate
 - (void)selectAlbum {
     UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
@@ -68,7 +67,7 @@
         UIImage *editImage = [info objectForKey:UIImagePickerControllerEditedImage];
         
         // 得到图片后操作使用
-        self.bgCoverImg = editImage;
+        //self.bgCoverImg = editImage;
         
         NSString *tmpDir = NSTemporaryDirectory();
         NSString *disPNGPath = [tmpDir stringByAppendingFormat:@"tmp-1.jpg"];
@@ -82,30 +81,33 @@
 
 //
 - (void)tapNextBtnAction {
-
+    NSLog(@"log-开始制作");
     
-    AlphaVideoPlayExportViewController *nextAlphaPlayVC = [[AlphaVideoPlayExportViewController alloc]init];
-
-    nextAlphaPlayVC.bgCoverImg = self.bgCoverImg;
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(exportVideoGetNotification) name:kAlphaVideoCombineImgFinishNotification object:nil];
     
-    NSString *srcPath = [[NSBundle mainBundle]bundlePath];
+    AVSDKAssetAlphaJoinBgImgExportVideo *exportMgr= [AVSDKAssetAlphaJoinBgImgExportVideo aVSDKAssetAlphaJoinBgImgExportVideo];
     
-    // 资源路径
-    nextAlphaPlayVC.unzipVideoPath  = srcPath;  // ~/Documents/TempleDes/xxxx
+    NSString *rgbFilePath = [[NSBundle mainBundle]pathForResource:kVideoColorStr ofType:@""];
+    NSString *alphaFilePath = [[NSBundle mainBundle]pathForResource:kVideoMaskStr ofType:@""];
     
-    nextAlphaPlayVC.mvColorStr = [[NSBundle mainBundle]pathForResource:kVideoColorStr ofType:@""];
-    nextAlphaPlayVC.mvMaskStr = [[NSBundle mainBundle]pathForResource:kVideoMaskStr ofType:@""];
+    NSString *tmpDir = NSTemporaryDirectory();
+    NSString *tmpOutPath = [tmpDir stringByAppendingFormat:@"tmpOut.mp4"];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    if ([fm fileExistsAtPath:tmpOutPath]) {
+        [fm removeItemAtPath:tmpOutPath error:nil];
+    }
+    UIImage *bgCoverImg = [UIImage imageNamed:@"tmp-1.jpg"];
     
-    nextAlphaPlayVC.mvJsonPath = [[NSBundle mainBundle]pathForResource:kVideoJsonStr ofType:@""];
-    
-    nextAlphaPlayVC.fileName = @"chunnuanhuakai";
-    
-    
-    
-    [self.navigationController pushViewController:nextAlphaPlayVC animated:YES];
+    [exportMgr loadAVAnimationResourcesWithMovieRGBFilePath:rgbFilePath movieAlphaFilePath:alphaFilePath outPath:tmpOutPath bgCoverImg:bgCoverImg bgCoverImgPoint:CGPointMake(0, 301)];
     
 }
-*/
+
+- (void)exportVideoGetNotification {
+    //
+    NSLog(@"log-视频导出完成");
+    self.view.backgroundColor = [UIColor redColor];
+    
+}
 
 
 - (void)didReceiveMemoryWarning

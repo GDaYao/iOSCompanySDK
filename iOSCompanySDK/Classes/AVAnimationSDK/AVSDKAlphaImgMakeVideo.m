@@ -160,7 +160,11 @@
         
         CVPixelBufferRef sampleBuffer;
         @autoreleasepool {
+#ifdef DEBUG
+#ifdef LOGGING
             NSLog(@"log-export index:%d",i);
+#endif // LOGGING
+#endif
             
             //UIImage* img = extractor([images objectAtIndex:i]);
             if (img == nil) {
@@ -201,7 +205,7 @@
     CVPixelBufferPoolRelease(self.bufferAdapter.pixelBufferPool);
 }
 
-// 获得每个image
+// *** 1. UIImage 转换为 CVPixelBufferRef(RGB)
 - (CVPixelBufferRef)newPixelBufferFromCGImage:(CGImageRef)image
 {
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -228,8 +232,9 @@
     void *pxdata = CVPixelBufferGetBaseAddress(pxbuffer);
     NSParameterAssert(pxdata != NULL);
     
-    CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
-    
+    // FIXME: 此处有修改，测试导出的透明视频
+    // rgb色值
+    CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB(); // 输出像素被视为隐式sRGB
     CGContextRef context = CGBitmapContextCreate(pxdata,
                                                  frameWidth,
                                                  frameHeight,
@@ -237,6 +242,16 @@
                                                  4 * frameWidth,
                                                  rgbColorSpace,
                                                  (CGBitmapInfo)kCGImageAlphaNoneSkipFirst);
+    // alpha 色值
+//    CGColorSpaceRef alphaColorSpace = CGColorSpaceCreateDeviceGray();
+//    CGContextRef context = CGBitmapContextCreate(pxdata,
+//                                                 frameWidth,
+//                                                 frameHeight,
+//                                                 8,
+//                                                 4 * frameWidth,
+//                                                 alphaColorSpace,
+//                                                 (CGBitmapInfo)kCGImageAlphaOnly);
+    
     NSParameterAssert(context);
     CGContextConcatCTM(context, CGAffineTransformIdentity);
     // 这里确定绘制区域
@@ -246,6 +261,7 @@
     CGContextDrawImage(context, CGRectMake(0,0,frameWidth,frameHeight),image);
     
     CGColorSpaceRelease(rgbColorSpace);
+    
     CGContextRelease(context);
     
     CVPixelBufferUnlockBaseAddress(pxbuffer, 0);
@@ -253,6 +269,24 @@
     return pxbuffer;
 }
 
+// 2. UIImage转为CVPixelBufferRef(YUV)
+- (CVPixelBufferRef)imageToYUVPixelBuffer:(UIImage *)image {
+    CGSize frameSize = CGSizeMake(CGImageGetWidth(image.CGImage), CGImageGetHeight(image.CGImage));
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithBool:YES],kCVPixelBufferCGImageCompatibilityKey,
+                             [NSNumber numberWithBool:YES],kCVPixelBufferCGBitmapContextCompatibilityKey,nil];
+    CVPixelBufferRef pxbuffer = NULL;
+    CVPixelBufferCreate(kCFAllocatorDefault, frameSize.width, frameSize.height,kCVPixelFormatType_420YpCbCr8BiPlanarFullRange, (__bridge CFDictionaryRef)options,&pxbuffer);
+    CVPixelBufferLockBaseAddress(pxbuffer, 0);
+    void *pxdata = CVPixelBufferGetBaseAddressOfPlane(pxbuffer,0);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
+    CGContextRef context = CGBitmapContextCreate(pxdata, frameSize.width, frameSize.height,8,CVPixelBufferGetBytesPerRowOfPlane(pxbuffer, 0),colorSpace,kCGImageAlphaNone);
+    CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(image.CGImage),CGImageGetHeight(image.CGImage)), image.CGImage);
+    CGColorSpaceRelease(colorSpace);
+    CGContextRelease(context);
+    CVPixelBufferUnlockBaseAddress(pxbuffer, 0);
+    return pxbuffer;
+}
 
 
 

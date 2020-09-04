@@ -62,7 +62,7 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
 
 
 
-#pragma mark - AVSDKCGFrameBuffer init method
+#pragma mark - AVSDKCGFrameBuffer alloc
 + (AVSDKCGFrameBuffer*)avsdkCGFrameBufferWithBppDimensions:(NSInteger)bitsPerPixel
                                             width:(NSInteger)width
                                            height:(NSInteger)height {
@@ -70,7 +70,7 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
     return obj;
 }
 
-#pragma mark - get frame buffer
+#pragma mark - init frame buffer -- assign some property,assign memory.
 - (id) initWithBppDimensions:(NSInteger)bitsPerPixel
                        width:(NSInteger)width
                       height:(NSInteger)height
@@ -299,60 +299,65 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
     // Note that the cgBuffer just deallocated itself, so the
     // pointer no longer points to valid memory.
 }
-
-
-#pragma mark - render CGImgae
+#pragma mark - render CGImgae -- 会进行所有的pixels赋值。
+/* 从 frameDecoder中调用，每一帧解码，获得CVImageBufferRef,转成CGImageRef,在这里进行渲染
+    *** 进行所有的pixels赋值 **
+*/
 - (BOOL) renderCGImage:(CGImageRef)cgImageRef
 {
-  [self doneZeroCopyPixels];
-  
+    [self doneZeroCopyPixels];
+    
     // Render the contents of an image to pixels.
-
+    
     size_t w = CGImageGetWidth(cgImageRef);
     size_t h = CGImageGetHeight(cgImageRef);
     
     BOOL isRotated = FALSE;
-
-    if ((w != h) && (h == self.width) && (w == self.height)) {
-    // Assume image is rotated to portrait, so rotate and then render
-        isRotated = TRUE;
-  } else {
-    // If sizes do not match, then resize input image to fit into this framebuffer
-  }
     
-  size_t bitsPerComponent = 0;
-  size_t numComponents = 0;
-  size_t bitsPerPixel = 0;
-  size_t bytesPerRow = 0;
-  
-  if (self.bitsPerPixel == 16) {
-    bitsPerComponent = 5;
-//    numComponents = 3;
-    bitsPerPixel = 16;
-    bytesPerRow = self.width * (bitsPerPixel / 8);
-  } else if (self.bitsPerPixel == 24 || self.bitsPerPixel == 32) {
-    bitsPerComponent = 8;
-    numComponents = 4;
-    bitsPerPixel = bitsPerComponent * numComponents;
-    bytesPerRow = self.width * (bitsPerPixel / 8);
-  } else {
-    NSAssert(FALSE, @"unmatched bitsPerPixel");
-  }
-  
+    if ((w != h) && (h == self.width) && (w == self.height)) {
+        // Assume image is rotated to portrait, so rotate and then render
+        isRotated = TRUE;
+    } else {
+        // If sizes do not match, then resize input image to fit into this framebuffer
+    }
+    
+    size_t bitsPerComponent = 0; // 8
+    size_t numComponents = 0;
+    size_t bitsPerPixel = 0; // 32每个字节32位数据
+    size_t bytesPerRow = 0; // 每行多少字节
+    // bitsPerPixel根据初始化给定决定
+    if (self.bitsPerPixel == 16) {
+        bitsPerComponent = 5;
+        //    numComponents = 3;
+        bitsPerPixel = 16;
+        bytesPerRow = self.width * (bitsPerPixel / 8);
+    } else if (self.bitsPerPixel == 24 || self.bitsPerPixel == 32) {
+        bitsPerComponent = 8;
+        numComponents = 4;
+        bitsPerPixel = bitsPerComponent * numComponents;
+        bytesPerRow = self.width * (bitsPerPixel / 8);
+    } else {
+        NSAssert(FALSE, @"unmatched bitsPerPixel");
+    }
+    
+    // 指定下面调用方法alpha的类型 -- 指定位图是否应该包含一个Alpha通道及其生成方式，以及组件是浮点数还是整数。
     CGBitmapInfo bitmapInfo = [self getBitmapInfo];
     
-  CGColorSpaceRef colorSpace = self.colorspace;
-  if (colorSpace) {
-    CGColorSpaceRetain(colorSpace);
-  } else {
-    colorSpace = CGColorSpaceCreateDeviceRGB();
-  }
-
+    CGColorSpaceRef colorSpace = self.colorspace;
+    if (colorSpace) {
+        CGColorSpaceRetain(colorSpace);
+    } else {
+        colorSpace = CGColorSpaceCreateDeviceRGB();  // 构建一个颜色空间引用
+    }
+    
     NSAssert(self.pixels != NULL, @"pixels must not be NULL");
     NSAssert(self.isLockedByDataProvider == FALSE, @"renderCGImage: pixel buffer locked by data provider");
-
+    
+    // 创建位图上下文,
+    // self.pixels(data),`data'，如果非NULL，指向至少一个“ bytesPerRow * height”字节的内存块。
+    // 如果`data'为NULL，则自动分配上下文数据并释放 -- 数据给pixels-data存储
     CGContextRef bitmapContext =
-        CGBitmapContextCreate(self.pixels, self.width, self.height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo);
+    CGBitmapContextCreate(self.pixels, self.width, self.height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo);
     
     CGColorSpaceRelease(colorSpace);
     
@@ -361,15 +366,15 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
     }
     
     // Translation matrix that maps CG space to view space
-
+    
     if (isRotated) {
         // To landscape : 90 degrees CCW
-
+        
         CGContextRotateCTM(bitmapContext, M_PI / 2);
     }
-
+    
     CGRect bounds = CGRectMake( 0.0f, 0.0f, self.width, self.height );
-
+    
     CGContextDrawImage(bitmapContext, bounds, cgImageRef);
     
     CGContextRelease(bitmapContext);

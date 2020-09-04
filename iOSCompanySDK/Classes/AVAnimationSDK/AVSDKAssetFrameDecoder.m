@@ -376,8 +376,48 @@ typedef enum
 }
 
 
+/*
+//#pragma mark - 获取帧图片+得到帧pixels
+- (AVSDKAVFrame *)getPixelsFromEachFrame:(NSUInteger)newFrameIndex {
+//    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoPath options:nil];
+//    AVAssetImageGenerator *gen = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+//    [gen generateCGImagesAsynchronouslyForTimes:nil completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable image, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
+//    }];
+//    [asset release];
+//    gen.appliesPreferredTrackTransform = YES;
+//    CMTime time = CMTimeMakeWithSeconds(0.0, 600); // 使用CMTime获取
+//    NSError *error = nil;
+//    CMTime actualTime;
+//    CGImageRef image = [gen copyCGImageAtTime:time actualTime:&actualTime error:&error];
+//    UIImage *img = [[[UIImage alloc] initWithCGImage:image] autorelease];
+//    CGImageRelease(image);
+//    [gen release];
+//    return img;
+    return nil;
+}
+// CVImageBufferRef (RGB)转为UIImage
+- (UIImage *)imageFromRGBImageBuffer:(CVImageBufferRef)imageBuffer {
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8,bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
+    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
+    UIImage *image = [UIImage imageWithCGImage:quartzImage];
+    CGImageRelease(quartzImage);
+    return (image);
+}
+*/
+
+
 #pragma mark - index 每一帧
-- (AVSDKAVFrame *) advanceToFrame:(NSUInteger)newFrameIndex {
+- (AVSDKAVFrame *)advanceToFrame:(NSUInteger)newFrameIndex {
+    
 #ifdef LOGGING
     NSLog(@"advanceToFrame : from %d to %d", (int)frameIndex, (int)newFrameIndex);
 #endif // LOGGING
@@ -422,12 +462,12 @@ typedef enum
         NSLog(@"RESTART condition when reading was finished found with frameIndex %d", (int)self.frameIndex);
 #endif // LOGGING
         
+        // Query the asset reader object again because it could have been changed
+        // by a restart above.
         [self restart];
     }
     
-    // Query the asset reader object again because it could have been changed
-    // by a restart above.
-    
+    // aVAssetReader -- 在setUpAsset中已读取完成。
     AVAssetReader *aVAssetReader = self.aVAssetReader;
     NSAssert(aVAssetReader, @"asset should be open already");
     
@@ -437,7 +477,7 @@ typedef enum
     
     // Examine the frame number we should advance to. Currently, the implementation
     // is limited to advancing to the next frame only.
-    
+    // 兼容判断各帧情况
     if ((frameIndex != -1) && (newFrameIndex == frameIndex)) {
         NSAssert(FALSE, @"cannot advance to same frame");
     } else if ((frameIndex != -1) && (newFrameIndex < frameIndex)) {
@@ -499,7 +539,7 @@ typedef enum
     
     
     AVSDKCGFrameBuffer *frameBuffer;
-    CVImageBufferRef cvBufferRef = NULL;
+    CVImageBufferRef cvBufferRef = NULL; // 将会存储一帧图下所有像素值。
     
     if (self.produceCoreVideoPixelBuffers) {
         frameBuffer = nil;
@@ -509,7 +549,7 @@ typedef enum
     
     // 图像缓冲区
     CVImageBufferRef skipAheadLastGoodBufferRef = NULL;
-    
+    // while 循环判断是否读取到帧，并未多多次循环
     while (doneReadingFrames == FALSE) @autoreleasepool {
         FrameReadStatus frameReadStatus;
         
@@ -610,7 +650,7 @@ typedef enum
         } else {
             NSAssert(FALSE, @"unmatched frame status %d", frameReadStatus);
         }
-    }
+    } // while-loop
     
     if (m_readingFinished == FALSE) {
         NSAssert(frameIndex == newFrameIndex, @"frameIndex != newFrameIndex, %d != %d", frameIndex, (int)newFrameIndex);
@@ -688,8 +728,10 @@ typedef enum
             // Return a CGImage wrapped in a AVFrame
             AVSDKCGFrameBuffer *cgFrameBuffer = self.currentFrameBuffer;
             retFrame.cgFrameBuffer = cgFrameBuffer;
-            // TODO: 使用AVFrame，传入frame buffer，转成image。
-            [retFrame makeImageFromFramebuffer];
+            // TODO: 使用AVFrame，传入frame buffer，转成UIImage -- 已关闭UIImage生成
+#ifdef DEBUG
+//            [retFrame makeImageFromFramebuffer];
+#endif
         }
         
         self.lastFrame = retFrame;
@@ -711,10 +753,10 @@ typedef enum
 }
 
 
-#pragma mark 读取下一帧缓冲区和状态码，去表示发生了什么。 invoke -2
+#pragma mark 读取下一帧缓冲区SamleBuffer和状态码，去表示发生了什么。 invoke -2
 // Attempt to read next frame and return a status code to inidcate what
 // happened.
-- (FrameReadStatus) blockingDecodeReadFrame:(AVSDKCGFrameBuffer**)frameBufferPtr
+- (FrameReadStatus)blockingDecodeReadFrame:(AVSDKCGFrameBuffer**)frameBufferPtr
                              cvBufferRefPtr:(CVImageBufferRef*)cvBufferRefPtr
 {
     BOOL worked;
@@ -758,8 +800,9 @@ typedef enum
     //}
     
     CMSampleBufferRef sampleBuffer = NULL;
+    // TODO: 同步复制下一个样本缓冲区 ，此处是否可以替换成同时使用rgb+alpha复制，加快效率
     sampleBuffer = [self.aVAssetReaderOutput copyNextSampleBuffer];
-    
+    // buffer 帧数据存在时。
     if (sampleBuffer) {
         if (self.produceCoreVideoPixelBuffers) {
             assert(cvBufferRefPtr);
@@ -866,7 +909,7 @@ typedef enum
             [self blockingDecodeVerifySize:*frameBufferPtr];
         }
         
-        return FrameReadStatusNextFrame;
+        return FrameReadStatusNextFrame; //  从asset成功读取下一帧
     } else if ([aVAssetReader status] == AVAssetReaderStatusReading) {
         AVAssetReaderStatus status = aVAssetReader.status;
         NSError *error = aVAssetReader.error;
@@ -921,32 +964,42 @@ typedef enum
 // frameBuffer can be stored so that multiple calls to this render function
 // will make use of the same buffer. Note that the returned frameBuffer
 // object is placed in the autorelease pool implicitly.
-
+//  CMSampleBufferRef ==> CVImageBufferRef,从视频的AVAsset中获得sampleBuffer，直接获得到图片
 - (BOOL) renderCMSampleBufferRefIntoFramebuffer:(CMSampleBufferRef)sampleBuffer frameBuffer:(AVSDKCGFrameBuffer**)frameBufferPtr
 {
-  CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-  
-  return [self renderCVImageBufferRefIntoFramebuffer:imageBuffer frameBuffer:frameBufferPtr];
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    
+#ifdef DEBUG
+    //[self imageFromRGBImageBuffer:imageBuffer];
+#endif
+    
+    return [self renderCVImageBufferRefIntoFramebuffer:imageBuffer frameBuffer:frameBufferPtr];
 }
 
 #pragma mark 决定是否需要转换 - invoke 4
 // This method will determine if a CoreVideo image buffer contains YUV or BGRX video data and
 // convert from YUV to BGRX if needed.
 // 此方法决定如果需要CoreVideo 图像缓冲区包含YUV 或 RGBA 视频数据和从YUV转换为RGBA
-- (BOOL) renderCVImageBufferRefIntoFramebuffer:(CVImageBufferRef)imageBuffer frameBuffer:(AVSDKCGFrameBuffer**)frameBufferPtr
-{
-  int numPlanes = (int) CVPixelBufferGetPlaneCount(imageBuffer);
-  
-  if (numPlanes <= 1) {
-    // BGRA contents
-    return [self renderCVBGRAImageBufferRefIntoFramebuffer:imageBuffer frameBuffer:frameBufferPtr];
-  } else {
-    // YUV
-    return [self renderCVYUVImageBufferRefIntoFramebuffer:imageBuffer frameBuffer:frameBufferPtr];
-  }
+- (BOOL)renderCVImageBufferRefIntoFramebuffer:(CVImageBufferRef)imageBuffer frameBuffer:(AVSDKCGFrameBuffer**)frameBufferPtr {
+    
+    // 判断素的存储方式是Planar或Chunky
+    //BOOL isPlanar =  CVPixelBufferIsPlanar(imageBuffer);
+    // 若是Planar，则通过CVPixelBufferGetPlaneCount获取YUV Plane数量。
+    
+    // 得到像素缓冲区平面数量，返回PixelBuffer的平面数。对于非平面的CVPixelBufferRefs，返回0。
+    int numPlanes = (int) CVPixelBufferGetPlaneCount(imageBuffer);
+    
+    if (numPlanes <= 1) {
+        // BGRA contents
+        return [self renderCVBGRAImageBufferRefIntoFramebuffer:imageBuffer frameBuffer:frameBufferPtr];
+    } else {
+        // YUV
+        return [self renderCVYUVImageBufferRefIntoFramebuffer:imageBuffer frameBuffer:frameBufferPtr];
+    }
+    
 }
 
-#pragma mark YUV使用  invoke 5
+#pragma mark YUV使用-使用CVImageBufferRef(YUV)生成image图像  invoke 5
 - (BOOL) renderCVYUVImageBufferRefIntoFramebuffer:(CVImageBufferRef)imageBuffer frameBuffer:(AVSDKCGFrameBuffer**)frameBufferPtr
 {
 #if TARGET_IPHONE_SIMULATOR
@@ -986,29 +1039,30 @@ typedef enum
 #endif // TARGET_IPHONE_SIMULATOR
 }
 
-#pragma mark 赋值给currentFrameBuffer后面使用生成image - invoke 5
+#pragma mark 赋值给currentFrameBuffer后面使用生成image，主要生成frameBuffer pixels存储 - invoke 5
+// TODO:此处大概耗时1-2s，未做优化处理，最大耗时不在这里。
 // Render BGRA pixels in a CoreVideo image buffer as a flat BGRA framebuffer
-// 在CoreVideo核心框架图像缓冲区，渲染RGBA像素，作为平面的RGBA缓冲区。
+// 在CoreVideo核心框架图像缓冲区，渲染RGBA像素，作为平面的RGBA缓冲区。 -- 使用CVImageBufferRef(RGB)生成image图像
 - (BOOL) renderCVBGRAImageBufferRefIntoFramebuffer:(CVImageBufferRef)imageBuffer frameBuffer:(AVSDKCGFrameBuffer**)frameBufferPtr
 {
     AVSDKCGFrameBuffer *frameBuffer = *frameBufferPtr;
-    
+    // TODO: 1. 把CVImageBufferRef(CVPixelBufferRef)转为UIImage处理方法
 #if defined(DEBUG)
     int numPlanes = (int) CVPixelBufferGetPlaneCount(imageBuffer);
     assert(numPlanes <= 1);
 #endif // DEBUG
-    
+    // 解码后的数据不能直接给CPU访问，需要先用CVPixelBufferLockBaseAddress锁定地址才能从主存访问
+    // 否则调用CVPixelBufferGetBaseAddressOfPlane等函数则返回NULL或无效值。然而，用CVImageBuffer -> CIImage -> UIImage则无需显式调用锁定基地址函数。
     CVPixelBufferLockBaseAddress(imageBuffer,0);
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer); // 图像数据一行多少个字节bytes
     
-    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    size_t width = CVPixelBufferGetWidth(imageBuffer); // 返回像素图像宽度
     
-    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer); // 返回像素图像高度
     
-    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer); // 返回PixelBuffer的基地址。
     
-    void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
-    
-    size_t bufferSize = CVPixelBufferGetDataSize(imageBuffer);
+    size_t bufferSize = CVPixelBufferGetDataSize(imageBuffer); // 获得图像缓冲区占用大小
     
     if (FALSE) {
         size_t left, right, top, bottom;
@@ -1020,10 +1074,10 @@ typedef enum
     
     // Under iOS, the output pixels are implicitly treated as sRGB when using the device
     // colorspace. Under MacOSX, explicitly set the output colorspace to sRGB.
-    
-    CGColorSpaceRef colorSpace = NULL;
+    // 在iOS下，使用设备色彩空间时，输出像素被隐式视为sRGB。 在MacOSX下，将输出色彩空间显式设置为sRGB。
+    CGColorSpaceRef colorSpace = NULL; // 创建一个颜色空间引用
 #if TARGET_OS_IPHONE
-    colorSpace = CGColorSpaceCreateDeviceRGB();
+    colorSpace = CGColorSpaceCreateDeviceRGB(); // 创建一个颜色空间引用
 #else
     // MacOSX
     
@@ -1033,15 +1087,15 @@ typedef enum
     NSAssert(colorSpace, @"colorSpace");
     
     // Create a Quartz direct-access data provider that uses data we supply.
-    
+    // 创建当前bufferSize所需要的所有空间地址。
     CGDataProviderRef dataProvider =
     CGDataProviderCreateWithData(NULL, baseAddress, bufferSize, NULL);
     
     size_t bitsPerComponent = 8;
-    size_t bitsPerPixel = 32;
+    size_t bitsPerPixel = 32; // 每个字节32位
     
     // Input should be BGRA pixels represented as a word buffer
-    
+    // 构建出一个图像
     CGImageRef cgImageRef = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow,
                                           colorSpace, kCGBitmapByteOrder32Host | kCGImageAlphaNoneSkipFirst,
                                           dataProvider, NULL, true, kCGRenderingIntentDefault);
@@ -1051,7 +1105,7 @@ typedef enum
     
     // Render CoreGraphics image into a flat bitmap framebuffer. Note that this object is
     // not autoreleased, instead the caller must explicitly release the ref.
-    
+    // TODO: 2. 对AVSDKCGFrameBuffer处理，将会存储image数据和pixels数据
     if (frameBuffer == NULL) {
         frameBuffer = [[AVSDKCGFrameBuffer alloc] initWithBppDimensions:24 width:width height:height];
 #if __has_feature(objc_arc)
@@ -1059,7 +1113,7 @@ typedef enum
         frameBuffer = [frameBuffer autorelease];
 #endif // objc_arc
         NSAssert(frameBuffer, @"frameBuffer");
-        *frameBufferPtr = frameBuffer;
+        *frameBufferPtr = frameBuffer; // 把此frameBuffer缓冲区地址分配给外部已经初始化分配地址的对象，指针重新指向即可。
         
         // Also save allocated framebuffer as a property in the object - 还将分配的帧缓冲区另存为对象中的属性
         // TODO: 赋值当前frameBuffer
@@ -1087,7 +1141,7 @@ typedef enum
     /**
      帧缓冲区的布局是alpha帧解码时间的98％，因此优化需要从此处开始。 只需不必复制缓冲区或调用CG渲染常规程序就可以节省大部分执行时间。 需要验证输入像素的布局与预期的布局，以确定我们是否仅可以直接进行内存复制，以及是否比使用CG渲染逻辑处理数据更快。
      */
-    [frameBuffer renderCGImage:cgImageRef];
+    [frameBuffer renderCGImage:cgImageRef];  // 此方法调用会进行所有的pixels赋值。
     
     CGImageRelease(cgImageRef);
     

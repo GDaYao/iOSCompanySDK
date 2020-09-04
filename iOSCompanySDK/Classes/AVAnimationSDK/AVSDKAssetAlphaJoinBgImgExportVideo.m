@@ -77,7 +77,7 @@
                     tmpBgCoverPath,
                     bgCoverImgPointStr,
                     nil];
-    NSAssert([arr count] == 4, @"arr count is not enough 3");
+    //NSAssert([arr count] == 4, @"arr count is not enough 3");
     [NSThread detachNewThreadSelector:@selector(detachThreadLoadEntryPoint:) toTarget:self.class withObject:arr];
 }
 
@@ -205,6 +205,7 @@
     //UIImage *bgCoverImg = [UIImage imageNamed:@"tmp-1.jpg"];
     // TODO: 底部背景图,从存储的文件中读取
     UIImage *bgCoverImg = [UIImage imageWithContentsOfFile:tmpBgCoverPath];
+    AVSDKCGFrameBuffer *bgCoverFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
     
     AVSDKAlphaImgMakeVideo *movieMaker  = [self singlaImgToGenerateMOVWithNumFrames:numFrames VideoSize:CGSizeMake(width, height) frameTime:frameDecoderRGB.frameTime exportVideoPath:outPath];
     
@@ -213,12 +214,14 @@
     for (NSUInteger frameIndex = 0; frameIndex < numFrames; frameIndex++) @autoreleasepool {
         
 #ifdef DEBUG
-#ifdef LOGGING
+
+#if PROGRESS==1
         NSLog(@"log-joinRGBAndAlpha-reading frame %d", frameIndex);
 #endif // LOGGING
+
 #endif
         
-        // 读取RGB+alpha文件 ==> 此处耗时大概2s-7s(模拟器)
+        // 1. 读取RGB+alpha文件 ==> 此处耗时大概:在有frame.image2s-7s(模拟器);无frame.image:大概性能提升1-2s间。
         AVSDKAVFrame *frameRGB = [frameDecoderRGB advanceToFrame:frameIndex]; // AVAssetFrameDecoder 获取当前帧图像，包含在 frameRGB.image
         assert(frameRGB);
         
@@ -226,22 +229,24 @@
         assert(frameAlpha);
         
 #ifdef DEBUG
+        // 去除了AVSDKAVFrame中image图像生成，直接为nil
         // 是否需要 -- 转储RGB和ALPHA帧的图像 TRUE/FALSE
         if (FALSE) {
-            // Dump images for the RGB and ALPHA frames
-            // Write image as PNG
-            NSString *tmpDir = NSTemporaryDirectory();
-            NSString *tmpPNGPath = [tmpDir stringByAppendingFormat:@"JoinAlpha_RGB_Frame%d.png", (int)(frameIndex + 1)];
-            NSData *data = [NSData dataWithData:UIImagePNGRepresentation(frameRGB.image)];
-            [data writeToFile:tmpPNGPath atomically:YES];
-            //NSLog(@"log-wrote %@", tmpPNGPath);
-            
-            tmpPNGPath = [tmpDir stringByAppendingFormat:@"JoinAlpha_ALPHA_Frame%d.png", (int)(frameIndex + 1)];
-            data = [NSData dataWithData:UIImagePNGRepresentation(frameAlpha.image)];
-            [data writeToFile:tmpPNGPath atomically:YES];
-            //NSLog(@"log-wrote %@", tmpPNGPath);
+//            // Dump images for the RGB and ALPHA frames
+//            // Write image as PNG
+//            NSString *tmpDir = NSTemporaryDirectory();
+//            NSString *tmpPNGPath = [tmpDir stringByAppendingFormat:@"JoinAlpha_RGB_Frame%d.png", (int)(frameIndex + 1)];
+//            NSData *data = [NSData dataWithData:UIImagePNGRepresentation(frameRGB.image)];
+//            [data writeToFile:tmpPNGPath atomically:YES];
+//            //NSLog(@"log-wrote %@", tmpPNGPath);
+//
+//            tmpPNGPath = [tmpDir stringByAppendingFormat:@"JoinAlpha_ALPHA_Frame%d.png", (int)(frameIndex + 1)];
+//            data = [NSData dataWithData:UIImagePNGRepresentation(frameAlpha.image)];
+//            [data writeToFile:tmpPNGPath atomically:YES];
+//            //NSLog(@"log-wrote %@", tmpPNGPath);
         }
 #endif
+        
         
         // 在框架内释放UIImage ref，因为我们将直接对图像数据进行操作。
         // Release the UIImage ref inside the frame since we will operate on the image data directly.
@@ -266,34 +271,38 @@
         uint32_t *rgbPixels = (uint32_t*)cgFrameBufferRGB.pixels;
         uint32_t *alphaPixels = (uint32_t*)cgFrameBufferAlpha.pixels;
         
-        // RGB和alpha透明通道混合
-        // 达到的结果是更新 combinedPixels 数值
+        // RGB和alpha透明通道混合 -- 达到的结果是更新 combinedPixels 数值
+        // 2. 此处耗时大概:5-6s
         [self combineRGBAndAlphaPixels:numPixels
                         combinedPixels:combinedPixels
                              rgbPixels:rgbPixels
                            alphaPixels:alphaPixels];
+        
+        
         
         // Write combined RGBA pixles as a keyframe, we do not attempt to calculate
         // frame diffs when processing on the device as that takes too long.
         // 将组合的RGBA像素写为关键帧，我们不会尝试计算各帧差异当在设备上处理时，那将占用很长时间。
         int numBytesInBuffer = (int) combinedFrameBuffer.numBytes;
         
-        // 保存所有存储的image
+        // 3. 合成所有image - 并保存. 耗时:1-2
         AVSDKAVFrame *disFrame = [AVSDKAVFrame avsdkAVFrame];
         disFrame.cgFrameBuffer = combinedFrameBuffer;  // 使用最新的 `combinedFrameBuffer` 生成最新的image。
         [disFrame makeImageFromFramebuffer];
+
         
+        // 4. 需要的背景图+带alpha每一帧==>合成新的图片. 耗时:20-26s左右
+        //UIImage *newImg = [self imageByCombiningImageNewImgSize:CGSizeMake(width, height) firstImage:bgCoverImg withImage:disFrame.image bgCoverPoint:bgCoverImgPoint];
+        UIImage *newImg = disFrame.image; // 测试使用透明图片，导出的视频是否是透明的。
+
         
-        UIImage *newImg = [self imageByCombiningImageNewImgSize:CGSizeMake(width, height) firstImage:bgCoverImg withImage:disFrame.image bgCoverPoint:bgCoverImgPoint];
-        
-        // 1. 添加到图片数组中，以便合成
+        // a. 添加到图片数组中，以便合成
         //[imgs addObject:newImg];
-        
-        // 2.
+        // b.
         //NSData *newImgData = [NSData dataWithData:UIImagePNGRepresentation(newImg)];
         //[imgs addObject:newImgData];
-        
-        // 3. 单个图片存储在mov buffer数据中
+        // c. 单个图片存储在mov buffer数据中
+        // 4. 添加到视频中存储。耗时:20-30s
         [movieMaker createMovieAppenPixelBufferWithImage:newImg imgIndex:frameIndex];
         
         
@@ -315,19 +324,20 @@
         
         newImg = nil;
         
+        
 #ifdef DEBUG
         // mEncodeData 是处理完、压缩完成的data数据
-        if (FALSE) {
-            //NSString *tmpDir = NSTemporaryDirectory();
-            // png /jpg
-            //NSString *disPNGPath = [tmpDir stringByAppendingFormat:@"JoinAlpha_RGBA_%d.jpg", (int)(frameIndex + 1)];
-            
-            //NSData *data = [NSData dataWithData:UIImagePNGRepresentation(newImg)];
-            //            NSData *data = [NSData dataWithData:UIImageJPEGRepresentation(newImg, 0.5)];
-            //            [data writeToFile:disPNGPath atomically:YES];
-            //            UIImage *disImg = newImg;
-            //            NSLog(@"log-测试:%@",disPNGPath);
-        }
+//        if (FALSE) {
+//            NSString *tmpDir = NSTemporaryDirectory();
+//            // png /jpg
+//            NSString *disPNGPath = [tmpDir stringByAppendingFormat:@"JoinAlpha_RGBA_%d.jpg", (int)(frameIndex + 1)];
+//
+//            NSData *data = [NSData dataWithData:UIImagePNGRepresentation(newImg)];
+//            NSData *data = [NSData dataWithData:UIImageJPEGRepresentation(newImg, 0.5)];
+//            [data writeToFile:disPNGPath atomically:YES];
+//            UIImage *disImg = newImg;
+//            NSLog(@"log-测试:%@",disPNGPath);
+//        }
 #endif
     }
     
@@ -362,7 +372,7 @@
 {
     
 #ifdef DEBUG
-    NSMutableArray *alphaMuArr = [NSMutableArray array];
+//    NSMutableArray *alphaMuArr = [NSMutableArray array];
 #endif
     
     // 一帧图像含有 numPixels 像素
@@ -387,7 +397,7 @@
             uint32_t pixelRed = (pixelRGB >> 16) & 0xFF;
             uint32_t pixelGreen = (pixelRGB >> 8) & 0xFF;
             uint32_t pixelBlue = (pixelRGB >> 0) & 0xFF;
-            
+
             NSLog(@"log-输出每个像素-rgbA-processing pixeli %d : (%3d %3d %3d) : alpha grayscale %3d %3d %3d", pixeli, pixelRed, pixelGreen, pixelBlue, pixelAlphaRed, pixelAlphaGreen, pixelAlphaBlue);
         }
 #endif // DEBUG
@@ -495,20 +505,23 @@
         uint32_t pixelBlue = (pixelRGB >> 0) & 0xFF;
         
 #ifdef DEBUG
-        if (FALSE) {
-            if (pixelAlpha != 255 ) {
-                NSLog(@"log-当前rgb透明-alpha:%f",pixelAlpha/255.0);
-            }
-            // 记住移除
-            NSNumber *alphaNum = [NSNumber numberWithFloat:pixelAlpha/255.0];
-            [alphaMuArr addObject:alphaNum];
-        }
+//        if (FALSE) {
+//            if (pixelAlpha != 255 ) {
+//                NSLog(@"log-当前rgb透明-alpha:%f",pixelAlpha/255.0);
+//            }
+//            // 记住移除
+//            NSNumber *alphaNum = [NSNumber numberWithFloat:pixelAlpha/255.0];
+//            [alphaMuArr addObject:alphaNum];
+//        }
 #endif
         
         // 预乘分量，组合像素
         uint32_t combinedPixel = premultiply_bgra_inline(pixelRed, pixelGreen, pixelBlue, pixelAlpha);
-        
-        //NSLog(@"output combinedPixel 0x%08X", combinedPixel);
+
+#ifdef DEBUG
+        // 输出每个存储像素值
+//            NSLog(@"output combinedPixel 0x%08X", combinedPixel);
+#endif
         
         combinedPixels[pixeli] = combinedPixel;
         
@@ -519,12 +532,26 @@
 
 
 
-#pragma mark - new add method
+#pragma mark -
 // 判断是否有透明通道
 + (BOOL)hasAlphaWithCurrentImg:(UIImage *)img {
     CGImageAlphaInfo alpha = CGImageGetAlphaInfo(img.CGImage);
     return (alpha==kCGImageAlphaFirst || alpha == kCGImageAlphaLast || alpha == kCGImageAlphaPremultipliedFirst || alpha == kCGImageAlphaPremultipliedLast);
 }
+
+// 单张图片转换CGFrameBuffer属性 -- 主要用于背景图pixels获取
++ (AVSDKCGFrameBuffer *)getBgCoverImgFrameBufferWithCurrentImg:(UIImage *)currentImg newImgSize:(CGSize)newImgSize {
+    float currentImgWidth = newImgSize.width;
+    float widthRatio = currentImgWidth / currentImg.size.width;
+    float currentImgHeight = currentImg.size.height *widthRatio;
+    //[firstImage drawInRect:CGRectMake(0, bgCoverPoint.y, firstImageWidth, firstImgHeight)];
+    AVSDKCGFrameBuffer *frameBuffer = [[AVSDKCGFrameBuffer alloc]initWithBppDimensions:24 width:currentImgWidth height:currentImgHeight];
+    CGImageRef cgImgRef = currentImg.CGImage;
+    [frameBuffer renderCGImage:cgImgRef];
+    
+    return frameBuffer;
+}
+
 
 // TODO: 两张图片合成一张图片
 + (UIImage*)imageByCombiningImageNewImgSize:(CGSize)newImgSize firstImage:(UIImage*)firstImage withImage:(UIImage*)secondImage bgCoverPoint:(CGPoint)bgCoverPoint {
@@ -534,7 +561,7 @@
     UIGraphicsBeginImageContextWithOptions(newImageSize, NO, [[UIScreen mainScreen] scale]);
     
     float screenHeightScle = [UIScreen mainScreen].bounds.size.height/667.0; //7屏幕适配高度比例系数
-    float firstImageWidth = [UIScreen mainScreen].bounds.size.width;
+    float firstImageWidth = newImgSize.width;
     float widthRatio = firstImageWidth / firstImage.size.width;
     float firstImgHeight = firstImage.size.height *widthRatio;
     
