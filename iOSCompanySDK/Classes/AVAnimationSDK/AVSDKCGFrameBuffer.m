@@ -192,6 +192,52 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
 }
 
 
+#pragma mark - bytes array covert to CVPixelBufferRef
+- (CVPixelBufferRef)getCVPixelBufferRefFromBytesWithWidth:(int)pixelWidth pixelHeight:(int)pixelHeight {
+    // 使用pixels数组直接生成需要的CVPixelBufferRef
+    CVPixelBufferRef pixelBuffer = NULL;
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithBool : YES],           kCVPixelBufferCGImageCompatibilityKey,
+                             [NSNumber numberWithBool : YES],           kCVPixelBufferCGBitmapContextCompatibilityKey,
+                             [NSNumber numberWithInt  : pixelWidth],  kCVPixelBufferWidthKey,
+                             [NSNumber numberWithInt  : pixelHeight], kCVPixelBufferHeightKey,
+                             nil];
+    CVPixelBufferCreateWithBytes(kCFAllocatorDefault, self.width, self.height, kCVPixelFormatType_32ARGB,(void*)self.pixels, 4*self.width, NULL, NULL, (__bridge CFDictionaryRef) options,&pixelBuffer);
+    
+    
+//    // ** 添加CVPixelBuffer属性
+//    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+//    void *pxdata = CVPixelBufferGetBaseAddress(pixelBuffer);
+//
+//    // rgb色值
+//    CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB(); // 输出像素被视为隐式sRGB
+//    CGContextRef context = CGBitmapContextCreate(pxdata,
+//                                                 self.width,
+//                                                 self.height,
+//                                                 8,
+//                                                 4 * self.width,
+//                                                 rgbColorSpace,
+//                                                 (CGBitmapInfo)kCGImageAlphaNoneSkipFirst);
+//
+//    NSParameterAssert(context);
+//    CGContextConcatCTM(context, CGAffineTransformIdentity);
+//    // 这里确定绘制区域
+//    // 1. 使用frame * UIScreen Scale
+//    //CGContextDrawImage(context, CGRectMake(0,0,CGImageGetWidth(image),CGImageGetHeight(image)),image);
+//    // use image width*height
+//
+//
+//    CGColorSpaceRelease(rgbColorSpace);
+//
+//    CGContextRelease(context);
+//
+//    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+    
+    return pixelBuffer;
+}
+
+
+
 #pragma mark - createCGImageRef
 - (CGImageRef)createCGImageRef
 {
@@ -222,7 +268,7 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
     
     CGDataProviderReleaseDataCallback releaseData = CGFrameBufferProviderReleaseData;
     
-    void *pixelsPtr = self.pixels; // Will return zero copy pointer in zero copy mode. Otherwise self.pixels
+    void *pixelsPtr = self.pixels;   // Will return zero copy pointer in zero copy mode. Otherwise self.pixels
     
     CGDataProviderRef dataProviderRef = CGDataProviderCreateWithData(
 #if __has_feature(objc_arc)

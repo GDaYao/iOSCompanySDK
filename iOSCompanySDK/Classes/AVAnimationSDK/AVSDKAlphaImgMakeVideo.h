@@ -38,6 +38,10 @@ typedef void(^avsdkAlphaImgMakeVideoCompletionBlock)(NSURL *fileUrl);
 @property (nonatomic, assign) CMTime frameTime;
 @property (nonatomic, strong) NSURL *fileURL;
 @property (nonatomic,copy)avsdkAlphaImgMakeVideoCompletionBlock makeCompletionBlock;
+@property (nonatomic)dispatch_queue_t mediaInputQueue;
+@property (nonatomic,assign)size_t pixelWidth;
+@property (nonatomic,assign)size_t pixelHeight;
+
 
 
 + (NSDictionary *)videoSettingsWithCodec:(NSString *)codec withWidth:(CGFloat)width andHeight:(CGFloat)height;
@@ -47,7 +51,13 @@ typedef void(^avsdkAlphaImgMakeVideoCompletionBlock)(NSURL *fileUrl);
 //  单个图片导入处理
 // 初始化各参数
 - (void)createMovieInitProperty;
+
+// 3. use pixels array ==> CVPixelsBufferRef ==>
+- (void)usePixelsArrayWithPixelWidth:(size_t)pixelWidth pixelHeight:(size_t)pixelHeight pixelNum:(NSUInteger)pixelsNum charPixels:(char*[])pixels completion:(avsdkAlphaImgMakeVideoCompletionBlock)completion;
+// 2. use sampleBuffer
+- (void)useSamplBufferCreateMovieAppenPixelBufferWithCVPixelBufferRef:(CVPixelBufferRef)sampleBuffer imgIndex:(NSInteger)frameIndex;
 - (void)createMovieAppenPixelBufferWithImage:(UIImage *)img imgIndex:(NSInteger)i;
+
 // 全部图片导入完成
 - (void)createMovieFinishWithCompletion:(avsdkAlphaImgMakeVideoCompletionBlock)completion;
 

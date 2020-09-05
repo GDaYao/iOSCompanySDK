@@ -12,11 +12,11 @@
 
 + (NSDictionary *)videoSettingsWithCodec:(NSString *)codec withWidth:(CGFloat)width andHeight:(CGFloat)height
 {
+
     
     if ((int)width % 16 != 0 ) {
         NSLog(@"Warning: video settings width must be divisible by 16.");
     }
-    
     NSDictionary *videoSettings = @{AVVideoCodecKey : AVVideoCodecTypeH264,
                                     AVVideoWidthKey : [NSNumber numberWithInt:(int)width],
                                     AVVideoHeightKey : [NSNumber numberWithInt:(int)height]};
@@ -51,9 +51,9 @@
             }
             _fileURL = [NSURL fileURLWithPath:tempPath];
         }
-        
+        // AVFileTypeMPEG4  AVFileTypeQuickTimeMovie
         _assetWriter = [[AVAssetWriter alloc] initWithURL:self.fileURL
-                                                 fileType:AVFileTypeQuickTimeMovie error:&error];
+                                                 fileType:AVFileTypeMPEG4 error:&error];
         if (error) {
             NSLog(@"Error: %@", error.debugDescription);
         }
@@ -65,7 +65,10 @@
         NSParameterAssert(self.writerInput);
         NSParameterAssert([self.assetWriter canAddInput:self.writerInput]);
         
+        // 添加图片
         [self.assetWriter addInput:self.writerInput];
+        // TODO: 添加音频轨道
+        
         
         NSDictionary *bufferAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                           [NSNumber numberWithInt:kCVPixelFormatType_32ARGB], kCVPixelBufferPixelFormatTypeKey, nil];
@@ -76,6 +79,7 @@
     }
     return self;
 }
+
 
 #pragma mark - creat method
 
@@ -129,7 +133,7 @@
                             [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:presentTime];
                         }
                     }
-                    CFRelease(sampleBuffer);
+                    //CFRelease(sampleBuffer);
                     i++;
                 }
             }
@@ -154,7 +158,102 @@
     [self.assetWriter startSessionAtSourceTime:kCMTimeZero];
     
 }
-//
+
+// 3. use pixels array ==> CVPixelsBufferRef ==>
+- (void)usePixelsArrayWithPixelWidth:(size_t)pixelWidth pixelHeight:(size_t)pixelHeight pixelNum:(NSUInteger)pixelsNum charPixels:(char*[])pixels completion:(avsdkAlphaImgMakeVideoCompletionBlock)makeCompletionBlock
+{
+    
+    self.pixelWidth = pixelWidth;
+    self.pixelHeight = pixelHeight;
+    
+    dispatch_queue_t mediaInputQueue = dispatch_queue_create("mediaInputQueue", NULL);
+    
+    __block NSInteger i = 0;
+    
+    NSInteger frameNumber = pixelsNum;
+    
+    [self.writerInput requestMediaDataWhenReadyOnQueue:mediaInputQueue usingBlock:^{
+        while (YES){
+            if (i >= frameNumber) {
+                break;
+            }
+            if ([self.writerInput isReadyForMoreMediaData]) {
+                
+//                @autoreleasepool {
+                    CVPixelBufferRef sampleBuffer  = [self getCVPixelBufferRefFromBytesWithPixels:pixels[i] ];
+                    
+                    if (sampleBuffer) {
+                        if (i == 0) {
+                            [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:kCMTimeZero];
+                        }else{
+                            CMTime lastTime = CMTimeMake(i-1, self.frameTime.timescale);
+                            CMTime presentTime = CMTimeAdd(lastTime, self.frameTime);
+                            if ( CMTIME_IS_NUMERIC(presentTime) ) {
+                                [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:presentTime];
+                            }else{
+                                NSLog(@"log-MakeVideo-无效时间");
+                            }
+                        }
+                        //CFRelease(sampleBuffer);
+                    } //
+                    i++;
+//                }
+            }else{
+                NSLog(@"log-MakeVideo-写入未准备好");
+            }
+            
+        }
+        
+        [self.writerInput markAsFinished];
+        [self.assetWriter finishWritingWithCompletionHandler:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                makeCompletionBlock(self.fileURL);
+            });
+        }];
+        
+        CVPixelBufferPoolRelease(self.bufferAdapter.pixelBufferPool);
+        
+    }];
+    
+}
+
+
+// 2. use sampleBuffer
+- (void)useSamplBufferCreateMovieAppenPixelBufferWithCVPixelBufferRef:(CVPixelBufferRef)sampleBuffer imgIndex:(NSInteger)frameIndex  {
+    
+    if (self.mediaInputQueue == nil ) {
+      self.mediaInputQueue = dispatch_queue_create("mediaInputQueue", NULL);
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if ([self.writerInput isReadyForMoreMediaData]) {
+            
+            @autoreleasepool {
+                
+                if (sampleBuffer) {
+                    if (frameIndex == 0) {
+                        [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:kCMTimeZero];
+                    }else{
+                        CMTime lastTime = CMTimeMake(frameIndex-1, self.frameTime.timescale);
+                        CMTime presentTime = CMTimeAdd(lastTime, self.frameTime);
+                        if ( CMTIME_IS_NUMERIC(presentTime) ) {
+                            [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:presentTime];
+                        }else{
+                            NSLog(@"log-MakeVideo-无效时间");
+                        }
+                    }
+                    CFRelease(sampleBuffer);
+                }
+            }
+        }else{
+            NSLog(@"log-MakeVideo-写入未准备好-%ld",(long)frameIndex);
+        }
+    });
+    
+    
+}
+
+// 1. use image ==> CVPixelBufferRef
 - (void)createMovieAppenPixelBufferWithImage:(UIImage *)img imgIndex:(NSInteger)i {
     if ([self.writerInput isReadyForMoreMediaData]) {
         
@@ -188,6 +287,8 @@
             CFRelease(sampleBuffer);
             //i++;
         }
+    }else{
+        NSLog(@"log-MakeVideo-写入未准备好-%ld",(long)i);
     }
 }
 
@@ -205,6 +306,17 @@
     CVPixelBufferPoolRelease(self.bufferAdapter.pixelBufferPool);
 }
 
+#pragma mark - bytes array covert to CVPixelBufferRef
+- (CVPixelBufferRef)getCVPixelBufferRefFromBytesWithPixels:(char *)pixels
+{
+    // 使用pixels数组直接生成需要的CVPixelBufferRef
+    CVPixelBufferRef pixelBuffer = NULL;
+    CVPixelBufferCreateWithBytes(kCFAllocatorDefault, self.pixelWidth, self.pixelHeight, kCVPixelFormatType_32ARGB,pixels, 4*self.pixelWidth, NULL, NULL, NULL,&pixelBuffer);
+    return pixelBuffer;
+}
+
+
+#pragma mark -
 // *** 1. UIImage 转换为 CVPixelBufferRef(RGB)
 - (CVPixelBufferRef)newPixelBufferFromCGImage:(CGImageRef)image
 {
@@ -232,7 +344,6 @@
     void *pxdata = CVPixelBufferGetBaseAddress(pxbuffer);
     NSParameterAssert(pxdata != NULL);
     
-    // FIXME: 此处有修改，测试导出的透明视频
     // rgb色值
     CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB(); // 输出像素被视为隐式sRGB
     CGContextRef context = CGBitmapContextCreate(pxdata,
@@ -242,15 +353,6 @@
                                                  4 * frameWidth,
                                                  rgbColorSpace,
                                                  (CGBitmapInfo)kCGImageAlphaNoneSkipFirst);
-    // alpha 色值
-//    CGColorSpaceRef alphaColorSpace = CGColorSpaceCreateDeviceGray();
-//    CGContextRef context = CGBitmapContextCreate(pxdata,
-//                                                 frameWidth,
-//                                                 frameHeight,
-//                                                 8,
-//                                                 4 * frameWidth,
-//                                                 alphaColorSpace,
-//                                                 (CGBitmapInfo)kCGImageAlphaOnly);
     
     NSParameterAssert(context);
     CGContextConcatCTM(context, CGAffineTransformIdentity);
@@ -287,6 +389,8 @@
     CVPixelBufferUnlockBaseAddress(pxbuffer, 0);
     return pxbuffer;
 }
+
+
 
 
 
