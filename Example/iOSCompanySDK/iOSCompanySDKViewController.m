@@ -90,8 +90,10 @@
     NSString *rgbFilePath = [[NSBundle mainBundle]pathForResource:kVideoColorStr ofType:@""];
     NSString *alphaFilePath = [[NSBundle mainBundle]pathForResource:kVideoMaskStr ofType:@""];
     
-    NSString *tmpDir = NSTemporaryDirectory();
-    NSString *tmpOutPath = [tmpDir stringByAppendingFormat:@"tmpOut.mp4"];
+    //NSString *tmpDir = NSTemporaryDirectory();
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths firstObject];
+    NSString *tmpOutPath = [documentsDirectory stringByAppendingFormat:@"tmpOut.mp4"];
     NSFileManager *fm = [NSFileManager defaultManager];
     if ([fm fileExistsAtPath:tmpOutPath]) {
         [fm removeItemAtPath:tmpOutPath error:nil];

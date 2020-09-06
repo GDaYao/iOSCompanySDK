@@ -42,8 +42,6 @@
 }
 
 
-
-
 #pragma mark - 使用framebuffer 生成image图像
 - (void) makeImageFromFramebuffer
 {

@@ -37,7 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
     CGColorSpaceRef m_colorspace;
 }
 
-@property (readonly) char * pixels;
+@property char * pixels;
+//@property (readonly) char * pixels;
 @property (readonly) char *zeroCopyPixels;
 @property (nonatomic, copy) NSData *zeroCopyMappedData;
 
@@ -64,6 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (id) initWithBppDimensions:(NSInteger)bitsPerPixel
                        width:(NSInteger)width
                       height:(NSInteger)height;
+// 销毁释放内存
+- (void)deallocPixelsWithBppDimensions:(NSInteger)bitsPerPixel width:(NSInteger)width height:(NSInteger)height;
 
 
 // TODO: bytes array covert to CVPixelBufferRef

@@ -55,6 +55,7 @@ typedef void(^avsdkAlphaImgMakeVideoCompletionBlock)(NSURL *fileUrl);
 // 3. use pixels array ==> CVPixelsBufferRef ==>
 - (void)usePixelsArrayWithPixelWidth:(size_t)pixelWidth pixelHeight:(size_t)pixelHeight pixelNum:(NSUInteger)pixelsNum charPixels:(char*[])pixels completion:(avsdkAlphaImgMakeVideoCompletionBlock)completion;
 // 2. use sampleBuffer
+@property (nonatomic,strong)UIImage *bgCoverImg;
 - (void)useSamplBufferCreateMovieAppenPixelBufferWithCVPixelBufferRef:(CVPixelBufferRef)sampleBuffer imgIndex:(NSInteger)frameIndex;
 - (void)createMovieAppenPixelBufferWithImage:(UIImage *)img imgIndex:(NSInteger)i;
 

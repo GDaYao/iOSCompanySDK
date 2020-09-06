@@ -69,9 +69,11 @@
         [self.assetWriter addInput:self.writerInput];
         // TODO: 添加音频轨道
         
-        
+        // 像素格式类型kCVPixelBufferPixelFormatTypeKey/pixelFormatType,需设置成kCVPixelFormatType_32BGRA,不能使用kCVPixelFormatType_32ARGB。
+        // 此主要和appendPixelBuffer中传入buffer-bitmapInfo对应，表示像素格式类型，位图像素分布
         NSDictionary *bufferAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                          [NSNumber numberWithInt:kCVPixelFormatType_32ARGB], kCVPixelBufferPixelFormatTypeKey, nil];
+                                          [NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
+                                           nil];
         
         _bufferAdapter = [[AVAssetWriterInputPixelBufferAdaptor alloc] initWithAssetWriterInput:self.writerInput sourcePixelBufferAttributes:bufferAttributes];
         // default frame time -- CMTime
@@ -219,39 +221,75 @@
 
 
 // 2. use sampleBuffer
+/* 此处传入原始的CVPixelBufferRef可能需要处理成需要的CVPixelBufferRef,可能缺少NV12数据 */
 - (void)useSamplBufferCreateMovieAppenPixelBufferWithCVPixelBufferRef:(CVPixelBufferRef)sampleBuffer imgIndex:(NSInteger)frameIndex  {
     
     if (self.mediaInputQueue == nil ) {
-      self.mediaInputQueue = dispatch_queue_create("mediaInputQueue", NULL);
+        self.mediaInputQueue = dispatch_queue_create("mediaInputQueue", NULL);
     }
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    //dispatch_async(self.mediaInputQueue, ^{
+       
+        // 这是一个键值观察属性，它会经常地异步地在NO和YES之间变换，来标识现在缓冲区中的数据是否已经处理完成。
         if ([self.writerInput isReadyForMoreMediaData]) {
             
-            @autoreleasepool {
-                
-                if (sampleBuffer) {
-                    if (frameIndex == 0) {
-                        [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:kCMTimeZero];
+            //@autoreleasepool {
+            if (sampleBuffer) {
+                if (frameIndex == 0) {
+                    
+                    // 它是一个缓冲区，作为assetWriter的输入，用于把缓冲池中的像素打包追加到视频样本上
+                    // 返回结果只是代表添加pixel buffer成功，并未代表处理完成。
+                    [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:kCMTimeZero];
+                    
+                }else{
+                    CMTime lastTime = CMTimeMake(frameIndex-1, self.frameTime.timescale);
+                    CMTime presentTime = CMTimeAdd(lastTime, self.frameTime);
+                    if ( CMTIME_IS_NUMERIC(presentTime) ) {
+                        [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:presentTime];
                     }else{
-                        CMTime lastTime = CMTimeMake(frameIndex-1, self.frameTime.timescale);
-                        CMTime presentTime = CMTimeAdd(lastTime, self.frameTime);
-                        if ( CMTIME_IS_NUMERIC(presentTime) ) {
-                            [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:presentTime];
-                        }else{
-                            NSLog(@"log-MakeVideo-无效时间");
-                        }
+                        NSLog(@"log-MakeVideo-无效时间");
                     }
-                    CFRelease(sampleBuffer);
                 }
             }
-        }else{
-            NSLog(@"log-MakeVideo-写入未准备好-%ld",(long)frameIndex);
+            //}
         }
-    });
-    
+        
+        
+        //根据appendPixelBuffer定义描述，使用期间不能改变CVPixelBufferRef。
+        // 所以必须等待处理完成,才能释放CVPixelBufferRef。
+        BOOL isReadyLoopFlag = YES;
+        while(isReadyLoopFlag == YES){
+            if(self.bufferAdapter.assetWriterInput.isReadyForMoreMediaData == YES){
+                
+                //UIImage *bgCoverImg = [UIImage imageNamed:@"tmp-1.jpg"];
+                //UIImage *bgCoverImg = nil;
+                //UIImageP NGRepresentation(self.bgCoverImg);
+                
+                // 查看当前添加的image。
+                //            CVPixelBufferRef newPixelBuffer = NULL;
+                //            CVPixelBufferPoolCreatePixelBuffer(NULL, self.bufferAdapter.pixelBufferPool, &newPixelBuffer);
+                
+#ifdef DEBUG
+                //测试导入的CVPixelBufferRef==>UIImage
+                if (FALSE) {
+                    // 测试此pixelBuffer生成image是否正常
+                    UIImage *newImg = [self imageFromRGBImageBuffer:sampleBuffer];
+                    //UIImagePNGRepresentation(newImg);
+                }
+#endif
+                
+                CVPixelBufferRelease(sampleBuffer);
+                isReadyLoopFlag = NO;
+                break;
+            }else{
+                //NSLog(@"log-MakeVideo-下一帧-写入未准备好-%ld",(long)frameIndex);
+            }
+        } //
+        
+    //});
     
 }
+
 
 // 1. use image ==> CVPixelBufferRef
 - (void)createMovieAppenPixelBufferWithImage:(UIImage *)img imgIndex:(NSInteger)i {
@@ -306,12 +344,13 @@
     CVPixelBufferPoolRelease(self.bufferAdapter.pixelBufferPool);
 }
 
+
 #pragma mark - bytes array covert to CVPixelBufferRef
 - (CVPixelBufferRef)getCVPixelBufferRefFromBytesWithPixels:(char *)pixels
 {
     // 使用pixels数组直接生成需要的CVPixelBufferRef
     CVPixelBufferRef pixelBuffer = NULL;
-    CVPixelBufferCreateWithBytes(kCFAllocatorDefault, self.pixelWidth, self.pixelHeight, kCVPixelFormatType_32ARGB,pixels, 4*self.pixelWidth, NULL, NULL, NULL,&pixelBuffer);
+    CVPixelBufferCreateWithBytes(kCFAllocatorDefault, self.pixelWidth, self.pixelHeight, kCVPixelFormatType_32BGRA,pixels, 4*self.pixelWidth, NULL, NULL, NULL,&pixelBuffer);
     return pixelBuffer;
 }
 
@@ -391,6 +430,23 @@
 }
 
 
+// CVImageBufferRef (RGB)转为UIImage
+- (UIImage *)imageFromRGBImageBuffer:(CVImageBufferRef)imageBuffer {
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8,bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
+    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
+    UIImage *image = [UIImage imageWithCGImage:quartzImage];
+    CGImageRelease(quartzImage);
+    return (image);
+}
 
 
 

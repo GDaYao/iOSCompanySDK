@@ -14,10 +14,10 @@
 # define EXTRA_CHECKS
 #endif // DEBUG
 
-// Alignment is not an issue, makes no difference in performance
+// Alignment is not an issue, makes no difference in performance -- 使用对齐分配内存方式
 //#define USE_ALIGNED_VALLOC 1
 
-// Using page copy makes a huge diff, 24 bpp goes from 15->20 FPS to 30 FPS!
+// Using page copy makes a huge diff, 24 bpp goes from 15->20 FPS to 30 FPS! -- 使用分页
 #define USE_MACH_VM_ALLOCATE 1
 
 #if defined(USE_ALIGNED_VALLOC) || defined(USE_MACH_VM_ALLOCATE)
@@ -191,6 +191,40 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
     return self;
 }
 
+// 销毁释放内存
+- (void)deallocPixelsWithBppDimensions:(NSInteger)bitsPerPixel width:(NSInteger)width height:(NSInteger)height {
+    size_t numPixels = width * height;
+    size_t numPixelsToAllocate = numPixels;
+    
+    if ((numPixels % 2) != 0) {
+        numPixelsToAllocate++;
+    }
+    
+    // 16bpp -> 2 bytes per pixel, 24bpp and 32bpp -> 4 bytes per pixel
+    // RGBA，一个通道一个字节，一个像素包含4个通道。
+    
+    size_t bytesPerPixel;
+    if (bitsPerPixel == 16) {
+        bytesPerPixel = 2;
+    } else if (bitsPerPixel == 24 || bitsPerPixel == 32) {
+        bytesPerPixel = 4;
+    } else {
+        bytesPerPixel = 0;
+        NSAssert(FALSE, @"bitsPerPixel is invalid");
+    }
+    
+    // 所有的像素总和所占内存字节数
+    size_t inNumBytes = numPixelsToAllocate * bytesPerPixel;
+    size_t pagesize = (size_t)getpagesize();
+    size_t numpages = (inNumBytes / pagesize);    // 分页大小
+    if (inNumBytes % pagesize) {
+        numpages++;
+    }
+    
+    vm_size_t m_size = (vm_size_t)(numpages * pagesize);
+    vm_deallocate((vm_map_t) mach_task_self(), (vm_address_t*)&self->m_pixels, m_size);
+}
+
 
 #pragma mark - bytes array covert to CVPixelBufferRef
 - (CVPixelBufferRef)getCVPixelBufferRefFromBytesWithWidth:(int)pixelWidth pixelHeight:(int)pixelHeight {
@@ -202,39 +236,33 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
                              [NSNumber numberWithInt  : pixelWidth],  kCVPixelBufferWidthKey,
                              [NSNumber numberWithInt  : pixelHeight], kCVPixelBufferHeightKey,
                              nil];
-    CVPixelBufferCreateWithBytes(kCFAllocatorDefault, self.width, self.height, kCVPixelFormatType_32ARGB,(void*)self.pixels, 4*self.width, NULL, NULL, (__bridge CFDictionaryRef) options,&pixelBuffer);
-    
-    
-//    // ** 添加CVPixelBuffer属性
-//    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
-//    void *pxdata = CVPixelBufferGetBaseAddress(pixelBuffer);
-//
-//    // rgb色值
-//    CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB(); // 输出像素被视为隐式sRGB
-//    CGContextRef context = CGBitmapContextCreate(pxdata,
-//                                                 self.width,
-//                                                 self.height,
-//                                                 8,
-//                                                 4 * self.width,
-//                                                 rgbColorSpace,
-//                                                 (CGBitmapInfo)kCGImageAlphaNoneSkipFirst);
-//
-//    NSParameterAssert(context);
-//    CGContextConcatCTM(context, CGAffineTransformIdentity);
-//    // 这里确定绘制区域
-//    // 1. 使用frame * UIScreen Scale
-//    //CGContextDrawImage(context, CGRectMake(0,0,CGImageGetWidth(image),CGImageGetHeight(image)),image);
-//    // use image width*height
-//
-//
-//    CGColorSpaceRelease(rgbColorSpace);
-//
-//    CGContextRelease(context);
-//
-//    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-    
+    /*
+     由pixels生成CVPixelBuffer,像素格式类型kCVPixelBufferPixelFormatTypeKey/pixelFormatType,需设置成kCVPixelFormatType_32BGRA,不能使用kCVPixelFormatType_32ARGB。
+     传入参数pixels是包含各个像素点的位图布局信息，二者属性有差别，bitmapInfo所以不一致会有问题，而转入image后，bitmapInfo决定位图布局信息。
+     // 
+     当inputPixelFormat=kCVPixelFormatType_32BGRA CGBitmapInfo的正确的设置
+     uint32_t bitmapInfo = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host;
+     // 或者
+     uint32_t bitmapInfo = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Host;
+
+     当inputPixelFormat=kCVPixelFormatType_32ARGB CGBitmapInfo的正确的设置
+     uint32_t bitmapInfo = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Big;
+     // 或者
+     uint32_t bitmapInfo = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Big;
+     
+     */
+    // Define a function to call when the pixel buffer is freed.
+
+    CVPixelBufferCreateWithBytes(kCFAllocatorDefault, self.width, self.height, kCVPixelFormatType_32BGRA,(void*)self.pixels, 4*self.width, NULL, NULL, (__bridge CFDictionaryRef) options,&pixelBuffer);
     return pixelBuffer;
 }
+
+//void releaseCallback(void *releaseRefCon, const void *baseAddress) {
+//    //free((void *)releaseRefCon);
+//    //free((void *)baseAddress);
+//    // 根据需要执行其他清理。
+//    NSLog(@"log-调用释放");
+//}
 
 
 
@@ -443,6 +471,7 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
 - (void) clear
 {
   [self doneZeroCopyPixels];
+    // 使用bzero置空pixels
   bzero(self.pixels, self.numBytes);
 }
 

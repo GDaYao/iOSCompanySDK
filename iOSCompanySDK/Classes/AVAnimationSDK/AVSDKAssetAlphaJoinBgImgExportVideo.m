@@ -205,9 +205,12 @@
     //UIImage *bgCoverImg = [UIImage imageNamed:@"tmp-1.jpg"];
     // TODO: 底部背景图,从存储的文件中读取
     UIImage *bgCoverImg = [UIImage imageWithContentsOfFile:tmpBgCoverPath];
-    AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
+    // 此处不能使用一个image生成pixel buffer会导致。
+    // pixels被分配的内存数据有时候被覆盖或释放，导致合成图片有问题。
+    //AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
     
     AVSDKAlphaImgMakeVideo *movieMaker  = [self singlaImgToGenerateMOVWithNumFrames:numFrames VideoSize:CGSizeMake(width, height) frameTime:frameDecoderRGB.frameTime exportVideoPath:outPath];
+    movieMaker.bgCoverImg = bgCoverImg;
     // 不能使用NSMutableArray数组，char*数组转成NSString出错。因为那是char*数组
     // 使用char*数组处理
     size_t pixelWidth;
@@ -234,6 +237,9 @@
         assert(frameAlpha);
         
         
+        // imgae -- 需要每次重新没pixels分配内存。
+        AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
+
         AVSDKCGFrameBuffer *cgFrameBufferRGB = frameRGB.cgFrameBuffer;
         NSAssert(cgFrameBufferRGB, @"cgFrameBufferRGB");
         
@@ -244,6 +250,7 @@
         if (frameIndex == 0) {
             combinedFrameBuffer.colorspace = cgFrameBufferRGB.colorspace;
         }
+        
         
         // Join RGB and ALPHA
         uint32_t numPixels = width * height;  // 每张图片所包含像素数值
@@ -293,7 +300,7 @@
 #if PROGRESS==1
 //         输出生成的图片
 //        if (TRUE) {
-//         测试此pixelBuffer生成image是否正常
+////         测试此pixelBuffer生成image是否正常
 //          UIImage *newImg = [self imageFromRGBImageBuffer:pixelBufferRef];
 //            NSString *tmpDir = NSTemporaryDirectory();
 //            // png /jpg
@@ -320,13 +327,19 @@
         //[movieMaker createMovieAppenPixelBufferWithImage:newGenerateImg imgIndex:frameIndex];
         // 使用 pixelBuffer
         [movieMaker useSamplBufferCreateMovieAppenPixelBufferWithCVPixelBufferRef:pixelBufferRef imgIndex:frameIndex];
-        
+    
         
         //  TODO: 使用完成释放需要释放
+        //[cgFrameBufferRGB clear]; // 此处释放了，pixels会出现黑色
+        
+        
         frameRGB = nil;
         frameAlpha = nil;
         
+        
+        [bgCoverImgFrameBuffer clear];
         [cgFrameBufferAlpha clear];
+        
         
         numPixels = 0;
         combinedPixels = 0;
@@ -358,13 +371,12 @@
 //        [[NSNotificationCenter defaultCenter]postNotificationName:kAlphaVideoCombineImgFinishNotification object:nil];
 //    }];
     
-    
-    
 #pragma mark 合成完毕导出
     
     
     return TRUE;
 }
+
 
 
 
