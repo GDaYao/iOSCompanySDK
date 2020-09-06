@@ -37,6 +37,7 @@ typedef void(^avsdkAlphaImgMakeVideoCompletionBlock)(NSURL *fileUrl);
 @property (nonatomic, strong) NSDictionary *videoSettings;
 @property (nonatomic, assign) CMTime frameTime;
 @property (nonatomic, strong) NSURL *fileURL;
+@property (nonatomic,copy)NSString *outPath;
 @property (nonatomic,copy)avsdkAlphaImgMakeVideoCompletionBlock makeCompletionBlock;
 @property (nonatomic)dispatch_queue_t mediaInputQueue;
 @property (nonatomic,assign)size_t pixelWidth;
@@ -60,7 +61,7 @@ typedef void(^avsdkAlphaImgMakeVideoCompletionBlock)(NSURL *fileUrl);
 - (void)createMovieAppenPixelBufferWithImage:(UIImage *)img imgIndex:(NSInteger)i;
 
 // 全部图片导入完成
-- (void)createMovieFinishWithCompletion:(avsdkAlphaImgMakeVideoCompletionBlock)completion;
+- (void)createMovieFinishWithAudioPath:(NSString *)audioPath completion:(avsdkAlphaImgMakeVideoCompletionBlock)completion;
 
 
 

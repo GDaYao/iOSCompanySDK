@@ -32,25 +32,26 @@
     if (self) {
         NSError *error;
         
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths firstObject];
+        //NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        //NSString *documentsDirectory = [paths firstObject];
         //NSString *tempPath = [documentsDirectory stringByAppendingFormat:@"/export.mov"];
         
-        if (exportVideoPath.length != 0 ) {
-            _fileURL = [NSURL fileURLWithPath:exportVideoPath];
-
-        }else{
-            
-            NSString *tempPath = [documentsDirectory stringByAppendingFormat:@"/export.mp4"];
-            NSLog(@"log-movieSavePath:%@",tempPath);
-            if ([[NSFileManager defaultManager] fileExistsAtPath:tempPath]) {
-                [[NSFileManager defaultManager] removeItemAtPath:tempPath error:&error];
-                if (error) {
-                    NSLog(@"Error: %@", error.debugDescription);
-                }
+        self.outPath = exportVideoPath;
+        //_fileURL = [NSURL fileURLWithPath:exportVideoPath];
+        
+        NSString *tmpDir = NSTemporaryDirectory();
+        NSString *tempPath = [tmpDir stringByAppendingFormat:@"/export.mp4"];
+        NSLog(@"log-movieSavePath:%@",tempPath);
+        if ([[NSFileManager defaultManager] fileExistsAtPath:tempPath]) {
+            [[NSFileManager defaultManager] removeItemAtPath:tempPath error:&error];
+            if (error) {
+                NSLog(@"Error: %@", error.debugDescription);
             }
-            _fileURL = [NSURL fileURLWithPath:tempPath];
         }
+        _fileURL = [NSURL fileURLWithPath:tempPath];
+        
+        
+    
         // AVFileTypeMPEG4  AVFileTypeQuickTimeMovie
         _assetWriter = [[AVAssetWriter alloc] initWithURL:self.fileURL
                                                  fileType:AVFileTypeMPEG4 error:&error];
@@ -67,7 +68,9 @@
         
         // 添加图片
         [self.assetWriter addInput:self.writerInput];
+        self.writerInput.expectsMediaDataInRealTime = YES;
         // TODO: 添加音频轨道
+        
         
         // 像素格式类型kCVPixelBufferPixelFormatTypeKey/pixelFormatType,需设置成kCVPixelFormatType_32BGRA,不能使用kCVPixelFormatType_32ARGB。
         // 此主要和appendPixelBuffer中传入buffer-bitmapInfo对应，表示像素格式类型，位图像素分布
@@ -162,6 +165,7 @@
 }
 
 // 3. use pixels array ==> CVPixelsBufferRef ==>
+/*
 - (void)usePixelsArrayWithPixelWidth:(size_t)pixelWidth pixelHeight:(size_t)pixelHeight pixelNum:(NSUInteger)pixelsNum charPixels:(char*[])pixels completion:(avsdkAlphaImgMakeVideoCompletionBlock)makeCompletionBlock
 {
     
@@ -182,7 +186,7 @@
             if ([self.writerInput isReadyForMoreMediaData]) {
                 
 //                @autoreleasepool {
-                    CVPixelBufferRef sampleBuffer  = [self getCVPixelBufferRefFromBytesWithPixels:pixels[i] ];
+                    //CVPixelBufferRef sampleBuffer  = [self getCVPixelBufferRefFromBytesWithPixels:pixels[i] ];
                     
                     if (sampleBuffer) {
                         if (i == 0) {
@@ -218,6 +222,7 @@
     }];
     
 }
+*/
 
 
 // 2. use sampleBuffer
@@ -228,65 +233,44 @@
         self.mediaInputQueue = dispatch_queue_create("mediaInputQueue", NULL);
     }
     
-    //dispatch_async(self.mediaInputQueue, ^{
-       
-        // 这是一个键值观察属性，它会经常地异步地在NO和YES之间变换，来标识现在缓冲区中的数据是否已经处理完成。
-        if ([self.writerInput isReadyForMoreMediaData]) {
-            
-            //@autoreleasepool {
-            if (sampleBuffer) {
-                if (frameIndex == 0) {
-                    
-                    // 它是一个缓冲区，作为assetWriter的输入，用于把缓冲池中的像素打包追加到视频样本上
-                    // 返回结果只是代表添加pixel buffer成功，并未代表处理完成。
-                    [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:kCMTimeZero];
-                    
-                }else{
-                    CMTime lastTime = CMTimeMake(frameIndex-1, self.frameTime.timescale);
-                    CMTime presentTime = CMTimeAdd(lastTime, self.frameTime);
-                    if ( CMTIME_IS_NUMERIC(presentTime) ) {
-                        [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:presentTime];
-                    }else{
-                        NSLog(@"log-MakeVideo-无效时间");
-                    }
-                }
-            }
-            //}
-        }
+    // 这是一个键值观察属性，它会经常地异步地在NO和YES之间变换，来标识现在缓冲区中的数据是否已经处理完成。
+    if ([self.writerInput isReadyForMoreMediaData]) {
         
-        
-        //根据appendPixelBuffer定义描述，使用期间不能改变CVPixelBufferRef。
-        // 所以必须等待处理完成,才能释放CVPixelBufferRef。
-        BOOL isReadyLoopFlag = YES;
-        while(isReadyLoopFlag == YES){
-            if(self.bufferAdapter.assetWriterInput.isReadyForMoreMediaData == YES){
+        //@autoreleasepool {
+        if (sampleBuffer) {
+            if (frameIndex == 0) {
                 
-                //UIImage *bgCoverImg = [UIImage imageNamed:@"tmp-1.jpg"];
-                //UIImage *bgCoverImg = nil;
-                //UIImageP NGRepresentation(self.bgCoverImg);
+                // 它是一个缓冲区，作为assetWriter的输入，用于把缓冲池中的像素打包追加到视频样本上
+                // 返回结果只是代表添加pixel buffer成功，并未代表处理完成。
+                [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:kCMTimeZero];
                 
-                // 查看当前添加的image。
-                //            CVPixelBufferRef newPixelBuffer = NULL;
-                //            CVPixelBufferPoolCreatePixelBuffer(NULL, self.bufferAdapter.pixelBufferPool, &newPixelBuffer);
-                
-#ifdef DEBUG
-                //测试导入的CVPixelBufferRef==>UIImage
-                if (FALSE) {
-                    // 测试此pixelBuffer生成image是否正常
-                    UIImage *newImg = [self imageFromRGBImageBuffer:sampleBuffer];
-                    //UIImagePNGRepresentation(newImg);
-                }
-#endif
-                
-                CVPixelBufferRelease(sampleBuffer);
-                isReadyLoopFlag = NO;
-                break;
             }else{
-                //NSLog(@"log-MakeVideo-下一帧-写入未准备好-%ld",(long)frameIndex);
+                CMTime lastTime = CMTimeMake(frameIndex-1, self.frameTime.timescale);
+                CMTime presentTime = CMTimeAdd(lastTime, self.frameTime);
+                if ( CMTIME_IS_NUMERIC(presentTime) ) {
+                    [self.bufferAdapter appendPixelBuffer:sampleBuffer withPresentationTime:presentTime];
+                }else{
+                    NSLog(@"log-MakeVideo-无效时间");
+                }
             }
-        } //
-        
-    //});
+        }
+        //}
+    }
+    
+    
+    //根据appendPixelBuffer定义描述，使用期间不能改变CVPixelBufferRef。
+    // 所以必须等待处理完成,才能释放CVPixelBufferRef。
+    BOOL isReadyLoopFlag = YES;
+    while(isReadyLoopFlag == YES){
+        if(self.bufferAdapter.assetWriterInput.isReadyForMoreMediaData == YES){
+            
+            CVPixelBufferRelease(sampleBuffer);
+            isReadyLoopFlag = NO;
+            break;
+        }else{
+            //NSLog(@"log-MakeVideo-下一帧-写入未准备好-%ld",(long)frameIndex);
+        }
+    } //
     
 }
 
@@ -331,28 +315,79 @@
 }
 
 // 全部图片导入完成
-- (void)createMovieFinishWithCompletion:(avsdkAlphaImgMakeVideoCompletionBlock)completion {
+- (void)createMovieFinishWithAudioPath:(NSString *)audioPath completion:(avsdkAlphaImgMakeVideoCompletionBlock)completion {
     self.makeCompletionBlock = completion;
     
     [self.writerInput markAsFinished];
     [self.assetWriter finishWritingWithCompletionHandler:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.makeCompletionBlock(self.fileURL);
-        });
+        // 添加合成音频文件
+        [self theVideoWithMixMusic:audioPath videoPath:self.fileURL.path savePath:self.outPath completion:^(NSURL * _Nonnull fileUrl) {
+            self.makeCompletionBlock([NSURL fileURLWithPath:self.outPath]);
+        }];
     }];
     
     CVPixelBufferPoolRelease(self.bufferAdapter.pixelBufferPool);
 }
 
 
-#pragma mark - bytes array covert to CVPixelBufferRef
-- (CVPixelBufferRef)getCVPixelBufferRefFromBytesWithPixels:(char *)pixels
+#pragma mark - 添加音频合成
+/**
+ 音频和视频混合
+
+ @param mixURLPath 混音
+ @param videoPath 视频
+ @param savePath 保存视频
+ */
+- (void)theVideoWithMixMusic:(NSString *)mixURLPath videoPath:(NSString *)videoPath savePath:(NSString *)savePath completion:(avsdkAlphaImgMakeVideoCompletionBlock)completion
 {
-    // 使用pixels数组直接生成需要的CVPixelBufferRef
-    CVPixelBufferRef pixelBuffer = NULL;
-    CVPixelBufferCreateWithBytes(kCFAllocatorDefault, self.pixelWidth, self.pixelHeight, kCVPixelFormatType_32BGRA,pixels, 4*self.pixelWidth, NULL, NULL, NULL,&pixelBuffer);
-    return pixelBuffer;
+    //声音来源路径（最终混合的音频）
+    NSURL   *audio_inputFileUrl =[NSURL fileURLWithPath:mixURLPath];
+    
+    //视频来源路径
+    NSURL   *video_inputFileUrl = [NSURL fileURLWithPath:videoPath];
+    
+    //最终合成输出路径
+    NSURL   *outputFileUrl = [NSURL fileURLWithPath:savePath];
+  
+    CMTime nextClipStartTime =kCMTimeZero;
+    
+    //创建可变的音频视频组合
+    AVMutableComposition* mixComposition =[AVMutableComposition composition];
+    
+    //视频采集
+    AVURLAsset* videoAsset =[[AVURLAsset alloc]initWithURL:video_inputFileUrl options:nil];
+    CMTimeRange video_timeRange =CMTimeRangeMake(kCMTimeZero,videoAsset.duration);
+    AVMutableCompositionTrack*a_compositionVideoTrack = [mixComposition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+    [a_compositionVideoTrack insertTimeRange:video_timeRange ofTrack:[[videoAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0]atTime:nextClipStartTime error:nil];
+    
+    //声音采集
+    AVURLAsset* audioAsset =[[AVURLAsset alloc]initWithURL:audio_inputFileUrl options:nil];
+    CMTimeRange audio_timeRange =CMTimeRangeMake(kCMTimeZero,videoAsset.duration);//声音长度截取范围==视频长度
+    AVMutableCompositionTrack*b_compositionAudioTrack = [mixComposition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+    [b_compositionAudioTrack insertTimeRange:audio_timeRange ofTrack:[[audioAsset tracksWithMediaType:AVMediaTypeAudio]objectAtIndex:0]atTime:nextClipStartTime error:nil];
+    
+    //创建一个输出
+    AVAssetExportSession* _assetExport =[[AVAssetExportSession alloc]initWithAsset:mixComposition presetName:AVAssetExportPreset960x540];
+    _assetExport.outputFileType = AVFileTypeMPEG4;
+    _assetExport.outputURL =outputFileUrl;
+    //_assetExport.shouldOptimizeForNetworkUse=YES;
+    
+    
+    [_assetExport exportAsynchronouslyWithCompletionHandler:
+     ^(void ) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //NSLog(@"完成！输出路径==%@",savePath);
+            
+            if([[NSFileManager defaultManager]fileExistsAtPath:mixURLPath]) {
+                [[NSFileManager defaultManager]removeItemAtPath:mixURLPath error:nil];
+            }
+            completion([NSURL fileURLWithPath:mixURLPath]);
+ 
+        });
+     }];
 }
+
+
 
 
 #pragma mark -
@@ -428,7 +463,6 @@
     CVPixelBufferUnlockBaseAddress(pxbuffer, 0);
     return pxbuffer;
 }
-
 
 // CVImageBufferRef (RGB)转为UIImage
 - (UIImage *)imageFromRGBImageBuffer:(CVImageBufferRef)imageBuffer {

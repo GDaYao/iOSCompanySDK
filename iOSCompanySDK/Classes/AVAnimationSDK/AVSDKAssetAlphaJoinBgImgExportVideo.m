@@ -188,7 +188,7 @@
     
     
     // TODO: for 循环 -- 遍历所有帧，即处理所有帧
-    BOOL isExecute = [self executeForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha combinedFrameBuffer:combinedFrameBuffer width:width height:height outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint];
+    BOOL isExecute = [self executeForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha combinedFrameBuffer:combinedFrameBuffer width:width height:height outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint audioPath:rgbPath];
     
     if (isExecute == FALSE) {
         return FALSE;
@@ -200,7 +200,7 @@
 
 
 // TODO: 执行for循环,拿出来使用
-+ (BOOL)executeForLoop:(NSUInteger)numFrames  frameDecoderRGB:(AVSDKAssetFrameDecoder *)frameDecoderRGB frameDecoderAlpha:(AVSDKAssetFrameDecoder *)frameDecoderAlpha  combinedFrameBuffer:(AVSDKCGFrameBuffer *)combinedFrameBuffer width:(int)width height:(int)height outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint  {
++ (BOOL)executeForLoop:(NSUInteger)numFrames  frameDecoderRGB:(AVSDKAssetFrameDecoder *)frameDecoderRGB frameDecoderAlpha:(AVSDKAssetFrameDecoder *)frameDecoderAlpha  combinedFrameBuffer:(AVSDKCGFrameBuffer *)combinedFrameBuffer width:(int)width height:(int)height outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint audioPath:(NSString *)audioPath  {
     
     //UIImage *bgCoverImg = [UIImage imageNamed:@"tmp-1.jpg"];
     // TODO: 底部背景图,从存储的文件中读取
@@ -355,7 +355,7 @@
 //    }];
     
     // 2. 全部图片导入完成 ==> 开始生成
-    [movieMaker createMovieFinishWithCompletion:^(NSURL * _Nonnull fileUrl) {
+    [movieMaker createMovieFinishWithAudioPath:audioPath  completion:^(NSURL * _Nonnull fileUrl) {
         NSLog(@"log-生成视频路径地址:%@",fileUrl.path);
 
         [[NSNotificationCenter defaultCenter]postNotificationName:kAlphaVideoCombineImgFinishNotification object:nil];
