@@ -263,15 +263,15 @@
     BOOL isReadyLoopFlag = YES;
     while(isReadyLoopFlag == YES){
         if(self.bufferAdapter.assetWriterInput.isReadyForMoreMediaData == YES){
-            
+
             CVPixelBufferRelease(sampleBuffer);
             isReadyLoopFlag = NO;
             break;
         }else{
-            //NSLog(@"log-MakeVideo-下一帧-写入未准备好-%ld",(long)frameIndex);
+            NSLog(@"log-MakeVideo-下一帧-写入未准备好-%ld",(long)frameIndex);
         }
     } //
-    
+   
 }
 
 

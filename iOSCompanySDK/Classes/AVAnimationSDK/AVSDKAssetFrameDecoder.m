@@ -784,7 +784,7 @@ typedef enum
     //}
     
     CMSampleBufferRef sampleBuffer = NULL;
-    // TODO: 同步复制下一个样本缓冲区 ，此处是否可以替换成同时使用rgb+alpha复制，加快效率
+    // TODO: 同步复制下一个样本缓冲区 ，此处"是否" 可以替换成同时使用rgb+alpha复制，加快效率
     sampleBuffer = [self.aVAssetReaderOutput copyNextSampleBuffer];
     // buffer 帧数据存在时。
     if (sampleBuffer) {

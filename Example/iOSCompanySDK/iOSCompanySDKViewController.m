@@ -93,7 +93,7 @@
     //NSString *tmpDir = NSTemporaryDirectory();
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths firstObject];
-    NSString *tmpOutPath = [documentsDirectory stringByAppendingFormat:@"tmpOut.mp4"];
+    NSString *tmpOutPath = [documentsDirectory stringByAppendingFormat:@"/tmpOut.mp4"];
     NSFileManager *fm = [NSFileManager defaultManager];
     if ([fm fileExistsAtPath:tmpOutPath]) {
         [fm removeItemAtPath:tmpOutPath error:nil];

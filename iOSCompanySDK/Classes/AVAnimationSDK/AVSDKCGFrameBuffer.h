@@ -18,12 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface AVSDKCGFrameBuffer : NSObject {
+    
 @protected
     
     size_t m_bitsPerPixel;
     size_t m_bytesPerPixel;
 
     char *m_pixels;
+    
     size_t m_numBytes;
     size_t m_numBytesAllocated;
 
@@ -37,8 +39,12 @@ NS_ASSUME_NONNULL_BEGIN
     CGColorSpaceRef m_colorspace;
 }
 
-@property char * pixels;
-//@property (readonly) char * pixels;
+
+//
+
+//@property char * pixels;
+@property (readonly) char * pixels;
+
 @property (readonly) char *zeroCopyPixels;
 @property (nonatomic, copy) NSData *zeroCopyMappedData;
 
@@ -65,8 +71,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (id) initWithBppDimensions:(NSInteger)bitsPerPixel
                        width:(NSInteger)width
                       height:(NSInteger)height;
-// 销毁释放内存
-- (void)deallocPixelsWithBppDimensions:(NSInteger)bitsPerPixel width:(NSInteger)width height:(NSInteger)height;
 
 
 // TODO: bytes array covert to CVPixelBufferRef
@@ -75,7 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
 // 根据此缓冲区中的像素数据创建Core Graphics图像。
 //使用CGImageRef时hasDataProvider属性将为TRUE。 此名称是大写字母，以避免来自analyzer工具的警告。
 - (CGImageRef)createCGImageRef CF_RETURNS_RETAINED;
-
 
 // render CGImgae
 - (BOOL) renderCGImage:(CGImageRef)cgImageRef;

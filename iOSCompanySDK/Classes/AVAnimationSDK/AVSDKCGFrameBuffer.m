@@ -109,6 +109,7 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
     // test out both modes!
     
     char* buffer;
+    
     size_t allocNumBytes; // 应该分配多大bytes字节数（分页数 * 每页bytes ）
     
 #if defined(USE_MACH_VM_ALLOCATE)
@@ -189,40 +190,6 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
     }
     
     return self;
-}
-
-// 销毁释放内存
-- (void)deallocPixelsWithBppDimensions:(NSInteger)bitsPerPixel width:(NSInteger)width height:(NSInteger)height {
-    size_t numPixels = width * height;
-    size_t numPixelsToAllocate = numPixels;
-    
-    if ((numPixels % 2) != 0) {
-        numPixelsToAllocate++;
-    }
-    
-    // 16bpp -> 2 bytes per pixel, 24bpp and 32bpp -> 4 bytes per pixel
-    // RGBA，一个通道一个字节，一个像素包含4个通道。
-    
-    size_t bytesPerPixel;
-    if (bitsPerPixel == 16) {
-        bytesPerPixel = 2;
-    } else if (bitsPerPixel == 24 || bitsPerPixel == 32) {
-        bytesPerPixel = 4;
-    } else {
-        bytesPerPixel = 0;
-        NSAssert(FALSE, @"bitsPerPixel is invalid");
-    }
-    
-    // 所有的像素总和所占内存字节数
-    size_t inNumBytes = numPixelsToAllocate * bytesPerPixel;
-    size_t pagesize = (size_t)getpagesize();
-    size_t numpages = (inNumBytes / pagesize);    // 分页大小
-    if (inNumBytes % pagesize) {
-        numpages++;
-    }
-    
-    vm_size_t m_size = (vm_size_t)(numpages * pagesize);
-    vm_deallocate((vm_map_t) mach_task_self(), (vm_address_t*)&self->m_pixels, m_size);
 }
 
 
@@ -373,13 +340,16 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
     // Note that the cgBuffer just deallocated itself, so the
     // pointer no longer points to valid memory.
 }
+
+
 #pragma mark - render CGImgae -- 会进行所有的pixels赋值。
 /* 从 frameDecoder中调用，每一帧解码，获得CVImageBufferRef,转成CGImageRef,在这里进行渲染
     *** 进行所有的pixels赋值 **
 */
-- (BOOL) renderCGImage:(CGImageRef)cgImageRef
+- (BOOL)renderCGImage:(CGImageRef)cgImageRef
 {
     [self doneZeroCopyPixels];
+    
     
     // Render the contents of an image to pixels.
     
@@ -424,6 +394,7 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
         colorSpace = CGColorSpaceCreateDeviceRGB();  // 构建一个颜色空间引用
     }
     
+    
     NSAssert(self.pixels != NULL, @"pixels must not be NULL");
     NSAssert(self.isLockedByDataProvider == FALSE, @"renderCGImage: pixel buffer locked by data provider");
     
@@ -448,13 +419,16 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
     }
     
     CGRect bounds = CGRectMake( 0.0f, 0.0f, self.width, self.height );
-    
+    // image 绘制进行contenxt，分配给pxiels
     CGContextDrawImage(bitmapContext, bounds, cgImageRef);
     
     CGContextRelease(bitmapContext);
     
     return TRUE;
 }
+
+
+
 
 // Exit zero copy mode.
 
@@ -473,6 +447,59 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
   [self doneZeroCopyPixels];
     // 使用bzero置空pixels
   bzero(self.pixels, self.numBytes);
+}
+
+
+// 分配buffer pixels内存
+- (CGContextRef) newBitmapRGBA8ContextFromImage:(CGImageRef) image width:(NSInteger)width height:(NSInteger)height {
+    CGContextRef context = NULL;
+    CGColorSpaceRef colorSpace;
+    uint32_t *bitmapData;
+    
+    self->m_bitsPerPixel = 24;
+    
+    size_t bitsPerComponent = 8;
+    size_t numComponents = 4;
+    size_t bitsPerPixel = bitsPerComponent * numComponents;
+    size_t bytesPerRow = width * (bitsPerPixel / 8);
+    
+    size_t bufferLength = bytesPerRow * height;
+    
+    colorSpace = CGColorSpaceCreateDeviceRGB();
+    
+    if(!colorSpace) {
+        NSLog(@"Error allocating color space RGB\n");
+        return NULL;
+    }
+    
+    // Allocate memory for image data
+//    bitmapData = (uint32_t *)malloc(bufferLength);
+//    if(!bitmapData) {
+//        NSLog(@"Error allocating memory for bitmap\n");
+//        CGColorSpaceRelease(colorSpace);
+//        return NULL;
+//    }
+    char* buffer;
+    buffer = (char*) malloc(bufferLength);
+    
+    CGBitmapInfo bitmapInfo = [self getBitmapInfo];
+    
+    //Create bitmap context
+    context = CGBitmapContextCreate(buffer,
+            width,
+            height,
+            bitsPerComponent,
+            bytesPerRow,
+            colorSpace,
+            bitmapInfo);    // RGBA // bitmapData  kCGImageAlphaPremultipliedLast
+    if(!context) {
+        free(bitmapData);
+        NSLog(@"Bitmap context not created");
+    }
+    
+    CGColorSpaceRelease(colorSpace);
+    
+    return context;
 }
 
 

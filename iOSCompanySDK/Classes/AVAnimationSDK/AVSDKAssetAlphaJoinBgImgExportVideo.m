@@ -15,6 +15,33 @@
 #import "AVSDKMovdata.h"
 
 
+// 移植CGFrameBuffer.m中
+#ifndef __OPTIMIZE__
+// Automatically define EXTRA_CHECKS when not optimizing (in debug mode)
+# define EXTRA_CHECKS
+#endif // DEBUG
+
+// Alignment is not an issue, makes no difference in performance -- 使用对齐分配内存方式
+//#define USE_ALIGNED_VALLOC 1
+
+// Using page copy makes a huge diff, 24 bpp goes from 15->20 FPS to 30 FPS! -- 使用分页
+#define USE_MACH_VM_ALLOCATE 1
+
+#if defined(USE_ALIGNED_VALLOC) || defined(USE_MACH_VM_ALLOCATE)
+#import <unistd.h> // getpagesize()
+#endif
+
+#if defined(USE_MACH_VM_ALLOCATE)
+#import <mach/mach.h>
+#endif
+
+
+
+// TODO:声明static静态image变量
+//static const char *staticbgCoverImgPixels;
+
+
+
 @interface AVSDKAssetAlphaJoinBgImgExportVideo ()
 
 // 背景图位置point
@@ -22,6 +49,9 @@
 // 后面背景图
 @property (nonatomic,strong)UIImage *bgCoverImg;
 
+//
+@property (nonatomic)char *bgCoverImgPixels;
+@property (nonatomic,assign) CGSize bgCoverImgFrameBuffer;
 
 
 // movie rgb file path name
@@ -32,6 +62,7 @@
 
 // export video path,example: ~/xxx/xxx.mp4
 @property (nonatomic, copy) NSString *outPath;
+
 
 @end
 
@@ -188,35 +219,35 @@
     
     
     // TODO: for 循环 -- 遍历所有帧，即处理所有帧
-    BOOL isExecute = [self executeForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha combinedFrameBuffer:combinedFrameBuffer width:width height:height outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint audioPath:rgbPath];
+    // 1. 提前预加载
+    NSMutableArray *preFrameBufferMuArr  = [NSMutableArray array];
+    NSMutableArray *preAlphaUnsignIntMuArr  = [NSMutableArray array];
+    
+    BOOL isExecute;
+    if (FALSE) {
+        BOOL isPreExecute = [self preExecuteForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha width:width height:height bgCoverImgPoint:bgCoverImgPoint preFrameBufferMuArr:preFrameBufferMuArr preAlphaUnsignIntMuArr:preAlphaUnsignIntMuArr];
+        
+        // 预加载执行处理 - 处理程序
+        isExecute = [self preTwoExecuteForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha combinedFrameBuffer:combinedFrameBuffer width:width height:height outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint audioPath:rgbPath preFrameBufferMuArr:preFrameBufferMuArr preAlphaUnsignIntMuArr:preAlphaUnsignIntMuArr];
+    }else{
+        // 2. 执行处理程序
+        isExecute = [self executeForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha combinedFrameBuffer:combinedFrameBuffer width:width height:height outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint audioPath:rgbPath];
+        
+    }
+    
     
     if (isExecute == FALSE) {
         return FALSE;
     }
     
-    
     return TRUE;
 }
 
-
-// TODO: 执行for循环,拿出来使用
-+ (BOOL)executeForLoop:(NSUInteger)numFrames  frameDecoderRGB:(AVSDKAssetFrameDecoder *)frameDecoderRGB frameDecoderAlpha:(AVSDKAssetFrameDecoder *)frameDecoderAlpha  combinedFrameBuffer:(AVSDKCGFrameBuffer *)combinedFrameBuffer width:(int)width height:(int)height outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint audioPath:(NSString *)audioPath  {
+//
++ (BOOL)preExecuteForLoop:(NSUInteger)numFrames  frameDecoderRGB:(AVSDKAssetFrameDecoder *)frameDecoderRGB frameDecoderAlpha:(AVSDKAssetFrameDecoder *)frameDecoderAlpha   width:(int)width height:(int)height bgCoverImgPoint:(CGPoint)bgCoverImgPoint preFrameBufferMuArr:(NSMutableArray *)preFrameBufferMuArr preAlphaUnsignIntMuArr:(NSMutableArray *)preAlphaUnsignIntMuArr {
     
-    //UIImage *bgCoverImg = [UIImage imageNamed:@"tmp-1.jpg"];
-    // TODO: 底部背景图,从存储的文件中读取
-    UIImage *bgCoverImg = [UIImage imageWithContentsOfFile:tmpBgCoverPath];
-    // 此处不能使用一个image生成pixel buffer会导致。
-    // pixels被分配的内存数据有时候被覆盖或释放，导致合成图片有问题。
-    //AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
-    
-    AVSDKAlphaImgMakeVideo *movieMaker  = [self singlaImgToGenerateMOVWithNumFrames:numFrames VideoSize:CGSizeMake(width, height) frameTime:frameDecoderRGB.frameTime exportVideoPath:outPath];
-    movieMaker.bgCoverImg = bgCoverImg;
-    // 不能使用NSMutableArray数组，char*数组转成NSString出错。因为那是char*数组
-    // 使用char*数组处理
-    size_t pixelWidth;
-    size_t pixelHeight;
-    char *arrCharPixels[numFrames];  // char* 数组里面存储的都是char*
 
+    uint32_t numPixels = width * height;  // 每张图片所包含像素数值
     
     // 正序循环
     for (NSUInteger frameIndex = 0; frameIndex < numFrames; frameIndex++) @autoreleasepool {
@@ -224,7 +255,7 @@
 #ifdef DEBUG
 
 #if PROGRESS==1
-        NSLog(@"log-joinRGBAndAlpha-reading frame %d", frameIndex);
+        NSLog(@"log-pre-joinRGBAndAlpha-reading frame %d", frameIndex);
 #endif // LOGGING
 
 #endif
@@ -235,10 +266,6 @@
         
         AVSDKAVFrame *frameAlpha = [frameDecoderAlpha advanceToFrame:frameIndex];
         assert(frameAlpha);
-        
-        
-        // imgae -- 需要每次重新没pixels分配内存。
-        AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
 
         AVSDKCGFrameBuffer *cgFrameBufferRGB = frameRGB.cgFrameBuffer;
         NSAssert(cgFrameBufferRGB, @"cgFrameBufferRGB");
@@ -246,59 +273,78 @@
         AVSDKCGFrameBuffer *cgFrameBufferAlpha = frameAlpha.cgFrameBuffer;
         NSAssert(cgFrameBufferAlpha, @"cgFrameBufferAlpha");
         
-        // sRGB
-        if (frameIndex == 0) {
-            combinedFrameBuffer.colorspace = cgFrameBufferRGB.colorspace;
-        }
+        // 存到数组中
+        [preFrameBufferMuArr addObject:cgFrameBufferRGB];
+        
+        uint32_t *alphaPixels = (uint32_t*)cgFrameBufferAlpha.pixels;
+        
+        [self saveAlphaUnsignIntWithAndAlphaPixelsNumPixels:numPixels alphaPixels:alphaPixels frameIndex:frameIndex preAlphaIntMuArr:preAlphaUnsignIntMuArr];
+    
+        //
+        frameAlpha = nil;
+        
+        [cgFrameBufferAlpha clear];
+        
+
+    }
+    
+    
+    return TRUE;
+}
+
+
+// TODO: 执行for循环,拿出来使用
++ (BOOL)preTwoExecuteForLoop:(NSUInteger)numFrames  frameDecoderRGB:(AVSDKAssetFrameDecoder *)frameDecoderRGB frameDecoderAlpha:(AVSDKAssetFrameDecoder *)frameDecoderAlpha  combinedFrameBuffer:(AVSDKCGFrameBuffer *)combinedFrameBuffer width:(int)width height:(int)height outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint audioPath:(NSString *)audioPath  preFrameBufferMuArr:(NSMutableArray *)preFrameBufferMuArr preAlphaUnsignIntMuArr:(NSMutableArray *)preAlphaUnsignIntMuArr {
+    
+    // TODO: 底部背景图,从存储的文件中读取
+    UIImage *bgCoverImg = [UIImage imageWithContentsOfFile:tmpBgCoverPath];
+    // 此处不能使用一个image生成pixel buffer会导致。
+    // pixels被分配的内存数据有时候被覆盖或释放，导致合成图片有问题。
+    AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
+    NSMutableArray *pixelIntMuArr = [NSMutableArray array];
+    
+    AVSDKAlphaImgMakeVideo *movieMaker  = [self singlaImgToGenerateMOVWithNumFrames:numFrames VideoSize:CGSizeMake(width, height) frameTime:frameDecoderRGB.frameTime exportVideoPath:outPath];
+    
+    uint32_t numPixels = width * height;  // 每张图片所包含像素数值
+    uint32_t bgCoverImgNumPixels = bgCoverImgFrameBuffer.width * bgCoverImgFrameBuffer.height;
+    
+    // 正序循环
+    for (NSUInteger frameIndex = 0; frameIndex < numFrames; frameIndex++) @autoreleasepool {
+        
+#ifdef DEBUG
+
+#if PROGRESS==1
+        NSLog(@"log-preTwo-joinRGBAndAlpha-reading frame %d", frameIndex);
+#endif // LOGGING
+
+#endif
+
+        AVSDKCGFrameBuffer *cgFrameBufferRGB = [preFrameBufferMuArr objectAtIndex:frameIndex];
         
         
         // Join RGB and ALPHA
-        uint32_t numPixels = width * height;  // 每张图片所包含像素数值
-        uint32_t *combinedPixels = (uint32_t*)combinedFrameBuffer.pixels;
-        uint32_t *rgbPixels = (uint32_t*)cgFrameBufferRGB.pixels;
-        uint32_t *alphaPixels = (uint32_t*)cgFrameBufferAlpha.pixels;
-        uint32_t bgCoverImgNumPixels = bgCoverImgFrameBuffer.width * bgCoverImgFrameBuffer.height;
+
+
         uint32_t *bgCoverPixels = (uint32_t *)bgCoverImgFrameBuffer.pixels;
+        
+        uint32_t *rgbPixels = (uint32_t*)cgFrameBufferRGB.pixels;
         
         // RGB和alpha透明通道混合 -- 达到的结果是更新 combinedPixels 数值
         // 2. 此处耗时大概:5-6s，使用部分pixel像素更新大概2-3s
-        [self updateRGBPixelWithAndAlphaPixelsNumPixels:numPixels
-                        combinedPixels:combinedPixels
+        [self preUpdateRGBPixelWithAndAlphaPixelsNumPixels:numPixels
                              rgbPixels:rgbPixels
-                    alphaPixels:alphaPixels
-                   bgCoverImgNumPixels:bgCoverImgNumPixels bgCoverImgPixels:bgCoverPixels bgCoverImgPixelStart:bgCoverImgPoint.y*bgCoverImgFrameBuffer.width];
-        
-        
-        
-        // Write combined RGBA pixles as a keyframe, we do not attempt to calculate
-        // frame diffs when processing on the device as that takes too long.
-        // 将组合的RGBA像素写为关键帧，我们不会尝试计算各帧差异当在设备上处理时，那将占用很长时间。
-        //int numBytesInBuffer = (int) combinedFrameBuffer.numBytes;
-        
-        // 3. 合成所有image - 并保存. 耗时:1-2
-//        AVSDKAVFrame *disFrame = [AVSDKAVFrame avsdkAVFrame];
-//        disFrame.cgFrameBuffer = cgFrameBufferRGB;  // 使用最新的 `combinedFrameBuffer` 生成最新的image。
-//        [disFrame makeImageFromFramebuffer];
-//        UIImage *newGenerateImg = disFrame.image;
-        
-        // 4. 需要的背景图+带alpha每一帧==>合成新的图片. 耗时:20-26s左右
-        //UIImage *newImg = [self imageByCombiningImageNewImgSize:CGSizeMake(width, height) firstImage:bgCoverImg withImage:disFrame.image bgCoverPoint:bgCoverImgPoint];
-        //UIImage *newImg = disFrame.image; // 测试使用透明图片，导出的视频是否是透明的。
+                                 preAlphaUnsignIntMuArr:preAlphaUnsignIntMuArr
+                   bgCoverImgNumPixels:bgCoverImgNumPixels bgCoverImgPixels:bgCoverPixels bgCoverImgPixelStart:bgCoverImgPoint.y*bgCoverImgFrameBuffer.width
+                                             frameIndex:frameIndex
+                                          pixelIntMuArr:pixelIntMuArr];
         
         // 5-1. 直接使用bytes arr 生成CVPixelsBuffer数据
         CVPixelBufferRef pixelBufferRef = [cgFrameBufferRGB getCVPixelBufferRefFromBytesWithWidth:width pixelHeight:height];
 
-        // 5-2. 先存储char* pixel
-        // 使用char* 数组存储
-        //arrCharPixels[frameIndex] = cgFrameBufferRGB.pixels;
-        //if (frameIndex == 0) {
-        //    pixelWidth = cgFrameBufferRGB.width;
-        //     pixelHeight = cgFrameBufferRGB.height;
-        //}
         
 #ifdef DEBUG
-#if PROGRESS==1
-//         输出生成的图片
+//#if PROGRESS==1
+////         输出生成的图片
 //        if (TRUE) {
 ////         测试此pixelBuffer生成image是否正常
 //          UIImage *newImg = [self imageFromRGBImageBuffer:pixelBufferRef];
@@ -313,38 +359,13 @@
 //                NSLog(@"log-测试:%@",disPNGPath);
 //            }
 //        }
-#endif // LOGGING
+//#endif // LOGGING
 #endif
         
-        // a. 添加到图片数组中，以便合成
-        //[imgs addObject:newImg];
-        // b.
-        //NSData *newImgData = [NSData dataWithData:UIImagePNGRepresentation(newImg)];
-        //[imgs addObject:newImgData];
-        // c. 单个图片存储在mov buffer数据中
-        // 6. 添加到视频中存储。耗时:20-30s
-        // 使用image
-        //[movieMaker createMovieAppenPixelBufferWithImage:newGenerateImg imgIndex:frameIndex];
-        // 使用 pixelBuffer
         [movieMaker useSamplBufferCreateMovieAppenPixelBufferWithCVPixelBufferRef:pixelBufferRef imgIndex:frameIndex];
-    
         
         //  TODO: 使用完成释放需要释放
         //[cgFrameBufferRGB clear]; // 此处释放了，pixels会出现黑色
-        
-        
-        frameRGB = nil;
-        frameAlpha = nil;
-        
-        
-        [bgCoverImgFrameBuffer clear];
-        [cgFrameBufferAlpha clear];
-        
-        
-        numPixels = 0;
-        combinedPixels = 0;
-        rgbPixels = 0;
-        alphaPixels = 0;
 
     }
     
@@ -379,15 +400,386 @@
 
 
 
+// TODO: 执行for循环,拿出来使用
++ (BOOL)executeForLoop:(NSUInteger)numFrames  frameDecoderRGB:(AVSDKAssetFrameDecoder *)frameDecoderRGB frameDecoderAlpha:(AVSDKAssetFrameDecoder *)frameDecoderAlpha  combinedFrameBuffer:(AVSDKCGFrameBuffer *)combinedFrameBuffer width:(int)width height:(int)height outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint audioPath:(NSString *)audioPath  {
+    
+    //UIImage *bgCoverImg = [UIImage imageNamed:@"tmp-1.jpg"];
+    // TODO: 底部背景图,从存储的文件中读取
+    UIImage *bgCoverImg = [UIImage imageWithContentsOfFile:tmpBgCoverPath];
+    // 此处不能使用一个image生成pixel buffer会导致。
+    // pixels被分配的内存数据有时候被覆盖或释放，导致合成图片有问题。
+    AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
+    NSMutableArray *pixelIntMuArr = [NSMutableArray array];
+    
+    AVSDKAlphaImgMakeVideo *movieMaker  = [self singlaImgToGenerateMOVWithNumFrames:numFrames VideoSize:CGSizeMake(width, height) frameTime:frameDecoderRGB.frameTime exportVideoPath:outPath];
+    // 不能使用NSMutableArray数组，char*数组转成NSString出错。因为那是char*数组
+    // 使用char*数组处理
+    //size_t pixelWidth;
+    //size_t pixelHeight;
+    //char *arrCharPixels[numFrames];  // char* 数组里面存储的都是char*
+    
+    uint32_t numPixels = width * height;  // 每张图片所包含像素数值
+    uint32_t bgCoverImgNumPixels = bgCoverImgFrameBuffer.width * bgCoverImgFrameBuffer.height;
+    
+    // 正序循环
+    for (NSUInteger frameIndex = 0; frameIndex < numFrames; frameIndex++) @autoreleasepool {
+        
+#ifdef DEBUG
+
+//#if PROGRESS==1
+//        NSLog(@"log-joinRGBAndAlpha-reading frame %d", frameIndex);
+//#endif // LOGGING
+
+#endif
+        
+        // 1. 读取RGB+alpha文件 ==> 此处耗时大概:在有frame.image2s-7s(模拟器);无frame.image:大概性能提升1-2s间。
+        AVSDKAVFrame *frameRGB = [frameDecoderRGB advanceToFrame:frameIndex]; // AVAssetFrameDecoder 获取当前帧图像，包含在 frameRGB.image
+        assert(frameRGB);
+        
+        AVSDKAVFrame *frameAlpha = [frameDecoderAlpha advanceToFrame:frameIndex];
+        assert(frameAlpha);
+        
+        
+        // imgae -- 需要每次重新没pixels分配内存。
+        //AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
+
+        AVSDKCGFrameBuffer *cgFrameBufferRGB = frameRGB.cgFrameBuffer;
+        NSAssert(cgFrameBufferRGB, @"cgFrameBufferRGB");
+        
+        AVSDKCGFrameBuffer *cgFrameBufferAlpha = frameAlpha.cgFrameBuffer;
+        NSAssert(cgFrameBufferAlpha, @"cgFrameBufferAlpha");
+        
+        // sRGB
+        if (frameIndex == 0) {
+            combinedFrameBuffer.colorspace = cgFrameBufferRGB.colorspace;
+        }
+        
+        
+        // Join RGB and ALPHA
+
+
+        uint32_t *bgCoverPixels = (uint32_t *)bgCoverImgFrameBuffer.pixels;
+        //uint32_t *bgCoverPixels = (uint32_t *)staticbgCoverImgPixels;
+        //uint32_t *bgCoverPixels = (uint32_t *)mgr.bgCoverImgPixels;
+        
+        uint32_t *rgbPixels = (uint32_t*)cgFrameBufferRGB.pixels;
+        uint32_t *alphaPixels = (uint32_t*)cgFrameBufferAlpha.pixels;
+        
+        // RGB和alpha透明通道混合 -- 达到的结果是更新 combinedPixels 数值
+        // 2. 此处耗时大概:5-6s，使用部分pixel像素更新大概2-3s
+        [self updateRGBPixelWithAndAlphaPixelsNumPixels:numPixels
+                             rgbPixels:rgbPixels
+                    alphaPixels:alphaPixels
+                   bgCoverImgNumPixels:bgCoverImgNumPixels bgCoverImgPixels:bgCoverPixels bgCoverImgPixelStart:bgCoverImgPoint.y*bgCoverImgFrameBuffer.width
+                                             frameIndex:frameIndex
+                                          pixelIntMuArr:pixelIntMuArr];
+        
+        
+        
+        // Write combined RGBA pixles as a keyframe, we do not attempt to calculate
+        // frame diffs when processing on the device as that takes too long.
+        // 将组合的RGBA像素写为关键帧，我们不会尝试计算各帧差异当在设备上处理时，那将占用很长时间。
+        //int numBytesInBuffer = (int) combinedFrameBuffer.numBytes;
+        
+        // 3. 合成所有image - 并保存. 耗时:1-2
+//        AVSDKAVFrame *disFrame = [AVSDKAVFrame avsdkAVFrame];
+//        disFrame.cgFrameBuffer = cgFrameBufferRGB;  // 使用最新的 `combinedFrameBuffer` 生成最新的image。
+//        [disFrame makeImageFromFramebuffer];
+//        UIImage *newGenerateImg = disFrame.image;
+        
+        // 4. 需要的背景图+带alpha每一帧==>合成新的图片. 耗时:20-26s左右
+        //UIImage *newImg = [self imageByCombiningImageNewImgSize:CGSizeMake(width, height) firstImage:bgCoverImg withImage:disFrame.image bgCoverPoint:bgCoverImgPoint];
+        //UIImage *newImg = disFrame.image; // 测试使用透明图片，导出的视频是否是透明的。
+        
+        // 5-1. 直接使用bytes arr 生成CVPixelsBuffer数据
+        CVPixelBufferRef pixelBufferRef = [cgFrameBufferRGB getCVPixelBufferRefFromBytesWithWidth:width pixelHeight:height];
+
+        // 5-2. 先存储char* pixel
+        // 使用char* 数组存储
+        //arrCharPixels[frameIndex] = cgFrameBufferRGB.pixels;
+        //if (frameIndex == 0) {
+        //    pixelWidth = cgFrameBufferRGB.width;
+        //     pixelHeight = cgFrameBufferRGB.height;
+        //}
+        
+#ifdef DEBUG
+//#if PROGRESS==1
+////         输出生成的图片
+//        if (TRUE) {
+////         测试此pixelBuffer生成image是否正常
+//          UIImage *newImg = [self imageFromRGBImageBuffer:pixelBufferRef];
+//            NSString *tmpDir = NSTemporaryDirectory();
+//            // png /jpg
+//            NSString *disPNGPath = [tmpDir stringByAppendingFormat:@"combined_%d.jpg", (int)(frameIndex + 1)];
+//
+//            NSData *data = [NSData dataWithData:UIImagePNGRepresentation(newImg)];
+//            //NSData *data = [NSData dataWithData:UIImageJPEGRepresentation(newImg, 0.5)];
+//            [data writeToFile:disPNGPath atomically:YES];
+//            if (frameIndex == 0) {
+//                NSLog(@"log-测试:%@",disPNGPath);
+//            }
+//        }
+//#endif // LOGGING
+#endif
+        
+        // a. 添加到图片数组中，以便合成
+        //[imgs addObject:newImg];
+        // b.
+        //NSData *newImgData = [NSData dataWithData:UIImagePNGRepresentation(newImg)];
+        //[imgs addObject:newImgData];
+        // c. 单个图片存储在mov buffer数据中
+        // 6. 添加到视频中存储。耗时:20-30s
+        // 使用image
+        //[movieMaker createMovieAppenPixelBufferWithImage:newGenerateImg imgIndex:frameIndex];
+        // 使用 pixelBuffer
+        [movieMaker useSamplBufferCreateMovieAppenPixelBufferWithCVPixelBufferRef:pixelBufferRef imgIndex:frameIndex];
+        
+        //  TODO: 使用完成释放需要释放
+        //[cgFrameBufferRGB clear]; // 此处释放了，pixels会出现黑色
+        
+        
+        //frameRGB = nil;
+        frameAlpha = nil;
+        
+        
+        //[bgCoverImgFrameBuffer clear];
+        [cgFrameBufferAlpha clear];
+        
+        rgbPixels = 0;
+        alphaPixels = 0;
+
+    }
+    
+    // 1. 全部图片统一生成mov
+//    [self imagesToGenerateMOVWith:imgs videoSize:CGSizeMake(width, height) frameTime:frameDecoderRGB.frameTime writefinish:^(NSURL *fileURL) {
+//        NSLog(@"log-生成视频路径地址:%@",fileURL.path);
+//        NSLog(@"log-test");
+//    }];
+    
+    // 2. 全部图片导入完成 ==> 开始生成
+    [movieMaker createMovieFinishWithAudioPath:audioPath  completion:^(NSURL * _Nonnull fileUrl) {
+        NSLog(@"log-生成视频路径地址:%@",fileUrl.path);
+
+        [[NSNotificationCenter defaultCenter]postNotificationName:kAlphaVideoCombineImgFinishNotification object:nil];
+
+    }];
+    
+    
+    // 3. 所有bytes集合。
+//    [movieMaker usePixelsArrayWithPixelWidth:pixelWidth pixelHeight:pixelHeight pixelNum:numFrames charPixels:arrCharPixels completion:^(NSURL * _Nonnull fileUrl)
+//    {
+//        NSLog(@"log-生成视频路径地址:%@",fileUrl.path);
+//
+//        [[NSNotificationCenter defaultCenter]postNotificationName:kAlphaVideoCombineImgFinishNotification object:nil];
+//    }];
+    
+#pragma mark 合成完毕导出
+    
+    
+    return TRUE;
+}
+
+// TODO: 4. 存储透明muArr
++ (void)saveAlphaUnsignIntWithAndAlphaPixelsNumPixels:(uint32_t)numPixels
+                                          alphaPixels:(uint32_t*)alphaPixels
+                                                           frameIndex:(NSUInteger )frameIndex
+                                        preAlphaIntMuArr:(NSMutableArray *)preAlphaIntMuArr {
+    
+    for (uint32_t pixeli = 0; pixeli<numPixels; pixeli++) {
+        uint32_t pixelAlpha = alphaPixels[pixeli];
+        [preAlphaIntMuArr addObject:[NSNumber numberWithUnsignedInt:pixelAlpha]];
+        
+    }
+}
+
+// TODO: 3. 使用数组添加
++ (void)preUpdateRGBPixelWithAndAlphaPixelsNumPixels:(uint32_t)numPixels
+                        rgbPixels:(uint32_t*)rgbPixels
+                              preAlphaUnsignIntMuArr:(NSMutableArray *)preAlphaUnsignIntMuArr
+              bgCoverImgNumPixels:(uint32_t)bgCoverImgNumPixels
+                    bgCoverImgPixels:(uint32_t *)bgCoverImgPixels
+                 bgCoverImgPixelStart:(uint32_t)bgCoverImgPixelStart
+                                       frameIndex:(NSUInteger )frameIndex
+                                    pixelIntMuArr:(NSMutableArray *)pixelIntMuArr
+{
+    
+    // 背景图含有的像素
+    for (uint32_t pixeli = 0; pixeli < bgCoverImgNumPixels; pixeli++) {
+        
+        uint32_t rgbPixelIndex = bgCoverImgPixelStart + pixeli;
+        
+        // bg cover image pixels sum > rgb pixels sum
+        if (rgbPixelIndex >= numPixels) {
+            break;
+        }
+        
+        
+        NSNumber *pixelAlphaNum = [preAlphaUnsignIntMuArr objectAtIndex:frameIndex*numPixels+rgbPixelIndex];
+        uint32_t pixelAlpha = [pixelAlphaNum unsignedIntValue];
+        
+        uint32_t pixelRGB = rgbPixels[rgbPixelIndex];
+        
+        uint32_t pixelBgCoverImg;
+        
+        // TODO: 直接从数组中取即可。
+        if (frameIndex == 0) {
+            pixelBgCoverImg = bgCoverImgPixels[pixeli];
+            [pixelIntMuArr addObject:[NSNumber numberWithUnsignedInt:pixelBgCoverImg]];
+        }else{
+            NSNumber *pixelBgCoverImgNum = [pixelIntMuArr objectAtIndex:pixeli];
+            pixelBgCoverImg = [pixelBgCoverImgNum unsignedIntValue];
+        }
+
+        // All 3 components of the ALPHA pixel should be the same in grayscale mode.
+        // If these are not exactly the same, this is likely caused by limited precision
+        // ranges in the hardware color conversion logic.
+        // 在灰度模式下，alpha像素的所有3个分量都应该相同
+        // 如果它们不完全相同，则可能是由于硬件颜色转换逻辑中的精度范围有限所致。
+        uint32_t pixelAlphaRed = (pixelAlpha >> 16) & 0xFF; //  alpha pixel 应该都为255,255,255
+        uint32_t pixelAlphaGreen = (pixelAlpha >> 8) & 0xFF;
+        uint32_t pixelAlphaBlue = (pixelAlpha >> 0) & 0xFF;
+                
+        
+        // 进行判断alpha通道像素值，应该使用RGB中哪个数值。
+        if (pixelAlphaRed != pixelAlphaGreen || pixelAlphaRed != pixelAlphaBlue) {
+            //NSLog(@"Input Alpha MVID input movie R G B components (%d %d %d) do not match at pixel %d", pixelAlphaRed, pixelAlphaGreen, pixelAlphaBlue, pixeli);
+            //return FALSE;
+            
+            uint32_t sum = pixelAlphaRed + pixelAlphaGreen + pixelAlphaBlue;
+            if (sum == 1) {
+                // If two values are 0 and the other is 1, then assume the alpha value is zero. The iOS h264
+                // decoding hardware seems to emit (R=0 G=0 B=1) even when the input is a grayscale black pixel.
+                pixelAlpha = 0;
+            } else if (sum == 2 && (pixelAlphaRed == 0 && pixelAlphaGreen == 2 && pixelAlphaBlue == 0)) {
+                // The h.264 decoder seems to generate (R=0 G=2 B=0) for black in some weird cases on ARM64.
+                pixelAlpha = 0;
+#if defined(__arm64__) && __arm64__
+            } else if ((pixelAlphaRed == pixelAlphaBlue) && (pixelAlphaRed+1 == pixelAlphaGreen)) {
+                // The h.264 decoder in newer ARM64 devices seems to decode the grayscale values (2 2 2) as
+                // (1 2 1) in certain cases. Choose an output grayscale value of 2 in these cases only
+                // for this specific hardware decoder.
+                
+                pixelAlpha = pixelAlphaGreen;
+            } else if ((pixelAlphaRed == pixelAlphaBlue) && (pixelAlphaRed+2 == pixelAlphaGreen)) {
+                // The h.264 decoder in newer ARM64 devices seems to decode the grayscale values (3 3 3) as
+                // (2 4 2) in certain cases. Choose an output grayscale value of 3 in these cases only
+                // for this specific hardware decoder.
+                
+                pixelAlpha = pixelAlphaRed + 1;
+#endif // __arm64__
+            } else if (pixelAlphaRed == pixelAlphaBlue) {
+                // The R and B pixel values are equal but these two values are not the same as the G pixel.
+                // This indicates that the grayscale conversion should have resulted in value between the
+                // two numbers.
+                //
+                // R G B components
+                //
+                // (3 1 3)       -> 2   <- (2, 2, 2) (sim)
+                // (2 0 2)       -> 1   <- (1, 1, 1) (sim)
+                // (18 16 18)    -> 17  <- (17, 17, 17) (sim)
+                // (219 218 219) -> 218 <- (218, 218, 218) (sim)
+                //
+                // Note that in some cases the original values (5, 5, 5) get decoded as (5, 4, 5) and that results in 4 as the
+                // alpha value. These cases are few and we just ignore them because the alpha is very close.
+                
+                if (pixelAlphaRed == 0) {
+                    pixelAlpha = 0;
+                } else {
+                    pixelAlpha = pixelAlphaRed - 1;
+                }
+                
+                //NSLog(@"Input Alpha MVID input movie R G B components (%d %d %d) do not match at pixel %d in frame %d", pixelAlphaRed, pixelAlphaGreen, pixelAlphaBlue, pixeli, frameIndex);
+                //NSLog(@"Using RED/BLUE Alpha level %d at pixel %d in frame %d", pixelAlpha, pixeli, frameIndex);
+            } else if ((pixelAlphaRed == (pixelAlphaGreen + 1)) && (pixelAlphaRed == (pixelAlphaBlue - 1))) {
+                // Common case seen in hardware decoder output, average is the middle value.
+                //
+                // R G B components
+                // (62, 61, 63)    -> 62  <- (62, 62, 62) (sim)
+                // (111, 110, 112) -> 111 <- (111, 111, 111) (sim)
+                
+                pixelAlpha = pixelAlphaRed;
+                
+                //NSLog(@"Input Alpha MVID input movie R G B components (%d %d %d) do not match at pixel %d in frame %d", pixelAlphaRed, pixelAlphaGreen, pixelAlphaBlue, pixeli, frameIndex);
+                //NSLog(@"Using RED (easy ave) Alpha level %d at pixel %d in frame %d", pixelAlpha, pixeli, frameIndex);
+            } else {
+                // Output did not match one of the know common patterns seen coming from iOS H264 decoder hardware.
+                // Since this branch does not seem to ever be executed, just use the red component which is
+                // basically the same as the branch above.
+                
+                //pixelAlpha = sum / 3;
+                pixelAlpha = pixelAlphaRed;
+                
+                //NSLog(@"Input Alpha MVID input movie R G B components (%d %d %d) do not match at pixel %d in frame %d", pixelAlphaRed, pixelAlphaGreen, pixelAlphaBlue, pixeli, frameIndex);
+                //NSLog(@"Using AVE Alpha level %d at pixel %d in frame %d", pixelAlpha, pixeli, frameIndex);
+            }
+            
+            //NSLog(@"will use pixelAlpha %d", pixelAlpha);
+        } else {
+            // All values are equal, does not matter which channel we use as the alpha value
+            // 所有值都相等，与我们使用哪个通道作为Alpha值无关紧要
+            pixelAlpha = pixelAlphaRed; // 255，带有透明通道，即alpha=1
+        }
+        
+        
+        // RGB componenets are 24 BPP non pre-multiplied values
+        uint32_t pixelRed = (pixelRGB >> 16) & 0xFF;
+        uint32_t pixelGreen = (pixelRGB >> 8) & 0xFF;
+        uint32_t pixelBlue = (pixelRGB >> 0) & 0xFF;
+        
+        // 判断当前背景图
+        //uint32_t combinePixelRGB = pixelRGB;
+        if ( pixelAlpha<255 ) {
+            // caluate alpha value
+            float pixelAlphaFloat = pixelAlpha/255.0;
+            pixelAlpha = 255;
+            
+            // m1:
+            // rgb整合
+            //combinePixelRGB = pixelRGB*pixelAlphaFloat + pixelBgCoverImg*(1-pixelAlphaFloat);
+            // 直接弃用原来rgb
+            //combinePixelRGB = pixelBgCoverImg;
+            // 结合像素
+             //uint32_t pixelRed = (combinePixelRGB >> 16) & 0xFF;
+             //uint32_t pixelGreen = (combinePixelRGB >> 8) & 0xFF;
+             //uint32_t pixelBlue = (combinePixelRGB >> 0) & 0xFF;
+            
+            // m2:
+            // 结合bgCoverImg像素
+            uint32_t pixelBgImgRed = (pixelBgCoverImg >> 16) & 0xFF;
+            uint32_t pixelBgImgGreen = (pixelBgCoverImg >> 8) & 0xFF;
+            uint32_t pixelBgImgBlue = (pixelBgCoverImg >> 0) & 0xFF;
+            
+            //
+            pixelRed = pixelRed*pixelAlphaFloat + pixelBgImgRed*(1-pixelAlphaFloat);
+            pixelGreen = pixelGreen*pixelAlphaFloat + pixelBgImgGreen*(1-pixelAlphaFloat);
+            pixelBlue = pixelBlue*pixelAlphaFloat + pixelBgImgBlue*(1-pixelAlphaFloat);
+            
+            
+            // 预乘分量，组合像素
+            uint32_t combinedPixel = premultiply_bgra_inline(pixelRed, pixelGreen, pixelBlue, pixelAlpha);
+
+            
+            // 更新rgb pixels分量即可，不用输出给新的combine结合pixels分量值。
+            rgbPixels[rgbPixelIndex] = combinedPixel; //
+            
+        }else{
+            pixelAlpha = 255;
+        }
+        
+    }
+    
+    return;
+}
 
 // TODO: 2. 直接使用rgb 更新pixels，在需要的位置替换背景图的pixel，预估将会大幅提升效率和性能
 + (void)updateRGBPixelWithAndAlphaPixelsNumPixels:(uint32_t)numPixels
-                   combinedPixels:(uint32_t*)combinedPixels
                         rgbPixels:(uint32_t*)rgbPixels
                       alphaPixels:(uint32_t*)alphaPixels
               bgCoverImgNumPixels:(uint32_t)bgCoverImgNumPixels
                     bgCoverImgPixels:(uint32_t *)bgCoverImgPixels
                  bgCoverImgPixelStart:(uint32_t)bgCoverImgPixelStart
+                                       frameIndex:(NSUInteger )frameIndex
+                                    pixelIntMuArr:(NSMutableArray *)pixelIntMuArr
 {
     
     // 背景图含有的像素
@@ -403,9 +795,17 @@
         uint32_t pixelAlpha = alphaPixels[rgbPixelIndex];
         uint32_t pixelRGB = rgbPixels[rgbPixelIndex];
         
-        uint32_t pixelBgCoverImg = bgCoverImgPixels[pixeli];
-
+        uint32_t pixelBgCoverImg;
         
+        // TODO: 直接从数组中取即可。
+        if (frameIndex == 0) {
+            pixelBgCoverImg = bgCoverImgPixels[pixeli];
+            [pixelIntMuArr addObject:[NSNumber numberWithUnsignedInt:pixelBgCoverImg]];
+        }else{
+            NSNumber *pixelBgCoverImgNum = [pixelIntMuArr objectAtIndex:pixeli];
+            pixelBgCoverImg = [pixelBgCoverImgNum unsignedIntValue];
+        }
+
         // All 3 components of the ALPHA pixel should be the same in grayscale mode.
         // If these are not exactly the same, this is likely caused by limited precision
         // ranges in the hardware color conversion logic.
@@ -762,8 +1162,6 @@
 //        }
 #endif
         
-        
-        
         // 预乘分量，组合像素
         uint32_t combinedPixel = premultiply_bgra_inline(pixelRed, pixelGreen, pixelBlue, pixelAlpha);
 
@@ -782,8 +1180,6 @@
 
 
 
-
-
 #pragma mark -
 // 判断是否有透明通道
 + (BOOL)hasAlphaWithCurrentImg:(UIImage *)img {
@@ -792,16 +1188,19 @@
 }
 
 // 单张图片转换CGFrameBuffer属性 -- 主要用于背景图pixels获取
-+ (AVSDKCGFrameBuffer *)getBgCoverImgFrameBufferWithCurrentImg:(UIImage *)currentImg newImgSize:(CGSize)newImgSize {
++ (AVSDKCGFrameBuffer *)getBgCoverImgFrameBufferWithCurrentImg:(UIImage *)currentImg newImgSize:(CGSize)newImgSize
+{
     float currentImgWidth = newImgSize.width;
     float widthRatio = currentImgWidth / currentImg.size.width;
     float currentImgHeight = currentImg.size.height *widthRatio;
-    //[firstImage drawInRect:CGRectMake(0, bgCoverPoint.y, firstImageWidth, firstImgHeight)];
-    AVSDKCGFrameBuffer *frameBuffer = [[AVSDKCGFrameBuffer alloc]initWithBppDimensions:24 width:currentImgWidth height:currentImgHeight];
+    
     CGImageRef cgImgRef = currentImg.CGImage;
+    
+    AVSDKCGFrameBuffer *frameBuffer = [[AVSDKCGFrameBuffer alloc]initWithBppDimensions:24 width:currentImgWidth height:currentImgHeight];
     [frameBuffer renderCGImage:cgImgRef];
     
     return frameBuffer;
+    
 }
 
 
@@ -859,7 +1258,6 @@
 }
 
 
-#pragma mark - test method
 // CVImageBufferRef (RGB)转为UIImage
 + (UIImage *)imageFromRGBImageBuffer:(CVImageBufferRef)imageBuffer {
     CVPixelBufferLockBaseAddress(imageBuffer, 0);
@@ -879,157 +1277,7 @@
 }
 
 
-/*
-#pragma mark - 所有图片整合图片生成 视频
-+ (void)imagesToGenerateMOVWith:(NSMutableArray *)imgs videoSize:(CGSize)videoSize frameTime:(CMTime)frameTime writefinish:(void(^)(NSURL *fileURL))writeFinish {
-    
-    int videoWidth = videoSize.width;
-    int videoHeight = videoSize.height;
-    while ( videoWidth % 16 != 0) {
-        videoWidth = videoWidth - 1;
-    }
-    
-    // 使用CEMovieMake实现视频生成
-    if (@available(iOS 11.0, *)) {
-        NSDictionary *settings = [AVSDKAlphaImgMakeVideo videoSettingsWithCodec:AVVideoCodecTypeH264 withWidth:videoWidth andHeight:videoHeight];
-        AVSDKAlphaImgMakeVideo *movieMaker = [[AVSDKAlphaImgMakeVideo alloc] initWithSettings:settings];
-        Float64 seconds = frameTime.value/frameTime.timescale;
-        int32_t timescale = imgs.count/seconds;
-        movieMaker.frameTime = CMTimeMake(1,timescale); // mean:1秒钟多少帧<==>1秒钟25帧
-        
-        [movieMaker createMovieFromImages:imgs withCompletion:^(NSURL *fileURL){
-            writeFinish(fileURL);
-        }];
-    } else {
-        // Fallback on earlier versions
-    }
-}
-*/
 
-
-
-/*
-#pragma mark - 图片压缩算法 - 未使用
-// 1. image压缩算法 使用压缩算法对图片进行相应的压缩处理
-+ (UIImage *)pressNewImgWithImg:(UIImage *)currentImg {
-    NSData *currentImgData = [NSData dataWithData:UIImagePNGRepresentation(currentImg)];
-    NSUInteger imgSize = currentImgData.length;
-    // 如果当前size>50KB
-    while(imgSize/1000 > 55 ) {
-        float pressRatio = 55.0/(imgSize/1000);
-        NSData *tmpImgData = UIImageJPEGRepresentation(currentImg, pressRatio);
-        currentImg = [UIImage imageWithData:tmpImgData];
-        imgSize = tmpImgData.length;
-    }
-    return currentImg;
-}
-
-// 2. image压缩算法
-+ (UIImage *)resetSizeOfImageData:(UIImage *)sourceImage maxSize:(NSInteger)maxSize {
-    //先判断当前质量是否满足要求，不满足再进行压缩
-    __block NSData *finallImageData = UIImageJPEGRepresentation(sourceImage,1.0);
-    NSUInteger sizeOrigin   = finallImageData.length;
-    NSUInteger sizeOriginKB = sizeOrigin / 1000;
-    
-    if (sizeOriginKB <= maxSize) {
-        UIImage *img = [UIImage imageWithData:finallImageData];
-        return img;
-    }
-    
-    //获取原图片宽高比
-    CGFloat sourceImageAspectRatio = sourceImage.size.width/sourceImage.size.height;
-    //先调整分辨率
-    CGSize defaultSize = CGSizeMake(1024, 1024/sourceImageAspectRatio);
-    UIImage *newImage = [self newSizeImage:defaultSize image:sourceImage];
-    
-    finallImageData = UIImageJPEGRepresentation(newImage,1.0);
-    
-    //保存压缩系数
-    NSMutableArray *compressionQualityArr = [NSMutableArray array];
-    CGFloat avg   = 1.0/250;
-    CGFloat value = avg;
-    for (int i = 250; i >= 1; i--) {
-        value = i*avg;
-        [compressionQualityArr addObject:@(value)];
-    }
-    
-    //
-     调整大小
-     说明：压缩系数数组compressionQualityArr是从大到小存储。
-    //思路：使用二分法搜索
-    finallImageData = [self halfFuntion:compressionQualityArr image:newImage sourceData:finallImageData maxSize:maxSize];
-    //如果还是未能压缩到指定大小，则进行降分辨率
-    while (finallImageData.length == 0) {
-        //每次降100分辨率
-        CGFloat reduceWidth = 100.0;
-        CGFloat reduceHeight = 100.0/sourceImageAspectRatio;
-        if (defaultSize.width-reduceWidth <= 0 || defaultSize.height-reduceHeight <= 0) {
-            break;
-        }
-        defaultSize = CGSizeMake(defaultSize.width-reduceWidth, defaultSize.height-reduceHeight);
-        UIImage *image = [self newSizeImage:defaultSize
-                                      image:[UIImage imageWithData:UIImageJPEGRepresentation(newImage,[[compressionQualityArr lastObject] floatValue])]];
-        finallImageData = [self halfFuntion:compressionQualityArr image:image sourceData:UIImageJPEGRepresentation(image,1.0) maxSize:maxSize];
-    }
-    UIImage *img = [UIImage imageWithData:finallImageData];
-    return img;
-}
-#pragma mark 调整图片分辨率/尺寸（等比例缩放）
-+ (UIImage *)newSizeImage:(CGSize)size image:(UIImage *)sourceImage {
-    CGSize newSize = CGSizeMake(sourceImage.size.width, sourceImage.size.height);
-    
-    CGFloat tempHeight = newSize.height / size.height;
-    CGFloat tempWidth = newSize.width / size.width;
-    
-    if (tempWidth > 1.0 && tempWidth > tempHeight) {
-        newSize = CGSizeMake(sourceImage.size.width / tempWidth, sourceImage.size.height / tempWidth);
-    } else if (tempHeight > 1.0 && tempWidth < tempHeight) {
-        newSize = CGSizeMake(sourceImage.size.width / tempHeight, sourceImage.size.height / tempHeight);
-    }
-    
-    UIGraphicsBeginImageContext(newSize);
-    [sourceImage drawInRect:CGRectMake(0,0,newSize.width,newSize.height)];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return newImage;
-}
-#pragma mark 二分法
-+ (NSData *)halfFuntion:(NSArray *)arr image:(UIImage *)image sourceData:(NSData *)finallImageData maxSize:(NSInteger)maxSize {
-    NSData *tempData = [NSData data];
-    NSUInteger start = 0;
-    NSUInteger end = arr.count - 1;
-    NSUInteger index = 0;
-    
-    NSUInteger difference = NSIntegerMax;
-    while(start <= end) {
-        index = start + (end - start)/2;
-        
-        finallImageData = UIImageJPEGRepresentation(image,[arr[index] floatValue]);
-        
-        NSUInteger sizeOrigin = finallImageData.length;
-        NSUInteger sizeOriginKB = sizeOrigin / 1024;
-        //NSLog(@"当前降到的质量：%ld KB", (unsigned long)sizeOriginKB);
-        //NSLog(@"\nstart：%zd\nend：%zd\nindex：%zd\n压缩系数：%lf", start, end, (unsigned long)index, [arr[index] floatValue]);
-        
-        if (sizeOriginKB > maxSize) {
-            start = index + 1;
-        } else if (sizeOriginKB < maxSize) {
-            if (maxSize-sizeOriginKB < difference) {
-                difference = maxSize-sizeOriginKB;
-                tempData = finallImageData;
-            }
-            if (index<=0) {
-                break;
-            }
-            end = index - 1;
-        } else {
-            break;
-        }
-    }
-    return tempData;
-}
-
-*/
 
 
 
