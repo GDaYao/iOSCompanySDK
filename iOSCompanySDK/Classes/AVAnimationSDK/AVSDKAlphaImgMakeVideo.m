@@ -268,7 +268,10 @@
             isReadyLoopFlag = NO;
             break;
         }else{
-            NSLog(@"log-MakeVideo-下一帧-写入未准备好-%ld",(long)frameIndex);
+#ifdef DEBUG
+            //NSLog(@"log-MakeVideo-下一帧-写入未准备好-%ld",(long)frameIndex);
+#endif
+            
         }
     } //
    
