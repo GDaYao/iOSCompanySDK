@@ -100,7 +100,7 @@
     }
     UIImage *bgCoverImg = [UIImage imageNamed:@"tmp-1.jpg"];
     
-    [exportMgr loadAVAnimationResourcesWithMovieRGBFilePath:rgbFilePath movieAlphaFilePath:alphaFilePath outPath:tmpOutPath bgCoverImg:bgCoverImg bgCoverImgPoint:CGPointMake(0, 301)];
+    [exportMgr loadAVAnimationResourcesWithMovieRGBFilePath:rgbFilePath movieAlphaFilePath:alphaFilePath outPath:tmpOutPath bgCoverImg:bgCoverImg bgCoverImgPoint:CGPointMake(0, 301) needCoverImgSize:CGSizeMake(540, 568)];
     
 }
 

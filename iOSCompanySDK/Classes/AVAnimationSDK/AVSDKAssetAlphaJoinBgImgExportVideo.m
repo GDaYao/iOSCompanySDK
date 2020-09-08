@@ -79,13 +79,14 @@
 }
 
 #pragma mark - load resources
-- (void)loadAVAnimationResourcesWithMovieRGBFilePath:(NSString *)rgbFilePath movieAlphaFilePath:(NSString *)movieAlphaFilePath outPath:(NSString *)outPath bgCoverImg:(UIImage *)bgCoverImg bgCoverImgPoint:(CGPoint)bgCoverImgPoint {
+- (void)loadAVAnimationResourcesWithMovieRGBFilePath:(NSString *)rgbFilePath movieAlphaFilePath:(NSString *)movieAlphaFilePath outPath:(NSString *)outPath bgCoverImg:(UIImage *)bgCoverImg bgCoverImgPoint:(CGPoint)bgCoverImgPoint needCoverImgSize:(CGSize)needCoverImgSize  {
     
     self.movieRGBFilename = rgbFilePath;
     self.movieAlphaFilename = movieAlphaFilePath;
     self.outPath = outPath;
     self.bgCoverImg = bgCoverImg;
     self.bgCoverImgPoint = bgCoverImgPoint;
+    
     
     NSAssert(self.movieRGBFilename, @"movie rgb path is nil");
     NSAssert(self.movieAlphaFilename, @"movie alpha path is nil");
@@ -102,11 +103,14 @@
     
     NSString *bgCoverImgPointStr = NSStringFromCGPoint(bgCoverImgPoint);
     
+    NSString *needCoverImgSizeStr = NSStringFromCGSize(needCoverImgSize);
+    
     NSArray *arr = [NSArray arrayWithObjects:self.movieRGBFilename,
                     self.movieAlphaFilename,
                     self.outPath,
                     tmpBgCoverPath,
                     bgCoverImgPointStr,
+                    needCoverImgSizeStr,
                     nil];
     //NSAssert([arr count] == 4, @"arr count is not enough 3");
     [NSThread detachNewThreadSelector:@selector(detachThreadLoadEntryPoint:) toTarget:self.class withObject:arr];
@@ -126,14 +130,16 @@
         NSString *bgCoverImgPointStr = [arr objectAtIndex:4];
         CGPoint bgCoverImgPoint = CGPointFromString(bgCoverImgPointStr);
         
-        [self joinRGBAlphaWithrgbPath:rgbAssetPath alphaPath:alphaAssetPath outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint];
+        NSString *needCoverImgSizeStr = [arr objectAtIndex:5];
+        CGSize needCoverImgSize = CGSizeFromString(needCoverImgSizeStr);
         
+        [self joinRGBAlphaWithrgbPath:rgbAssetPath alphaPath:alphaAssetPath outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint needCoverImgSize:needCoverImgSize];
     }
     
 }
 
 #pragma mark - add rgb+alpha path
-+ (BOOL)joinRGBAlphaWithrgbPath:(NSString *)rgbPath alphaPath:(NSString *)alphaPath outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint {
++ (BOOL)joinRGBAlphaWithrgbPath:(NSString *)rgbPath alphaPath:(NSString *)alphaPath outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint needCoverImgSize:(CGSize)needCoverImgSize {
     
     // open both the rgb and alpha video src file.
     AVSDKAssetFrameDecoder *frameDecoderRGB = [AVSDKAssetFrameDecoder aVSDKAssetFrameDecoder];
@@ -228,10 +234,10 @@
         BOOL isPreExecute = [self preExecuteForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha width:width height:height bgCoverImgPoint:bgCoverImgPoint preFrameBufferMuArr:preFrameBufferMuArr preAlphaUnsignIntMuArr:preAlphaUnsignIntMuArr];
         
         // 预加载执行处理 - 处理程序
-        isExecute = [self preTwoExecuteForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha combinedFrameBuffer:combinedFrameBuffer width:width height:height outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint audioPath:rgbPath preFrameBufferMuArr:preFrameBufferMuArr preAlphaUnsignIntMuArr:preAlphaUnsignIntMuArr];
+        isExecute = [self preTwoExecuteForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha combinedFrameBuffer:combinedFrameBuffer width:width height:height outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint audioPath:rgbPath preFrameBufferMuArr:preFrameBufferMuArr preAlphaUnsignIntMuArr:preAlphaUnsignIntMuArr needCoverImgSize:needCoverImgSize];
     }else{
         // 2. 执行处理程序
-        isExecute = [self executeForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha combinedFrameBuffer:combinedFrameBuffer width:width height:height outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint audioPath:rgbPath];
+        isExecute = [self executeForLoop:numFrames frameDecoderRGB:frameDecoderRGB frameDecoderAlpha:frameDecoderAlpha combinedFrameBuffer:combinedFrameBuffer width:width height:height outPath:outPath tmpBgCoverPath:tmpBgCoverPath bgCoverImgPoint:bgCoverImgPoint audioPath:rgbPath needCoverImgSize:needCoverImgSize];
         
     }
     
@@ -294,13 +300,13 @@
 
 
 // TODO: 执行for循环,拿出来使用
-+ (BOOL)preTwoExecuteForLoop:(NSUInteger)numFrames  frameDecoderRGB:(AVSDKAssetFrameDecoder *)frameDecoderRGB frameDecoderAlpha:(AVSDKAssetFrameDecoder *)frameDecoderAlpha  combinedFrameBuffer:(AVSDKCGFrameBuffer *)combinedFrameBuffer width:(int)width height:(int)height outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint audioPath:(NSString *)audioPath  preFrameBufferMuArr:(NSMutableArray *)preFrameBufferMuArr preAlphaUnsignIntMuArr:(NSMutableArray *)preAlphaUnsignIntMuArr {
++ (BOOL)preTwoExecuteForLoop:(NSUInteger)numFrames  frameDecoderRGB:(AVSDKAssetFrameDecoder *)frameDecoderRGB frameDecoderAlpha:(AVSDKAssetFrameDecoder *)frameDecoderAlpha  combinedFrameBuffer:(AVSDKCGFrameBuffer *)combinedFrameBuffer width:(int)width height:(int)height outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint audioPath:(NSString *)audioPath  preFrameBufferMuArr:(NSMutableArray *)preFrameBufferMuArr preAlphaUnsignIntMuArr:(NSMutableArray *)preAlphaUnsignIntMuArr needCoverImgSize:(CGSize)needCoverImgSize {
     
     // TODO: 底部背景图,从存储的文件中读取
     UIImage *bgCoverImg = [UIImage imageWithContentsOfFile:tmpBgCoverPath];
     // 此处不能使用一个image生成pixel buffer会导致。
     // pixels被分配的内存数据有时候被覆盖或释放，导致合成图片有问题。
-    AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
+    AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0) needCoverImgSize:needCoverImgSize];
     NSMutableArray *pixelIntMuArr = [NSMutableArray array];
     
     AVSDKAlphaImgMakeVideo *movieMaker  = [self singlaImgToGenerateMOVWithNumFrames:numFrames VideoSize:CGSizeMake(width, height) frameTime:frameDecoderRGB.frameTime exportVideoPath:outPath];
@@ -401,14 +407,14 @@
 
 
 // TODO: 执行for循环,拿出来使用
-+ (BOOL)executeForLoop:(NSUInteger)numFrames  frameDecoderRGB:(AVSDKAssetFrameDecoder *)frameDecoderRGB frameDecoderAlpha:(AVSDKAssetFrameDecoder *)frameDecoderAlpha  combinedFrameBuffer:(AVSDKCGFrameBuffer *)combinedFrameBuffer width:(int)width height:(int)height outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint audioPath:(NSString *)audioPath  {
++ (BOOL)executeForLoop:(NSUInteger)numFrames  frameDecoderRGB:(AVSDKAssetFrameDecoder *)frameDecoderRGB frameDecoderAlpha:(AVSDKAssetFrameDecoder *)frameDecoderAlpha  combinedFrameBuffer:(AVSDKCGFrameBuffer *)combinedFrameBuffer width:(int)width height:(int)height outPath:(NSString *)outPath tmpBgCoverPath:(NSString *)tmpBgCoverPath bgCoverImgPoint:(CGPoint)bgCoverImgPoint audioPath:(NSString *)audioPath needCoverImgSize:(CGSize)needCoverImgSize {
     
     //UIImage *bgCoverImg = [UIImage imageNamed:@"tmp-1.jpg"];
     // TODO: 底部背景图,从存储的文件中读取
     UIImage *bgCoverImg = [UIImage imageWithContentsOfFile:tmpBgCoverPath];
     // 此处不能使用一个image生成pixel buffer会导致。
     // pixels被分配的内存数据有时候被覆盖或释放，导致合成图片有问题。
-    AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0)];
+    AVSDKCGFrameBuffer *bgCoverImgFrameBuffer = [self getBgCoverImgFrameBufferWithCurrentImg:bgCoverImg newImgSize:CGSizeMake(width, 0) needCoverImgSize:needCoverImgSize];
     NSMutableArray *pixelIntMuArr = [NSMutableArray array];
     
     AVSDKAlphaImgMakeVideo *movieMaker  = [self singlaImgToGenerateMOVWithNumFrames:numFrames VideoSize:CGSizeMake(width, height) frameTime:frameDecoderRGB.frameTime exportVideoPath:outPath];
@@ -1188,11 +1194,17 @@
 }
 
 // 单张图片转换CGFrameBuffer属性 -- 主要用于背景图pixels获取
-+ (AVSDKCGFrameBuffer *)getBgCoverImgFrameBufferWithCurrentImg:(UIImage *)currentImg newImgSize:(CGSize)newImgSize
++ (AVSDKCGFrameBuffer *)getBgCoverImgFrameBufferWithCurrentImg:(UIImage *)currentImg newImgSize:(CGSize)newImgSize needCoverImgSize:(CGSize)needCoverImgSize
 {
-    float currentImgWidth = newImgSize.width;
-    float widthRatio = currentImgWidth / currentImg.size.width;
-    float currentImgHeight = currentImg.size.height *widthRatio;
+    // 1
+//    float currentImgWidth = newImgSize.width;
+//    float widthRatio = currentImgWidth / currentImg.size.width;
+//    float currentImgHeight = currentImg.size.height *widthRatio;
+    
+    //2. 直接使用需要的尺寸进行适配即可。
+    float currentImgWidth = needCoverImgSize.width;
+    float currentImgHeight = needCoverImgSize.height;
+    
     
     CGImageRef cgImgRef = currentImg.CGImage;
     
