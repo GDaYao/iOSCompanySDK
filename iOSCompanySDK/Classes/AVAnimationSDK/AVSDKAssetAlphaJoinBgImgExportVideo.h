@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // 输出flag
 #define NeedLogging 0
-#define NeedProgress 1
+#define NeedProgress 0
 
 // 打印日志
 #if NeedLogging==1
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 打印生成进程
 #if NeedProgress==1
 
-#define PROGRESS 1
+//#define PROGRESS 1
 
 #endif
 
