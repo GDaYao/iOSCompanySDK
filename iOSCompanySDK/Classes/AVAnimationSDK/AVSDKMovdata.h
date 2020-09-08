@@ -22,7 +22,7 @@ extern const uint8_t* const extern_alphaTablesPtr;
 // 例如，A = 128的像素RGB（128，0，0）将返回A = 128的（255，0，0）
 static
 inline
-uint32_t premultiply_bgra_inline(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha)
+uint32_t avsdkpremultiply_bgra_inline(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha)
 {
 
 #if defined(DEBUG)

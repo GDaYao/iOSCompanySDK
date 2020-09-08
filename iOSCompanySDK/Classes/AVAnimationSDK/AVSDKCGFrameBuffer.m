@@ -29,7 +29,7 @@
 #endif
 
 
-void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size);
+void AVSDKCGFrameBufferProviderReleaseData (void *info, const void *data, size_t size);
 
 
 @interface AVSDKCGFrameBuffer ()
@@ -261,7 +261,7 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
     
     CGBitmapInfo bitmapInfo = [self getBitmapInfo];
     
-    CGDataProviderReleaseDataCallback releaseData = CGFrameBufferProviderReleaseData;
+    CGDataProviderReleaseDataCallback releaseData = AVSDKCGFrameBufferProviderReleaseData;
     
     void *pixelsPtr = self.pixels;   // Will return zero copy pointer in zero copy mode. Otherwise self.pixels
     
@@ -320,11 +320,11 @@ void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size
 // C callback invoked by core graphics when done with a buffer, this is tricky
 // since an extra ref is held on the buffer while it is locked by the
 // core graphics layer.
-void CGFrameBufferProviderReleaseData (void *info, const void *data, size_t size) {
+void AVSDKCGFrameBufferProviderReleaseData (void *info, const void *data, size_t size) {
     
 #ifdef DEBUG
 #ifdef LOGGING
-    NSLog(@"CGFrameBufferProviderReleaseData() called");
+    NSLog(@"AVSDKCGFrameBufferProviderReleaseData() called");
 #endif
 #endif
 

@@ -756,7 +756,7 @@
             
             
             // 预乘分量，组合像素
-            uint32_t combinedPixel = premultiply_bgra_inline(pixelRed, pixelGreen, pixelBlue, pixelAlpha);
+            uint32_t combinedPixel = avsdkpremultiply_bgra_inline(pixelRed, pixelGreen, pixelBlue, pixelAlpha);
 
             
             // 更新rgb pixels分量即可，不用输出给新的combine结合pixels分量值。
@@ -932,7 +932,7 @@
             
             
             // 预乘分量，组合像素
-            uint32_t combinedPixel = premultiply_bgra_inline(pixelRed, pixelGreen, pixelBlue, pixelAlpha);
+            uint32_t combinedPixel = avsdkpremultiply_bgra_inline(pixelRed, pixelGreen, pixelBlue, pixelAlpha);
 
             
             // 更新rgb pixels分量即可，不用输出给新的combine结合pixels分量值。
@@ -1163,7 +1163,7 @@
 #endif
         
         // 预乘分量，组合像素
-        uint32_t combinedPixel = premultiply_bgra_inline(pixelRed, pixelGreen, pixelBlue, pixelAlpha);
+        uint32_t combinedPixel = avsdkpremultiply_bgra_inline(pixelRed, pixelGreen, pixelBlue, pixelAlpha);
 
 #ifdef DEBUG
         // 输出每个存储像素值
