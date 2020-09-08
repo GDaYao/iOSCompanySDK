@@ -377,11 +377,7 @@
      ^(void ) {
         dispatch_async(dispatch_get_main_queue(), ^{
             //NSLog(@"完成！输出路径==%@",savePath);
-            
-            if([[NSFileManager defaultManager]fileExistsAtPath:mixURLPath]) {
-                [[NSFileManager defaultManager]removeItemAtPath:mixURLPath error:nil];
-            }
-            completion([NSURL fileURLWithPath:mixURLPath]);
+            completion(nil);
  
         });
      }];
