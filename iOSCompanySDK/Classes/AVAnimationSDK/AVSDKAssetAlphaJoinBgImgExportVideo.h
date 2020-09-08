@@ -35,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-
 #define kAlphaVideoCombineImgFinishNotification @"AlphaVideoCombineImgFinishNotification"
 
 
