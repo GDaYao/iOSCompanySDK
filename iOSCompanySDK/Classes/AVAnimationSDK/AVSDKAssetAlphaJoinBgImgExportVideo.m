@@ -1197,13 +1197,21 @@
 + (AVSDKCGFrameBuffer *)getBgCoverImgFrameBufferWithCurrentImg:(UIImage *)currentImg newImgSize:(CGSize)newImgSize needCoverImgSize:(CGSize)needCoverImgSize
 {
     // 1
-//    float currentImgWidth = newImgSize.width;
-//    float widthRatio = currentImgWidth / currentImg.size.width;
-//    float currentImgHeight = currentImg.size.height *widthRatio;
+    float currentImgWidth = newImgSize.width;
+    float widthRatio = currentImgWidth / currentImg.size.width;
+    float currentImgHeight = currentImg.size.height *widthRatio;
     
     //2. 直接使用需要的尺寸进行适配即可。
-    float currentImgWidth = needCoverImgSize.width;
-    float currentImgHeight = needCoverImgSize.height;
+    //float currentImgWidth = needCoverImgSize.width;
+    //float currentImgHeight = needCoverImgSize.height;
+    
+//    float widthRatio = currentImgWidth > currentImg.size.width ? (currentImgWidth/currentImg.size.width):(currentImg.size.width/currentImgWidth) ; // 宽度放大/缩小比例 -- 保持二者比较同步
+//    float heightRatio = currentImgHeight>currentImg.size.height ? (currentImgHeight/currentImg.size.height) :(currentImg.size.height / currentImgHeight); // 高度放大/缩小的比例 - 保持二者比较同步
+//    if ( widthRatio > heightRatio ) {
+//        currentImgHeight = currentImg.size.height*widthRatio;
+//    }else{
+//        currentImgWidth = currentImg.size.width*heightRatio;
+//    }
     
     
     CGImageRef cgImgRef = currentImg.CGImage;
