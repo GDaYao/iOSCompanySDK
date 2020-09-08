@@ -40,7 +40,7 @@
         //_fileURL = [NSURL fileURLWithPath:exportVideoPath];
         
         NSString *tmpDir = NSTemporaryDirectory();
-        NSString *tempPath = [tmpDir stringByAppendingFormat:@"/export.mp4"];
+        NSString *tempPath = [tmpDir stringByAppendingFormat:@"export.mp4"];
         NSLog(@"log-movieSavePath:%@",tempPath);
         if ([[NSFileManager defaultManager] fileExistsAtPath:tempPath]) {
             [[NSFileManager defaultManager] removeItemAtPath:tempPath error:&error];
@@ -340,6 +340,12 @@
  */
 - (void)theVideoWithMixMusic:(NSString *)mixURLPath videoPath:(NSString *)videoPath savePath:(NSString *)savePath completion:(avsdkAlphaImgMakeVideoCompletionBlock)completion
 {
+    // 移除之前生成的视频文件
+    NSFileManager *fm = [NSFileManager defaultManager];
+    if ( [fm fileExistsAtPath:savePath] ) {
+        [fm removeItemAtPath:savePath error:nil];
+    }
+    
     //声音来源路径（最终混合的音频）
     NSURL   *audio_inputFileUrl =[NSURL fileURLWithPath:mixURLPath];
     
@@ -369,7 +375,7 @@
     //创建一个输出
     AVAssetExportSession* _assetExport =[[AVAssetExportSession alloc]initWithAsset:mixComposition presetName:AVAssetExportPreset960x540];
     _assetExport.outputFileType = AVFileTypeMPEG4;
-    _assetExport.outputURL =outputFileUrl;
+    _assetExport.outputURL = outputFileUrl;
     //_assetExport.shouldOptimizeForNetworkUse=YES;
     
     
