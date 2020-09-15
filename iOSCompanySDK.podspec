@@ -47,7 +47,7 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
     newwallpapersfull.libraries = 'sqlite3'
     newwallpapersfull.source_files = 'iOSCompanySDK/Classes/NewWallpapersFull/**/*'
     newwallpapersfull.public_header_files = 'iOSCompanySDK/Classes/NewWallpapersFull/**/*.h'
-    newwallpapersfull.dependency 'AFNetworking' # ,'3.2.1'
+    newwallpapersfull.dependency 'AFNetworking','3.2.1'
     #newwallpapersfull.dependency 'MBProgressHUD'
     #newwallpapersfull.resource_bundles = {
     #}
