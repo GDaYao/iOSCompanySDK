@@ -15,7 +15,7 @@
 
 #pragma mark - In-App purchase
 // add transaction observer
-- (void)addTransactionObserver:(id)observer {
+- (void)addTransactionObserver:(id _Nullable)observer {
     [[SKPaymentQueue defaultQueue]addTransactionObserver:self];
 }
 // 内购数据请求
@@ -28,7 +28,7 @@
     [productRequest start];
 }
 // remove transaction observer
-- (void)removeTransactionObserver:(id)observer {
+- (void)removeTransactionObserver:(id _Nullable)observer {
     [[SKPaymentQueue defaultQueue]removeTransactionObserver:self];
 }
 

@@ -63,13 +63,13 @@ NS_ASSUME_NONNULL_BEGIN
 
  @param observer 设置内购监听对象--可不传
  */
-- (void)addTransactionObserver:(id)observer;
+- (void)addTransactionObserver:(id _Nullable)observer;
 /**
  remove transaction observer -- 移除设置的内购监听
 
  @param observer 移除设置的内购监听--可不传
  */
-- (void)removeTransactionObserver:(id)observer;
+- (void)removeTransactionObserver:(id _Nullable)observer;
 /**
  传入对应productId-内购id进行app内验证
  

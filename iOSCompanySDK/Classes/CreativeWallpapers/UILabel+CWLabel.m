@@ -7,7 +7,7 @@
 @implementation UILabel (CWLabel)
 
 
-+ (UILabel *)cwInitLabWithBGColor:(UIColor *)bgColor textColor:(UIColor *)txColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)fontSize labText:(NSString *)labText txAlignment:(NSTextAlignment)txAlignment {
++ (UILabel *)cwInitLabWithBGColor:(UIColor *_Nullable)bgColor textColor:(UIColor *)txColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)fontSize labText:(NSString *)labText txAlignment:(NSTextAlignment)txAlignment {
     UILabel *lab = [[UILabel alloc]init];
     if (bgColor == nil) {
         lab.backgroundColor = [UIColor clearColor];

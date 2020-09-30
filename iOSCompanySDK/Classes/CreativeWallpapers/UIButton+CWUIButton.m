@@ -4,7 +4,7 @@
 @implementation UIButton (CWUIButton)
 
 #pragma mark - init button.
-+ (UIButton *)cwInitBtnWithBGName:(NSString *)imgStr title:(NSString *)titleStr titleColor:(UIColor *)titleColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)sizeFont btnBGColor:(UIColor *)bgColor {
++ (UIButton *)cwInitBtnWithBGName:(NSString *_Nullable)imgStr title:(NSString *)titleStr titleColor:(UIColor *)titleColor fontName:(NSString *)fontName isBold:(BOOL)isBold fontSize:(CGFloat)sizeFont btnBGColor:(UIColor *)bgColor {
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     if (imgStr.length != 0) {
         [btn setBackgroundImage:[UIImage imageNamed:imgStr] forState:UIControlStateNormal];
