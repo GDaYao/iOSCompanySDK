@@ -27,7 +27,7 @@
       "public_header_files": "iOSCompanySDK/Classes/NewWallpapersFull/**/*.h",
       "dependencies": {
         "AFNetworking": [
-
+          "3.2.1"
         ]
       },
       "xcconfig": {
@@ -136,7 +136,6 @@
     },
     {
       "name": "AVAnimationSDK",
-      "libraries": "sqlite3",
       "source_files": "iOSCompanySDK/Classes/AVAnimationSDK/**/*",
       "public_header_files": "iOSCompanySDK/Classes/AVAnimationSDK/**/*.h",
       "xcconfig": {
