@@ -20,6 +20,9 @@
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
+
+#define kNwfInKeychainItemIndentifier @"NwfInKeychainItemIndentifier"
+
 @implementation NWFSystemMgr
 
 #pragma mark - get app config
@@ -69,35 +72,48 @@
     return appName;
 }
 
+// save public service token
++ (void)setNWfKeyChainPublicServiceTokenWithSaveObject:(NSString *)saveObject {
+    
+    NWFKeychainItemWrapper *keychain = [[NWFKeychainItemWrapper alloc]initWithIdentifier:kNwfInKeychainItemIndentifier accessGroup:nil];
+    NSString *keychainValue = [keychain objectForKey:(__bridge id)kSecAttrService];
+    if (keychainValue.length != 0) {
+    }else{
+        [keychain setObject:saveObject forKey:(__bridge id)kSecAttrService];
+    }
+}
++ (NSString *)getNwfKeyChainPublicServiceToken {
+    NWFKeychainItemWrapper *keychain = [[NWFKeychainItemWrapper alloc]initWithIdentifier:kNwfInKeychainItemIndentifier accessGroup:nil];
+    if ([keychain objectForKey:(__bridge id)kSecAttrService]) {
+        NSString * valueStr = [keychain objectForKey:(__bridge id)kSecAttrService];
+        return valueStr;
+    }
+    return @"";
+}
 
 /* 获取当前设备的UDID-存储到KeyChain中  */
 + (NSString *)getDeviceUDIDValueFromKeychainInNWF {
-    NSString *identifier = @"GetUDIDIdentifierInNWF";
-    NWFKeychainItemWrapper *keyChainWrapper = [[NWFKeychainItemWrapper alloc] initWithIdentifier:identifier accessGroup:nil];
-    NSArray *UUID = [keyChainWrapper objectForKey:(__bridge id)kSecValueData];
-    if (UUID == nil || UUID.count == 0) {
-        UUID = @[ [[[UIDevice currentDevice] identifierForVendor] UUIDString] ];
-        [keyChainWrapper setObject:UUID forKey:(__bridge id)kSecValueData];
-        return [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    NWFKeychainItemWrapper *keychain = [[NWFKeychainItemWrapper alloc]initWithIdentifier:kNwfInKeychainItemIndentifier accessGroup:nil];
+    NSString *udidvalue = [keychain objectForKey:(__bridge id)kSecAttrLabel];
+    if ( udidvalue.length != 0 ) {
+        return udidvalue;
+    }else{
+        NSString *udidstr = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+        [keychain setObject:udidstr forKey:(__bridge id)kSecAttrLabel];
+        return udidstr;
     }
-    return UUID[0];
 }
 
 // get current设备的idfa
 + (NSString *)nwfGetDeviceIDFA {
-    
-    NSString *nwfIdentifier = @"NWFKeychainItemWrapper_idfa";
-    NWFKeychainItemWrapper *keyChainWrapper = [[NWFKeychainItemWrapper alloc]initWithIdentifier:nwfIdentifier accessGroup:nil];
-    NSArray *user = [keyChainWrapper objectForKey:(__bridge id)kSecValueRef];
-    if (user == nil || user.count == 0)
-    {
-        [keyChainWrapper setObject:[[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]
-                     forKey:(__bridge id)kSecValueRef];
-        return [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-    }
-    else
-    {
-        return user[0];
+    NWFKeychainItemWrapper *keychain = [[NWFKeychainItemWrapper alloc]initWithIdentifier:kNwfInKeychainItemIndentifier accessGroup:nil];
+    NSString *idfaValue = [keychain objectForKey:(__bridge id)kSecAttrAccount];
+    if ( idfaValue.length != 0 ) {
+        return idfaValue;
+    }else{
+        NSString *idfastr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+        [keychain setObject:idfastr forKey:(__bridge id)kSecAttrAccount];
+        return idfastr;
     }
 }
 
@@ -329,7 +345,78 @@
 }
 
 
+// 运营商名称
++ (NSString *)getDeviceCarrierName {
+    CTTelephonyNetworkInfo *info = [CTTelephonyNetworkInfo new];
+    CTCarrier *carrier = [info subscriberCellularProvider];
+    if(!carrier){
+        return  @"";
+    }
+    NSString *carrierName = [carrier carrierName];
+    if( [self isHaveString:carrierName] == NO ){
+        return @"";
+    }
+    return carrierName;
+}
+// 运营商
++ (NSString *)getDeviceCarrier {
+    CTTelephonyNetworkInfo *info = [CTTelephonyNetworkInfo new];
+    CTCarrier *carrier = [info subscriberCellularProvider];
+    if(!carrier){
+        return  @"";
+    }
+    NSString *mobileCountryCode = carrier.mobileCountryCode;
+    if ( [self isHaveString:mobileCountryCode] == NO ) {
+        mobileCountryCode = @"";
+    }
+    NSString *mobileNetworkCode = carrier.mobileNetworkCode;
+    if ([self isHaveString:mobileCountryCode] == NO ) {
+        mobileNetworkCode  = @"";
+    }
+    return  [NSString stringWithFormat:@"%@%@",mobileCountryCode,mobileNetworkCode];
+}
+// 地区
++ (NSString *)getDeviceRegion {
+    // iOS 获取设备当前地区的代码
+    NSString *region = [[NSLocale currentLocale] objectForKey:NSLocaleIdentifier];
+    NSArray * strArr = [region componentsSeparatedByString:@"_"];
+    if (strArr.count>1) {
+        return strArr[1];
+    }else{
+        return strArr[0];
+    }
+}
 
+// 设备运行系统名称 -- 即iOS
++ (NSString *)getDeviceOSName {
+    return [[UIDevice currentDevice] systemName];
+}
+/* 当前设备名称--即用户可在设置中自定义的名称     */
++ (NSString *)getDeviceName {
+    return [[UIDevice currentDevice] name];
+}
+
++ (BOOL)isHaveString:(NSString *)string {
+    if (string == nil || string == NULL){
+        return NO;
+    }
+    if ([string isKindOfClass:[NSNull class]]) {
+        return NO;
+    }
+    if ([string isEqualToString:@""]       ||
+        [string isEqualToString:@"null"]   ||
+        [string isEqualToString:@"<NULL>"] ||
+        [string isEqualToString:@"<null>"] ||
+        [string isEqualToString:@"NULL"]   ||
+        [string isEqualToString:@"nil"]    ||
+        [string isEqualToString:@"(null)"] ) {
+        return NO;
+    }
+    if ([[string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length]==0) {
+        return NO;
+    }
+    return YES;
+}
 
 #pragma mark - get system languages
 /**   en:英文  zh-Hans:简体中文   zh-Hant:繁体中文    ja:日本  ...... */
@@ -358,7 +445,6 @@
     else{
         return @"en";
     }
-    // NSLog(@"Preferred Language:%@", preferredLang);
     return preferredLang;
 }
 
