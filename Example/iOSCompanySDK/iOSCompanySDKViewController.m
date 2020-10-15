@@ -24,25 +24,46 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     
-    UIButton *nextBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [nextBtn setTitle:@"点击" forState:UIControlStateNormal];
-    [nextBtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-    nextBtn.layer.borderColor = [UIColor redColor].CGColor;
-    nextBtn.layer.borderWidth = 1.0;
-    [self.view addSubview:nextBtn];
-    nextBtn.frame = CGRectMake(50, 100, 80, 80);
-    [nextBtn addTarget:self action:@selector(twotapNextBtnAction) forControlEvents:UIControlEventTouchUpInside];
+    
+    // 动态壁纸模板导出视频点击
+    [self createNewVideoUI];
+    
     
 }
 
 #pragma mark - action
-// 2.
-- (void)twotapNextBtnAction {
-    [self selectAlbum];
+
+
+
+#pragma mark - 动态壁纸模板导出视频点击
+- (void)createNewVideoUI {
+    // TODO: 动态壁纸导出新替换视频
+    UIButton *nextBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [nextBtn setTitle:@"动态壁纸模板导出视频点击" forState:UIControlStateNormal];
+    [nextBtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    nextBtn.layer.borderColor = [UIColor redColor].CGColor;
+    nextBtn.layer.borderWidth = 1.0;
+    [self.view addSubview:nextBtn];
+    nextBtn.frame = CGRectMake(50, 100, 200, 80);
+    [nextBtn addTarget:self action:@selector(tapNextBtnAction) forControlEvents:UIControlEventTouchUpInside];
+}
+- (void)tapNextBtnAction {
+    int i = 1;
+    if (i == 1) {
+        [self selectAlbum];
+    }else{
+        [self tapDirectlyNextBtnAction];
+    }
+}
+- (void)exportVideoGetNotification {
+    //
+    NSLog(@"log-视频导出完成");
+    self.view.backgroundColor = [UIColor redColor];
     
 }
 
-#pragma mark - select Album + Delegate
+#pragma mark 方法1
+// select Album + Delegate
 - (void)selectAlbum {
     UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
     imagePickerController.delegate = self;
@@ -70,8 +91,7 @@
         // 得到图片后操作使用
         //self.bgCoverImg = editImage;
         
-        
-        
+    
         NSString *rgbFilePath = [[NSBundle mainBundle]pathForResource:kVideoColorStr ofType:@""];
         NSString *alphaFilePath = [[NSBundle mainBundle]pathForResource:kVideoMaskStr ofType:@""];
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -92,9 +112,8 @@
     }];
 }
 
-
-// 1
-- (void)tapNextBtnAction {
+#pragma mark 方法二
+- (void)tapDirectlyNextBtnAction {
     NSLog(@"log-开始制作");
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(exportVideoGetNotification) name:kAlphaVideoCombineImgFinishNotification object:nil];
@@ -118,12 +137,7 @@
     
 }
 
-- (void)exportVideoGetNotification {
-    //
-    NSLog(@"log-视频导出完成");
-    self.view.backgroundColor = [UIColor redColor];
-    
-}
+
 
 
 - (void)didReceiveMemoryWarning
@@ -131,6 +145,7 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 
 
 @end

@@ -418,6 +418,7 @@
     NSMutableArray *pixelIntMuArr = [NSMutableArray array];
     
     AVSDKAlphaImgMakeVideo *movieMaker  = [self singlaImgToGenerateMOVWithNumFrames:numFrames VideoSize:CGSizeMake(width, height) frameTime:frameDecoderRGB.frameTime exportVideoPath:outPath];
+    
     // 不能使用NSMutableArray数组，char*数组转成NSString出错。因为那是char*数组
     // 使用char*数组处理
     //size_t pixelWidth;
@@ -462,8 +463,8 @@
         
         
         // Join RGB and ALPHA
-
-
+        
+        
         uint32_t *bgCoverPixels = (uint32_t *)bgCoverImgFrameBuffer.pixels;
         //uint32_t *bgCoverPixels = (uint32_t *)staticbgCoverImgPixels;
         //uint32_t *bgCoverPixels = (uint32_t *)mgr.bgCoverImgPixels;
