@@ -18,9 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - get device config
-+ (NSString *)getDeviceUDIDValueString;
 
 + (NSString *)getDeviceUDIDValueFromKeychain;
++ (NSString *)getIDFAValueFromKeychain;
+// save public service token
++ (void)setCwKeyChainPublicServiceTokenWithSaveObject:(NSString *)saveObject;
++ (NSString *)getCwKeyChainPublicServiceToken;
 
 
 + (NSString *)getDeviceModel;
@@ -40,6 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - get system languages/ 获的当前系统使用语言
 + (NSString*)getPreferredLanguage;
+
+// 运营商名称
++ (NSString *)getDeviceCarrierName;
+// 运营商
++ (NSString *)getDeviceCarrier;
+// 地区
++ (NSString *)getDeviceRegion;
+// 获取网络名称
++ (NSString *)cwGetDeviceNetworkStatus;
 
 
 

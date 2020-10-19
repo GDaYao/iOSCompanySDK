@@ -5,6 +5,20 @@
 // 获取当前设备型号名称
 #import "sys/utsname.h"
 
+
+#import <AdSupport/AdSupport.h>
+
+
+#import "CWReachability.h"
+
+
+#import <CoreTelephony/CTCarrier.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+
+#define kCWKeychainItemIdentifier  @"CWKeychainItemIdentifier"
+
+
+
 @implementation CWSystemMgr
 
 #pragma mark - get app config
@@ -35,20 +49,49 @@
 
 
 #pragma mark - get device config
-+ (NSString *)getDeviceUDIDValueString {
-    return [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-}
 + (NSString *)getDeviceUDIDValueFromKeychain {
-    NSString *identifier = @"GetUDIDIdentifier";
-    CWKeychainItemWrapper *keyChainWrapper = [[CWKeychainItemWrapper alloc] initCWWithIdentifier:identifier accessGroup:nil];
-    NSArray *UUID = [keyChainWrapper cwObjectForKey:(__bridge id)kSecValueData];
-    if (UUID == nil || UUID.count == 0) {
-        UUID = @[ [[[UIDevice currentDevice] identifierForVendor] UUIDString] ];
-        [keyChainWrapper cwSetObject:UUID forKey:(__bridge id)kSecValueData];
-        return [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    CWKeychainItemWrapper *keyChainWrapper = [[CWKeychainItemWrapper alloc] initCWWithIdentifier:kCWKeychainItemIdentifier accessGroup:nil];
+    NSString *udidvalue = [keyChainWrapper cwObjectForKey:(__bridge id)kSecAttrLabel];
+    if ( udidvalue.length != 0 ) {
+        return udidvalue;
+    }else{
+        NSString *udidstr = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+        [keyChainWrapper cwSetObject:udidstr forKey:(__bridge id)kSecAttrLabel];
+        return udidstr;
     }
-    return UUID[0];
 }
++ (NSString *)getIDFAValueFromKeychain {
+    CWKeychainItemWrapper *keyChainWrapper = [[CWKeychainItemWrapper alloc]initCWWithIdentifier:kCWKeychainItemIdentifier accessGroup:nil];
+    NSString *idfaValue = [keyChainWrapper cwObjectForKey:(__bridge id)kSecAttrAccount];
+    if ( idfaValue.length != 0 ) {
+        return idfaValue;
+    }else{
+        NSString *idfastr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+        [keyChainWrapper cwSetObject:idfastr forKey:(__bridge id)kSecAttrAccount];
+        return idfastr;
+    }
+}
+// save public service token
++ (void)setCwKeyChainPublicServiceTokenWithSaveObject:(NSString *)saveObject {
+    
+    CWKeychainItemWrapper *keychain = [[CWKeychainItemWrapper alloc]initCWWithIdentifier:kCWKeychainItemIdentifier accessGroup:nil];
+    NSString *keychainValue = [keychain cwObjectForKey:(__bridge id)kSecAttrService];
+    if (keychainValue.length != 0) {
+    }else{
+        [keychain cwSetObject:saveObject forKey:(__bridge id)kSecAttrService];
+    }
+}
++ (NSString *)getCwKeyChainPublicServiceToken {
+    CWKeychainItemWrapper *keychain = [[CWKeychainItemWrapper alloc]initCWWithIdentifier:kCWKeychainItemIdentifier accessGroup:nil];
+    if ([keychain cwObjectForKey:(__bridge id)kSecAttrService]) {
+        NSString * valueStr = [keychain cwObjectForKey:(__bridge id)kSecAttrService];
+        return valueStr;
+    }
+    return @"";
+}
+
+
+
 // need import  "sys/utsname.h"
 + (NSString *)getDeviceModel {
     NSString *platform = nil;
@@ -223,30 +266,169 @@
     return preferredLang;
 }
 
+// 获取当前设备的操作系统版本号
 + (NSString *)getDeviceOSVersion {
     return [[UIDevice currentDevice] systemVersion];
 }
-
+// 当前设备名称
 + (NSString *)getDeviceName {
     return [[UIDevice currentDevice] name];
 }
-
+// 获取手机品牌
 + (NSString *)getDeviceBand {
     return [[UIDevice currentDevice] model];
 }
 + (NSString *)getDeviceLocalizedModel {
     return [[UIDevice currentDevice] localizedModel];
 }
+// 设备运行系统名称 -- iOS
 + (NSString *)getDeviceSystemName {
     return [[UIDevice currentDevice] systemName];
 }
 
 
 
+// 运营商名称
++ (NSString *)getDeviceCarrierName {
+    CTTelephonyNetworkInfo *info = [CTTelephonyNetworkInfo new];
+    CTCarrier *carrier = [info subscriberCellularProvider];
+    if(!carrier){
+        return  @"";
+    }
+    NSString *carrierName = [carrier carrierName];
+    if( [self isCWHaveString:carrierName] == NO ){
+        return @"";
+    }
+    return carrierName;
+}
+// 运营商
++ (NSString *)getDeviceCarrier {
+    CTTelephonyNetworkInfo *info = [CTTelephonyNetworkInfo new];
+    CTCarrier *carrier = [info subscriberCellularProvider];
+    if(!carrier){
+        return  @"";
+    }
+    NSString *mobileCountryCode = carrier.mobileCountryCode;
+    if ( [self isCWHaveString:mobileCountryCode] == NO ) {
+        mobileCountryCode = @"";
+    }
+    NSString *mobileNetworkCode = carrier.mobileNetworkCode;
+    if ([self isCWHaveString:mobileCountryCode] == NO ) {
+        mobileNetworkCode  = @"";
+    }
+    return  [NSString stringWithFormat:@"%@%@",mobileCountryCode,mobileNetworkCode];
+}
+// 地区
++ (NSString *)getDeviceRegion {
+    // iOS 获取设备当前地区的代码
+    NSString *region = [[NSLocale currentLocale] objectForKey:NSLocaleIdentifier];
+    NSArray * strArr = [region componentsSeparatedByString:@"_"];
+    if (strArr.count>1) {
+        return strArr[1];
+    }else{
+        return strArr[0];
+    }
+}
 
 
 
+// 获取网络名称
++ (NSString *)cwGetDeviceNetworkStatus
+{
+    NSString *netconnType = @"";
+    
+    CWReachability *reach = [CWReachability reachabilityWithHostName:@"www.apple.com"];
+    
+    switch ([reach currentReachabilityStatus]) {
+        case CWNotReachable:// 没有网络
+        {
+            
+            netconnType = @"no network";
+        }
+            break;
+            
+        case CWReachableViaWiFi:// Wifi
+        {
+            netconnType = @"Wifi";
+        }
+            break;
+            
+        case CWReachableViaWWAN: // 手机自带网络
+        {
+            // 获取手机网络类型
+            CTTelephonyNetworkInfo *info = [[CTTelephonyNetworkInfo alloc] init];
+            
+            NSString *currentStatus = info.currentRadioAccessTechnology;
+            
+            if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyGPRS"]) {
+                
+                netconnType = @"GPRS";
+            }else if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyEdge"]) {
+                
+                netconnType = @"2.75G EDGE";
+            }else if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyWCDMA"]){
+                
+                netconnType = @"3G";
+            }else if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyHSDPA"]){
+                
+                netconnType = @"3.5G HSDPA";
+            }else if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyHSUPA"]){
+                
+                netconnType = @"3.5G HSUPA";
+            }else if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyCDMA1x"]){
+                
+                netconnType = @"2G";
+            }else if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyCDMAEVDORev0"]){
+                
+                netconnType = @"3G";
+            }else if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyCDMAEVDORevA"]){
+                
+                netconnType = @"3G";
+            }else if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyCDMAEVDORevB"]){
+                
+                netconnType = @"3G";
+            }else if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyeHRPD"]){
+                
+                netconnType = @"HRPD";
+            }else if ([currentStatus isEqualToString:@"CTRadioAccessTechnologyLTE"]){
+                
+                netconnType = @"4G";
+            }
+        }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return netconnType;
+}
+
++ (BOOL)isCWHaveString:(NSString *)cwstring {
+    if (cwstring == nil || cwstring == NULL){
+        return NO;
+    }
+    if ([cwstring isKindOfClass:[NSNull class]]) {
+        return NO;
+    }
+    if ([cwstring isEqualToString:@""]       ||
+        [cwstring isEqualToString:@"null"]   ||
+        [cwstring isEqualToString:@"<NULL>"] ||
+        [cwstring isEqualToString:@"<null>"] ||
+        [cwstring isEqualToString:@"NULL"]   ||
+        [cwstring isEqualToString:@"nil"]    ||
+        [cwstring isEqualToString:@"(null)"] ) {
+        return NO;
+    }
+    if ([[cwstring stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length]==0) {
+        return NO;
+    }
+    return YES;
+}
 
 
 
 @end
+
+
+

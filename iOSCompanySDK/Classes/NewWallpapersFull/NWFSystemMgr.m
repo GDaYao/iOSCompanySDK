@@ -25,6 +25,7 @@
 
 @implementation NWFSystemMgr
 
+
 #pragma mark - get app config
 //获取当前App的版本号信息
 + (NSString *)getAppVersion {
@@ -103,7 +104,6 @@
         return udidstr;
     }
 }
-
 // get current设备的idfa
 + (NSString *)nwfGetDeviceIDFA {
     NWFKeychainItemWrapper *keychain = [[NWFKeychainItemWrapper alloc]initWithIdentifier:kNwfInKeychainItemIndentifier accessGroup:nil];
