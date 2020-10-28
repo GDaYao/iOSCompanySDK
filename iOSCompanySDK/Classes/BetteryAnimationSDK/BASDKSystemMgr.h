@@ -28,6 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getDeviceUDIDValueFromKeychain;
 // get current设备的idfa
 + (NSString *)getDeviceIDFA;
+// save public service token
++ (void)setKeyChainPublicServiceTokenWithSaveObject:(NSString *)saveObject;
++ (NSString *)getKeyChainPublicServiceToken;
 
 
 #pragma mark - 获取网络类型

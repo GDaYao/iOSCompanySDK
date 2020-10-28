@@ -37,8 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) void(^basdkScrollViewWillBeginDraggingInCV)(UIScrollView *scrollView);
 @property (nonatomic,copy) void(^basdkScrollViewDidScrollToTopInCV)(UIScrollView *scrollView);
 @property (nonatomic,copy) void(^basdkScrollViewDidScrollInCV)(UIScrollView *scrollView);
-@property (nonatomic,copy) void(^basdkScrollViewDidEndDraggingInNWF)(UIScrollView *scrollView,BOOL decelerate);
-@property (nonatomic,copy) void(^basdkScrollViewWillBegingDeceleratingInNWF)(UIScrollView *scrollView);
+@property (nonatomic,copy) void(^basdkScrollViewDidEndDragging)(UIScrollView *scrollView,BOOL decelerate);
+@property (nonatomic,copy) void(^basdkScrollViewWillBegingDecelerating)(UIScrollView *scrollView);
 @property (nonatomic,copy) void(^basdkScrollViewDidEndDecelerating)(UIScrollView *scrollView);
 
 

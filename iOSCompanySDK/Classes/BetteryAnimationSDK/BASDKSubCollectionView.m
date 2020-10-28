@@ -141,14 +141,14 @@
 }
 // scrollView
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    if (self.basdkScrollViewDidEndDraggingInNWF) {
-        self.basdkScrollViewDidEndDraggingInNWF(scrollView, decelerate);
+    if (self.basdkScrollViewDidEndDragging) {
+        self.basdkScrollViewDidEndDragging(scrollView, decelerate);
     }
 }
 // scrollview 开始减速
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
-    if (self.basdkScrollViewWillBegingDeceleratingInNWF) {
-        self.basdkScrollViewWillBegingDeceleratingInNWF(scrollView);
+    if (self.basdkScrollViewWillBegingDecelerating) {
+        self.basdkScrollViewWillBegingDecelerating(scrollView);
     }
 }
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {

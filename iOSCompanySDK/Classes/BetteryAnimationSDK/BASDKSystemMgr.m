@@ -88,6 +88,25 @@
     }
 }
 
+// save public service token
++ (void)setKeyChainPublicServiceTokenWithSaveObject:(NSString *)saveObject {
+    BASDKKeychainItemWrapper *keychain = [[BASDKKeychainItemWrapper alloc]initWithIdentifier:kBASDKKeychainIdentifier accessGroup:nil];
+    NSString *keychainValue = [keychain objectForKey:(__bridge id)kSecAttrService];
+    if (keychainValue.length != 0) {
+    }else{
+        [keychain setObject:saveObject forKey:(__bridge id)kSecAttrService];
+    }
+}
++ (NSString *)getKeyChainPublicServiceToken {
+    BASDKKeychainItemWrapper *keychain = [[BASDKKeychainItemWrapper alloc]initWithIdentifier:kBASDKKeychainIdentifier accessGroup:nil];
+    if ([keychain objectForKey:(__bridge id)kSecAttrService]) {
+        NSString * valueStr = [keychain objectForKey:(__bridge id)kSecAttrService];
+        return valueStr;
+    }
+    return @"";
+}
+
+
 
 #pragma mark - 获取网络类型
 + (NSString *)getDeviceNetworkStatus {
