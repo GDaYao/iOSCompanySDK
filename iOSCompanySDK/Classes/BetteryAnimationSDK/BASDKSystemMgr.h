@@ -23,6 +23,20 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getDeviceOSVersion;
 
 
+
+// 运营商名称
++ (NSString *)getDeviceCarrierName;
+// 运营商
++ (NSString *)getDeviceCarrier;
+// 地区
++ (NSString *)getDeviceRegion;
+
+// 设备运行系统名称 -- 即iOS
++ (NSString *)getDeviceOSName;
+
+/* 当前设备名称--即用户可在设置中自定义的名称     */
++ (NSString *)getDeviceName;
+
 #pragma mark - 获取UDID + idfa
 // 获取当前设备的UDID-存储到KeyChain中
 + (NSString *)getDeviceUDIDValueFromKeychain;
@@ -37,6 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getDeviceNetworkStatus;
 #pragma mark -  获取设备型号
 + (NSString*)getDeviceType;
+
+
+#pragma mark - get system languages
++ (NSString*)getPreferredLanguage;
 
 
 

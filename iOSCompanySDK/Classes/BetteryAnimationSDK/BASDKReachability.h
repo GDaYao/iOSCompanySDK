@@ -20,22 +20,22 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const kBASDKReachabilityChangedNotification;
 
 
-typedef NS_ENUM(NSInteger, RCNetworkStatus) {
-    RCNotReachable = 0,
-    RCReachableViaWiFi = 2,
-    RCReachableViaWWAN = 1
+typedef NS_ENUM(NSInteger, BANetworkStatus) {
+    BANotReachable = 0,
+    BAReachableViaWiFi = 2,
+    BAReachableViaWWAN = 1
 };
 
 
 @class BASDKReachability;
 
-typedef void (^RCNetworkReachable)(BASDKReachability * reachability);
-typedef void (^RCNetworkUnreachable)(BASDKReachability * reachability);
+typedef void (^BANetworkReachable)(BASDKReachability * reachability);
+typedef void (^BANetworkUnreachable)(BASDKReachability * reachability);
 
 @interface BASDKReachability : NSObject
 
-@property (nonatomic, copy) RCNetworkReachable    reachableBlock;
-@property (nonatomic, copy) RCNetworkUnreachable  unreachableBlock;
+@property (nonatomic, copy) BANetworkReachable    reachableBlock;
+@property (nonatomic, copy) BANetworkUnreachable  unreachableBlock;
 
 @property (nonatomic, assign) BOOL reachableOnWWAN;
 
@@ -66,7 +66,7 @@ typedef void (^RCNetworkUnreachable)(BASDKReachability * reachability);
 // Is user intervention required?
 -(BOOL)isInterventionRequired;
 
--(RCNetworkStatus)currentReachabilityStatus;
+-(BANetworkStatus)currentReachabilityStatus;
 -(SCNetworkReachabilityFlags)reachabilityFlags;
 -(NSString*)currentReachabilityString;
 -(NSString*)currentReachabilityFlags;

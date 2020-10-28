@@ -359,19 +359,19 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 #pragma mark - reachability status stuff
 
--(RCNetworkStatus)currentReachabilityStatus
+-(BANetworkStatus)currentReachabilityStatus
 {
     if([self isReachable])
     {
         if([self isReachableViaWiFi])
-            return RCReachableViaWiFi;
+            return BAReachableViaWiFi;
         
 #if    TARGET_OS_IPHONE
-        return RCReachableViaWWAN;
+        return BAReachableViaWWAN;
 #endif
     }
     
-    return RCNotReachable;
+    return BANotReachable;
 }
 
 -(SCNetworkReachabilityFlags)reachabilityFlags
@@ -388,14 +388,14 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 -(NSString*)currentReachabilityString
 {
-    RCNetworkStatus temp = [self currentReachabilityStatus];
+    BANetworkStatus temp = [self currentReachabilityStatus];
     
-    if(temp == RCReachableViaWWAN)
+    if(temp == BAReachableViaWWAN)
     {
         // Updated for the fact that we have CDMA phones now!
         return NSLocalizedString(@"Cellular", @"");
     }
-    if (temp == RCReachableViaWiFi)
+    if (temp == BAReachableViaWiFi)
     {
         return NSLocalizedString(@"WiFi", @"");
     }

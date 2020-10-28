@@ -106,6 +106,80 @@
     return @"";
 }
 
+// 运营商名称
++ (NSString *)getDeviceCarrierName {
+    CTTelephonyNetworkInfo *info = [CTTelephonyNetworkInfo new];
+    CTCarrier *carrier = [info subscriberCellularProvider];
+    if(!carrier){
+        return  @"";
+    }
+    NSString *carrierName = [carrier carrierName];
+    if( [self isHaveString:carrierName] == NO ){
+        return @"";
+    }
+    return carrierName;
+}
+// 运营商
++ (NSString *)getDeviceCarrier {
+    CTTelephonyNetworkInfo *info = [CTTelephonyNetworkInfo new];
+    CTCarrier *carrier = [info subscriberCellularProvider];
+    if(!carrier){
+        return  @"";
+    }
+    NSString *mobileCountryCode = carrier.mobileCountryCode;
+    if ( [self isHaveString:mobileCountryCode] == NO ) {
+        mobileCountryCode = @"";
+    }
+    NSString *mobileNetworkCode = carrier.mobileNetworkCode;
+    if ([self isHaveString:mobileCountryCode] == NO ) {
+        mobileNetworkCode  = @"";
+    }
+    return  [NSString stringWithFormat:@"%@%@",mobileCountryCode,mobileNetworkCode];
+}
+// 地区
++ (NSString *)getDeviceRegion {
+    // iOS 获取设备当前地区的代码
+    NSString *region = [[NSLocale currentLocale] objectForKey:NSLocaleIdentifier];
+    NSArray * strArr = [region componentsSeparatedByString:@"_"];
+    if (strArr.count>1) {
+        return strArr[1];
+    }else{
+        return strArr[0];
+    }
+}
+
+// 设备运行系统名称 -- 即iOS
++ (NSString *)getDeviceOSName {
+    return [[UIDevice currentDevice] systemName];
+}
+/* 当前设备名称--即用户可在设置中自定义的名称     */
++ (NSString *)getDeviceName {
+    return [[UIDevice currentDevice] name];
+}
+
++ (BOOL)isHaveString:(NSString *)string {
+    if (string == nil || string == NULL){
+        return NO;
+    }
+    if ([string isKindOfClass:[NSNull class]]) {
+        return NO;
+    }
+    if ([string isEqualToString:@""]       ||
+        [string isEqualToString:@"null"]   ||
+        [string isEqualToString:@"<NULL>"] ||
+        [string isEqualToString:@"<null>"] ||
+        [string isEqualToString:@"NULL"]   ||
+        [string isEqualToString:@"nil"]    ||
+        [string isEqualToString:@"(null)"] ) {
+        return NO;
+    }
+    if ([[string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length]==0) {
+        return NO;
+    }
+    return YES;
+}
+
+
 
 
 #pragma mark - 获取网络类型
@@ -115,20 +189,20 @@
     BASDKReachability *reach = [BASDKReachability reachabilityWithHostName:@"www.apple.com"];
     
     switch ([reach currentReachabilityStatus]) {
-        case RCNotReachable:// 没有网络
+        case BANotReachable:// 没有网络
         {
             
             netconnType = @"no network";
         }
             break;
             
-        case RCReachableViaWiFi:// Wifi
+        case BAReachableViaWiFi:// Wifi
         {
             netconnType = @"Wifi";
         }
             break;
             
-        case RCReachableViaWWAN: // 手机自带网络
+        case BAReachableViaWWAN: // 手机自带网络
         {
             // 获取手机网络类型
             CTTelephonyNetworkInfo *info = [[CTTelephonyNetworkInfo alloc] init];
@@ -325,7 +399,35 @@
 
 
 
-
+#pragma mark - get system languages
+/**   en:英文  zh-Hans:简体中文   zh-Hant:繁体中文    ja:日本  ...... */
++ (NSString*)getPreferredLanguage {
+    NSUserDefaults* defs = [NSUserDefaults standardUserDefaults];
+    NSArray* languages = [defs objectForKey:@"AppleLanguages"];
+    NSString* preferredLang = [languages objectAtIndex:0];
+    
+    if ( (preferredLang.length>=2) && ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"en"]) ) {
+        return @"en";
+    }else if ((preferredLang.length>=7) && ([[preferredLang substringWithRange:NSMakeRange(0, 7)] isEqualToString:@"zh-Hans"]) ) {
+        return @"zh-Hans";
+    } else if ((preferredLang.length>=7) && ([[preferredLang substringWithRange:NSMakeRange(0, 7)] isEqualToString:@"zh-Hant"]) ) {
+        return @"zh-Hant";
+    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ja"]) ) {
+        return @"ja";
+    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ko"]) ) {
+        return @"ko";
+    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"ru"]) ) {
+        return @"ru";
+    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"de"]) ) {
+        return @"de";
+    }else if ((preferredLang.length>=2)&& ([[preferredLang substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"fr"]) ) {
+        return @"fr";
+    }
+    else{
+        return @"en";
+    }
+    return preferredLang;
+}
 
 
 
