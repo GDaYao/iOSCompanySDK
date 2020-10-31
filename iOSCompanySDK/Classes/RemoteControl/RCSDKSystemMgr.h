@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCSDKSystemMgr : NSObject
 
+
 // get app config
 + (NSString *)getAppBundleId;
 + (NSString *)getAppDisplayName;
@@ -21,6 +22,31 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getDeviceBand;
 // 获取当前设备的操作系统版本号
 + (NSString *)getDeviceOSVersion;
+
+
+// get system languages
++ (NSString*)getPreferredLanguage;
+
+
+// 运营商名称
++ (NSString *)getDeviceCarrierName;
+
+// 运营商
++ (NSString *)getDeviceCarrier;
+
+// 地区
++ (NSString *)getDeviceRegion;
+
+// 设备运行系统名称 -- 即iOS
++ (NSString *)getDeviceOSName;
+
+// 当前设备名称--即用户可在设置中自定义的名称
++ (NSString *)getDeviceName;
+
+#pragma mark  - save public service token
++ (void)setKeyChainPublicServiceTokenWithSaveObject:(NSString *)saveObject;
++ (NSString *)getKeyChainPublicServiceToken;
+
 
 
 #pragma mark - 获取UDID + idfa
@@ -37,6 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
+
 @end
 
 NS_ASSUME_NONNULL_END
+
+
+
