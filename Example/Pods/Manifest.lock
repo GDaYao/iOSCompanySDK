@@ -24,7 +24,8 @@ PODS:
     - iOSCompanySDK/VideoPlayerClip (= 1.0.3)
     - iOSCompanySDK/VoiceRecoder (= 1.0.3)
   - iOSCompanySDK/AVAnimationSDK (1.0.3)
-  - iOSCompanySDK/BetteryAnimationSDK (1.0.3)
+  - iOSCompanySDK/BetteryAnimationSDK (1.0.3):
+    - AFNetworking (= 3.2.1)
   - iOSCompanySDK/CreativeWallpapers (1.0.3):
     - AFNetworking
   - iOSCompanySDK/NewPhotoTranslation (1.0.3):
@@ -51,7 +52,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  iOSCompanySDK: 5182f2f7ee2c856ed6f8f55edccff079e80df209
+  iOSCompanySDK: 67a7bd5d1cec83bdba94bd40f15816da9a5f763d
 
 PODFILE CHECKSUM: 22add7f03cd124e3b191c85d05542205e5237e1f
 

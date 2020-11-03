@@ -16,6 +16,7 @@
 #import "AVSDKAVFrame.h"
 #import "AVSDKCGFrameBuffer.h"
 #import "AVSDKMovdata.h"
+#import "BASDKInAppPurchase.h"
 #import "BASDKKeychainItemWrapper.h"
 #import "BASDKNetworkMgr.h"
 #import "BASDKReachability.h"
