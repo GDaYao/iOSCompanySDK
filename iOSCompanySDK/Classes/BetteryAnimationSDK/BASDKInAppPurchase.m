@@ -103,7 +103,9 @@
                 case SKPaymentTransactionStatePurchased:
             {
                 NSLog(@"内购产品购买成功");
-                [[SKPaymentQueue defaultQueue] finishTransaction:tran];//记得关闭交易事件
+                
+                // no 二次验证
+                //[self completeTransaction:tran];
                 
                 NSString *productId = tran.payment.productIdentifier;
                 NSString *receiptString = [tran.transactionReceipt base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
@@ -118,6 +120,9 @@
                 }else{
                     //普通购买，以及 第一次购买 自动订阅
                 }
+
+                [[SKPaymentQueue defaultQueue] finishTransaction:tran];//记得关闭交易事件
+                
             }
                 break;
                 case SKPaymentTransactionStatePurchasing:
@@ -152,6 +157,101 @@
     }
     
 }
+
+
+#pragma mark - verify purchase
+/**
+ *  验证购买
+ */
+- (void)completeTransaction:(SKPaymentTransaction *)transaction {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //[SVProgressHUD showWithStatus:@"正式验证"];
+    });
+    NSString *productIdentifer = transaction.payment.productIdentifier;
+    //从沙盒中获取交易凭证并且拼接成请求体数据
+    NSURL *receiptUrl=[[NSBundle mainBundle] appStoreReceiptURL];
+    NSData *receiptData=[NSData dataWithContentsOfURL:receiptUrl];
+    NSString *receiptString=[receiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];//转化为base64字符串
+    
+    // 自动续订--需要共享密钥
+//    NSDictionary * bodyDic = @{
+//        @"receipt-data":receiptString,
+//        @"password":@"xxx"
+//    };
+//    NSString *bodyString = [self dictionaryToJson:bodyDic];
+    
+    // 其他
+    NSString *bodyString = [NSString stringWithFormat:@"{\"receipt-data\" : \"%@\"}", receiptString];//拼接请求数据
+
+    NSData *bodyData = [bodyString dataUsingEncoding:NSUTF8StringEncoding];
+    NSURL *url=[NSURL URLWithString: @"https://buy.itunes.apple.com/verifyReceipt"];
+    NSMutableURLRequest *requestM=[NSMutableURLRequest requestWithURL:url];
+    requestM.HTTPBody=bodyData;
+    requestM.HTTPMethod=@"POST";
+    [[[NSURLSession sharedSession] dataTaskWithRequest:requestM completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"验证购买过程中发生错误，错误信息：%@",error.localizedDescription);
+            return;
+        }
+        NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+        NSLog(@"%@",dic);
+        if([dic[@"status"] intValue]==0){
+            //正式环境验证通过（说明是上线以后的用户购买）
+            NSLog(@"购买成功！");
+            //调用setVip接口
+            
+        }else if([dic[@"status"] intValue]== 21007){
+            //第二步，验证测试环境
+            [self verifyPurchaseWithTestEnvironment:bodyData receiptString:receiptString productIdentifer:productIdentifer];
+        }else {
+            NSLog(@"验证失败,订单出错");
+            
+        }
+        
+    }] resume];
+    
+}
+
+//创建请求到苹果官方进行购买验证（测试环境）
+- (void)verifyPurchaseWithTestEnvironment:(NSData *)bodyData receiptString:(NSString *)receiptString productIdentifer:(NSString *)productIdentifer  {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //[SVProgressHUD showWithStatus:@"测试验证"];
+    });
+    NSURL *url=[NSURL URLWithString:@"https://sandbox.itunes.apple.com/verifyReceipt"];
+    NSMutableURLRequest *requestM=[NSMutableURLRequest requestWithURL:url];
+    requestM.HTTPBody=bodyData;
+    requestM.HTTPMethod=@"POST";
+    [[[NSURLSession sharedSession] dataTaskWithRequest:requestM completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (error) {
+            NSLog(@"验证购买过程中发生错误，错误信息：%@",error.localizedDescription);
+            return;
+        }
+        NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+        NSLog(@"%@",dic);
+        if([dic[@"status"] intValue]==0){
+            NSLog(@"购买成功！");
+            //调用setVip接口
+            
+        }else {
+            NSLog( @"验证失败,订单出错" );
+        }
+        
+    }] resume];
+    
+}
+
++ (NSString*)dictionaryToJson:(NSDictionary *)dic {
+    NSError *paraseError = nil;
+    NSData *jonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&paraseError];
+    NSString *base =[[NSString alloc] initWithData:jonData encoding:NSUTF8StringEncoding];
+    base = [base stringByReplacingOccurrencesOfString:@"\r\n" withString : @"" ];
+    base = [base stringByReplacingOccurrencesOfString:@"\n" withString : @"" ];
+    base = [base stringByReplacingOccurrencesOfString:@"\t" withString : @"" ];
+    base = [base stringByReplacingOccurrencesOfString:@" " withString : @"" ];
+    base = [base stringByReplacingOccurrencesOfString:@"/n" withString : @"" ];
+    return base;
+}
+
 
 
 
