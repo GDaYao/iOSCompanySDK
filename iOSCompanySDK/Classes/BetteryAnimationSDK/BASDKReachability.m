@@ -65,12 +65,12 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 #pragma mark - Class Constructor Methods
 
-+(BASDKReachability*)reachabilityWithHostName:(NSString*)hostname
++ (BASDKReachability*)reachabilityWithHostName:(NSString*)hostname
 {
     return [BASDKReachability reachabilityWithHostname:hostname];
 }
 
-+(BASDKReachability*)reachabilityWithHostname:(NSString*)hostname
++ (BASDKReachability*)reachabilityWithHostname:(NSString*)hostname
 {
     SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithName(NULL, [hostname UTF8String]);
     if (ref)
@@ -121,16 +121,13 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 // Initialization methods
 
--(BASDKReachability *)initWithReachabilityRef:(SCNetworkReachabilityRef)ref
+- (BASDKReachability *)initWithReachabilityRef:(SCNetworkReachabilityRef)ref
 {
     self = [super init];
     if (self != nil)
     {
         self.reachableOnWWAN = YES;
         self.reachabilityRef = ref;
-
-        // We need to create a serial queue.
-        // We allocate this once for the lifetime of the notifier.
 
         self.reachabilitySerialQueue = dispatch_queue_create("com.tonymillion.reachability", NULL);
     }
@@ -155,19 +152,12 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 #pragma mark - Notifier Methods
 
-// Notifier
-// NOTE: This uses GCD to trigger the blocks - they *WILL NOT* be called on THE MAIN THREAD
-// - In other words DO NOT DO ANY UI UPDATES IN THE BLOCKS.
-//   INSTEAD USE dispatch_async(dispatch_get_main_queue(), ^{UISTUFF}) (or dispatch_sync if you want)
-
--(BOOL)startNotifier
-{
+- (BOOL)startNotifier {
     // allow start notifier to be called multiple times
     if(self.reachabilityObject && (self.reachabilityObject == self))
     {
         return YES;
     }
-
 
     SCNetworkReachabilityContext    context = { 0, NULL, NULL, NULL, NULL };
     context.info = (__bridge void *)self;
@@ -216,14 +206,6 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 }
 
 #pragma mark - reachability tests
-
-// This is for the case where you flick the airplane mode;
-// you end up getting something like this:
-//VPReachability: WR ct-----
-//VPReachability: -- -------
-//VPReachability: WR ct-----
-//VPReachability: -- -------
-// We treat this as 4 UNREACHABLE triggers - really apple should do better than this
 
 #define testcase (kSCNetworkReachabilityFlagsConnectionRequired | kSCNetworkReachabilityFlagsTransientConnection)
 

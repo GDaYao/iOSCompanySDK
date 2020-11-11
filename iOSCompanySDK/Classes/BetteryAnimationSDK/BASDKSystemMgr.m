@@ -9,13 +9,10 @@
 
 #import "BASDKKeychainItemWrapper.h"
 
-// use get idfa
 #import <AdSupport/AdSupport.h>
 
-// 获取当前设备型号名称
 #import "sys/utsname.h"
 
-// judge network status
 #import "BASDKReachability.h"
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
@@ -57,17 +54,14 @@
     NSDictionary *infoDictionary = [currentBundle infoDictionary];
     return [infoDictionary objectForKey:@"CFBundleVersion"];
 }
-// 获取手机品牌
 + (NSString *)getDeviceBand {
     return [[UIDevice currentDevice]model];
 }
-// 获取当前设备的操作系统版本号
 + (NSString *)getDeviceOSVersion {
     return [[UIDevice currentDevice] systemVersion];
 }
 
-#pragma mark - 获取UDID + idfa
-// 获取当前设备的UDID-存储到KeyChain中
+//
 + (NSString *)getDeviceUDIDValueFromKeychain {
     BASDKKeychainItemWrapper *keyChainWrapper = [[BASDKKeychainItemWrapper alloc] initWithIdentifier:kBASDKKeychainIdentifier accessGroup:nil];
     NSString *udidvalue = [keyChainWrapper objectForKey:(__bridge id)kSecAttrLabel];
@@ -79,8 +73,7 @@
         return udidstr;
     }
 }
-
-// get current设备的idfa
+// idfa
 + (NSString *)getDeviceIDFA {
     BASDKKeychainItemWrapper *keyChainWrapper = [[BASDKKeychainItemWrapper alloc]initWithIdentifier:kBASDKKeychainIdentifier accessGroup:nil];
     NSString *idfaValue = [keyChainWrapper objectForKey:(__bridge id)kSecAttrAccount];
@@ -93,7 +86,7 @@
     }
 }
 
-// save public service token
+// save or get
 + (void)setKeyChainPublicServiceTokenWithSaveObject:(NSString *)saveObject {
     BASDKKeychainItemWrapper *keychain = [[BASDKKeychainItemWrapper alloc]initWithIdentifier:kBASDKKeychainIdentifier accessGroup:nil];
     NSString *keychainValue = [keychain objectForKey:(__bridge id)kSecAttrService];
@@ -111,7 +104,6 @@
     return @"";
 }
 
-// 运营商名称
 + (NSString *)getDeviceCarrierName {
     CTTelephonyNetworkInfo *info = [CTTelephonyNetworkInfo new];
     CTCarrier *carrier = [info subscriberCellularProvider];
@@ -124,7 +116,6 @@
     }
     return carrierName;
 }
-// 运营商
 + (NSString *)getDeviceCarrier {
     CTTelephonyNetworkInfo *info = [CTTelephonyNetworkInfo new];
     CTCarrier *carrier = [info subscriberCellularProvider];
@@ -141,9 +132,7 @@
     }
     return  [NSString stringWithFormat:@"%@%@",mobileCountryCode,mobileNetworkCode];
 }
-// 地区
 + (NSString *)getDeviceRegion {
-    // iOS 获取设备当前地区的代码
     NSString *region = [[NSLocale currentLocale] objectForKey:NSLocaleIdentifier];
     NSArray * strArr = [region componentsSeparatedByString:@"_"];
     if (strArr.count>1) {
@@ -152,16 +141,12 @@
         return strArr[0];
     }
 }
-
-// 设备运行系统名称 -- 即iOS
 + (NSString *)getDeviceOSName {
     return [[UIDevice currentDevice] systemName];
 }
-/* 当前设备名称--即用户可在设置中自定义的名称     */
 + (NSString *)getDeviceName {
     return [[UIDevice currentDevice] name];
 }
-
 + (BOOL)isHaveString:(NSString *)string {
     if (string == nil || string == NULL){
         return NO;
@@ -184,32 +169,27 @@
     return YES;
 }
 
-
-
-
-#pragma mark - 获取网络类型
 + (NSString *)getDeviceNetworkStatus {
     NSString *netconnType = @"";
     
     BASDKReachability *reach = [BASDKReachability reachabilityWithHostName:@"www.apple.com"];
     
     switch ([reach currentReachabilityStatus]) {
-        case BANotReachable:// 没有网络
+        case BANotReachable:
         {
             
             netconnType = @"no network";
         }
             break;
             
-        case BAReachableViaWiFi:// Wifi
+        case BAReachableViaWiFi:
         {
             netconnType = @"Wifi";
         }
             break;
             
-        case BAReachableViaWWAN: // 手机自带网络
+        case BAReachableViaWWAN:
         {
-            // 获取手机网络类型
             CTTelephonyNetworkInfo *info = [[CTTelephonyNetworkInfo alloc] init];
             
             NSString *currentStatus = info.currentRadioAccessTechnology;
@@ -258,8 +238,6 @@
     return netconnType;
 }
 
-
-#pragma mark -  获取设备型号
 + (NSString*)getDeviceType {
     struct utsname systemInfo;
     
@@ -402,10 +380,7 @@
     return platform;
 }
 
-
-
-#pragma mark - get system languages
-/**   en:英文  zh-Hans:简体中文   zh-Hant:繁体中文    ja:日本  ...... */
+//  get system languages
 + (NSString*)getPreferredLanguage {
     NSUserDefaults* defs = [NSUserDefaults standardUserDefaults];
     NSArray* languages = [defs objectForKey:@"AppleLanguages"];

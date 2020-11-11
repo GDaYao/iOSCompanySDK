@@ -10,7 +10,6 @@
 @implementation NSDictionary (BASDKDictionary)
 
 
-// 取字典元素
 - (id)BASDKDicSafetyObjectForKey:(NSString *)key {
     if ([self.allKeys containsObject:key]) {
         id object = [self objectForKey:key];

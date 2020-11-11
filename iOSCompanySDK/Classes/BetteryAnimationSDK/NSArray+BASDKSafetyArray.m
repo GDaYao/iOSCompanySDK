@@ -9,8 +9,6 @@
 
 @implementation NSArray (BASDKSafetyArray)
 
-/** func: 取数据-index
- */
 - (id)BASDKSafetyArrayObjectAtIndexVerify:(NSUInteger)index {
     if (index < self.count) {
         return[self objectAtIndex:index];

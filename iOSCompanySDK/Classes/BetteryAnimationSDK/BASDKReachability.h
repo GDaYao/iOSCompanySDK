@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
 #endif
 
-// 注意const常量这里的监听名已改变
+
 extern NSString *const kBASDKReachabilityChangedNotification;
 
 
@@ -41,35 +41,11 @@ typedef void (^BANetworkUnreachable)(BASDKReachability * reachability);
 
 
 +(BASDKReachability*)reachabilityWithHostname:(NSString*)hostname;
-// This is identical to the function above, but is here to maintain
-//compatibility with Apples original code. (see .m)
-+ (BASDKReachability*)reachabilityWithHostName:(NSString*)hostname;
-+ (BASDKReachability*)reachabilityForInternetConnection;
-+ (BASDKReachability*)reachabilityWithAddress:(void *)hostAddress;
-+ (BASDKReachability*)reachabilityForLocalWiFi;
+// 下面这个方法与上面一样但是需要保留
++(BASDKReachability*)reachabilityWithHostName:(NSString*)hostname;
 
--(BASDKReachability *)initWithReachabilityRef:(SCNetworkReachabilityRef)ref;
+- (BANetworkStatus)currentReachabilityStatus;
 
--(BOOL)startNotifier;
--(void)stopNotifier;
-
--(BOOL)isReachable;
--(BOOL)isReachableViaWWAN;
--(BOOL)isReachableViaWiFi;
-
-// WWAN may be available, but not active until a connection has been established.
-// WiFi may require a connection for VPN on Demand.
--(BOOL)isConnectionRequired; // Identical DDG variant.
--(BOOL)connectionRequired; // Apple's routine.
-// Dynamic, on demand connection?
--(BOOL)isConnectionOnDemand;
-// Is user intervention required?
--(BOOL)isInterventionRequired;
-
--(BANetworkStatus)currentReachabilityStatus;
--(SCNetworkReachabilityFlags)reachabilityFlags;
--(NSString*)currentReachabilityString;
--(NSString*)currentReachabilityFlags;
 
 
 

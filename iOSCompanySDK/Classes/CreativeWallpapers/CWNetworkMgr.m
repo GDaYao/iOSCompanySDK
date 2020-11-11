@@ -13,7 +13,7 @@
     AFHTTPSessionManager *sessionMgr = [AFHTTPSessionManager manager];
     sessionMgr.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"application/xhtml+xml", @"application/xml", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", @"video/mp4", @"text/plain",@"charset=utf-8",nil];
     sessionMgr.requestSerializer.timeoutInterval = 6.f; // 60.0s request->response default time out
-    [sessionMgr POST:URLString parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
+    [sessionMgr POST:URLString parameters:parameters headers:nil progress:^(NSProgress * _Nonnull downloadProgress) {
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (responseObject) {
             success(responseObject);

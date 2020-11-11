@@ -25,21 +25,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy)BOOL(^basdkShouldSelectItem)(UICollectionView *collectionView,NSIndexPath *indexPath);
 @property (nonatomic,copy)UIEdgeInsets(^basdkInsetForSectionAtIndex)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
 
+@property (nonatomic,copy) void(^basdkScrollViewDidScrollToTopInCV)(UIScrollView *scrollView);
+@property (nonatomic,copy) void(^basdkScrollViewWillBegingDecelerating)(UIScrollView *scrollView);
+@property (nonatomic,copy) void(^basdkScrollViewWillBeginDraggingInCV)(UIScrollView *scrollView);
+@property (nonatomic,copy) void(^basdkScrollViewDidScrollInCV)(UIScrollView *scrollView);
+@property (nonatomic,copy) void(^basdkScrollViewDidEndDecelerating)(UIScrollView *scrollView);
+@property (nonatomic,copy) void(^basdkScrollViewDidEndDragging)(UIScrollView *scrollView,BOOL decelerate);
+
 
 //
 @property (nonatomic,copy)CGSize (^basdkHeaderSizeInSection)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
 @property (nonatomic,copy)CGSize (^basdkFooterSizeInSection)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
 @property (nonatomic,copy)UICollectionReusableView *_Nullable(^basdkSectionHeader)(UICollectionView *collectionView,NSString *kind,NSIndexPath *indexPath);
 @property (nonatomic,copy)UICollectionReusableView *_Nullable(^basdkSectionFooter)(UICollectionView *collectionView,NSString *kind,NSIndexPath *indexPath);
-
-
-// scroll delegate
-@property (nonatomic,copy) void(^basdkScrollViewWillBeginDraggingInCV)(UIScrollView *scrollView);
-@property (nonatomic,copy) void(^basdkScrollViewDidScrollToTopInCV)(UIScrollView *scrollView);
-@property (nonatomic,copy) void(^basdkScrollViewDidScrollInCV)(UIScrollView *scrollView);
-@property (nonatomic,copy) void(^basdkScrollViewDidEndDragging)(UIScrollView *scrollView,BOOL decelerate);
-@property (nonatomic,copy) void(^basdkScrollViewWillBegingDecelerating)(UIScrollView *scrollView);
-@property (nonatomic,copy) void(^basdkScrollViewDidEndDecelerating)(UIScrollView *scrollView);
 
 
 

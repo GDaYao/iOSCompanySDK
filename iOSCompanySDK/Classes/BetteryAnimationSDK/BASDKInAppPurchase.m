@@ -38,7 +38,7 @@
         productRequest.delegate = self;
         [productRequest start];
     }else{
-        NSLog(@"用户不允许程序内付费");
+        NSLog(@"log-CS-用户不允许程序内付费");
     }
 }
 
@@ -48,7 +48,7 @@
     NSArray *product = response.products;
     if (!product.count)
     {
-        NSLog(@"未收到内购产品信息");
+        NSLog(@"log-CS-未收到内购产品信息");
         if ([self.deleagte respondsToSelector:@selector(productRequestInReceiveResponseWithNullProduct)]) {
             [self.deleagte productRequestInReceiveResponseWithNullProduct];
         }
@@ -64,10 +64,9 @@
         }
     }
     // 发送购买请求
-    if (currentProduct != nil)
-    {
+    if (currentProduct != nil) {
         SKPayment *payMent = [SKPayment paymentWithProduct:currentProduct];
-        NSLog(@"加入内购购买队列-开始发送购买请求");
+        NSLog(@"log-CS-加入内购购买队列-开始发送购买请求");
         if (payMent)
         {
             [[SKPaymentQueue defaultQueue] addPayment:payMent];
@@ -76,17 +75,15 @@
 
 }
 #pragma mark <SKRequestDelegate>
-// call in request finish with success
 - (void)requestDidFinish:(SKRequest *)request {
-    NSLog(@"内购购买请求成功");
+    NSLog(@"log-CS-内购购买请求成功");
     if ([self.deleagte respondsToSelector:@selector(SKRequestInDidFinish)]) {
         [self.deleagte SKRequestInDidFinish];
     }
     
 }
-// call in request fail with error
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
-    NSLog(@"内购购买请求失败-error:%@",error);
+    NSLog(@"log-CS-内购购买请求失败-error:%@",error);
     if ([self.deleagte respondsToSelector:@selector(SKRequestInDidFailWithError:)]) {
         [self.deleagte SKRequestInDidFailWithError:error];
     }
@@ -212,10 +209,9 @@
     
 }
 
-//创建请求到苹果官方进行购买验证（测试环境）
+// 创建请求到苹果官方进行购买验证（测试环境）
 - (void)verifyPurchaseWithTestEnvironment:(NSData *)bodyData receiptString:(NSString *)receiptString productIdentifer:(NSString *)productIdentifer  {
     dispatch_async(dispatch_get_main_queue(), ^{
-        //[SVProgressHUD showWithStatus:@"测试验证"];
     });
     NSURL *url=[NSURL URLWithString:@"https://sandbox.itunes.apple.com/verifyReceipt"];
     NSMutableURLRequest *requestM=[NSMutableURLRequest requestWithURL:url];

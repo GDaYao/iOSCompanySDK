@@ -40,14 +40,7 @@
         if (accessGroup != nil)
         {
 #if TARGET_IPHONE_SIMULATOR
-            // Ignore the access group if running on the iPhone simulator.
-            //
-            // Apps that are built for the simulator aren't signed, so there's no keychain access group
-            // for the simulator to check. This means that all apps can see all keychain items when run
-            // on the simulator.
-            //
-            // If a SecItem contains an access group attribute, SecItemAdd and SecItemUpdate on the
-            // simulator will return -25243 (errSecNoAccessForItem).
+
 #else
             [genericPasswordQuery setObject:accessGroup forKey:(__bridge id)kSecAttrAccessGroup];
 #endif
@@ -70,14 +63,8 @@
             if (accessGroup != nil)
             {
 #if TARGET_IPHONE_SIMULATOR
-                // Ignore the access group if running on the iPhone simulator.
-                //
-                // Apps that are built for the simulator aren't signed, so there's no keychain access group
-                // for the simulator to check. This means that all apps can see all keychain items when run
-                // on the simulator.
-                //
-                // If a SecItem contains an access group attribute, SecItemAdd and SecItemUpdate on the
-                // simulator will return -25243 (errSecNoAccessForItem).
+
+                
 #else
                 [keychainItemData setObject:accessGroup forKey:(__bridge id)kSecAttrAccessGroup];
 #endif
@@ -142,8 +129,7 @@
     //[returnDict setObject:_identifier forKey:(id)kSecAttrGeneric];
     [returnDict setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
     
-    // convert the dictionary to an info list for serialization
-    // could contain multiple result sets to be handled
+
     NSDictionary * resultsInfo = [dictionaryToConvert objectForKey:(__bridge id)kSecValueData];
     
     NSString * error;
@@ -218,17 +204,7 @@
         [tempCheck removeObjectForKey:(__bridge id)kSecClass];
         
 #if TARGET_IPHONE_SIMULATOR
-        // Remove the access group if running on the iPhone simulator.
-        //
-        // Apps that are built for the simulator aren't signed, so there's no keychain access group
-        // for the simulator to check. This means that all apps can see all keychain items when run
-        // on the simulator.
-        //
-        // If a SecItem contains an access group attribute, SecItemAdd and SecItemUpdate on the
-        // simulator will return -25243 (errSecNoAccessForItem).
-        //
-        // The access group attribute will be included in items returned by SecItemCopyMatching,
-        // which is why we need to remove it before updating the item.
+
         [tempCheck removeObjectForKey:(__bridge id)kSecAttrAccessGroup];
 #endif
         

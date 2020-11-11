@@ -12,8 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NSDictionary (BASDKDictionary)
 
 
-
-// 取字典元素
 - (id)BASDKDicSafetyObjectForKey:(NSString *)key;
 
 

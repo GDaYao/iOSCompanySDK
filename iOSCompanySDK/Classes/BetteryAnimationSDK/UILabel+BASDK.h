@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UILabel (BASDK)
 
 
-#pragma mark - `UILabel` init method
+
 + (UILabel *)InitLabWithBGColor:(UIColor * _Nullable)bgColor textColor:(UIColor *)txColor fontName:(NSString *_Nullable)fontName isBold:(BOOL)isBold fontSize:(CGFloat)fontSize labText:(NSString *)labText txAlignment:(NSTextAlignment)txAlignment;
 
 

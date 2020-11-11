@@ -28,7 +28,7 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
   s.source           = { :git => 'https://github.com/GDaYao/iOSCompanySDK.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
 #  s.source_files = 'iOSCompanySDK/Classes/**/*'
 
@@ -38,7 +38,7 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  #s.dependency 'AFNetworking', '~> 4.0.1'
   s.frameworks = 'UIKit'
   
   
@@ -47,7 +47,7 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
     newwallpapersfull.libraries = 'sqlite3'
     newwallpapersfull.source_files = 'iOSCompanySDK/Classes/NewWallpapersFull/**/*'
     newwallpapersfull.public_header_files = 'iOSCompanySDK/Classes/NewWallpapersFull/**/*.h'
-    newwallpapersfull.dependency 'AFNetworking','3.2.1'
+    newwallpapersfull.dependency 'AFNetworking','4.0.1'
     #newwallpapersfull.dependency 'MBProgressHUD'
     #newwallpapersfull.resource_bundles = {
     #}
@@ -84,7 +84,7 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
     videoplayerclip.libraries = 'sqlite3'
     videoplayerclip.source_files = 'iOSCompanySDK/Classes/VideoPlayerClip/**/*'
     videoplayerclip.public_header_files = 'iOSCompanySDK/Classes/VideoPlayerClip/**/*.h'
-    videoplayerclip.dependency 'AFNetworking','3.2.1'
+    videoplayerclip.dependency 'AFNetworking','4.0.1'
     #videoplayerclip.dependency 'SJBaseVideoPlayer',:git=>'git@github.com:GDaYao/SJBaseVideoPlayer.git' // 取消依赖
     videoplayerclip.xcconfig = { "FRAMEWORK_SEARCH_PATHS" => '$(inherited)', "LIBRARY_SEARCH_PATHS" => '$(inherited)', "HEADER_SEARCH_PATHS" => '$(inherited)', "OTHER_CFLAGS" => '$(inherited)', "OTHER_LDFLAGS" => '$(inherited)', "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited)' }
     end
@@ -93,7 +93,7 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
     remotecontrol.libraries = 'sqlite3'
     remotecontrol.source_files = 'iOSCompanySDK/Classes/RemoteControl/**/*'
     remotecontrol.public_header_files = 'iOSCompanySDK/Classes/RemoteControl/**/*.h'
-    remotecontrol.dependency 'AFNetworking','3.2.1'
+    remotecontrol.dependency 'AFNetworking','4.0.1'
     remotecontrol.xcconfig = { "FRAMEWORK_SEARCH_PATHS" => '$(inherited)', "LIBRARY_SEARCH_PATHS" => '$(inherited)', "HEADER_SEARCH_PATHS" => '$(inherited)', "OTHER_CFLAGS" => '$(inherited)', "OTHER_LDFLAGS" => '$(inherited)', "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited)' }
   
     end
@@ -101,7 +101,7 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
     voicerecoder.libraries = 'sqlite3'
     voicerecoder.source_files = 'iOSCompanySDK/Classes/VoiceRecoder/**/*'
     voicerecoder.public_header_files = 'iOSCompanySDK/Classes/VoiceRecoder/**/*.h'
-    voicerecoder.dependency 'AFNetworking','3.2.1'
+    voicerecoder.dependency 'AFNetworking','4.0.1'
     voicerecoder.xcconfig = { "FRAMEWORK_SEARCH_PATHS" => '$(inherited)', "LIBRARY_SEARCH_PATHS" => '$(inherited)', "HEADER_SEARCH_PATHS" => '$(inherited)', "OTHER_CFLAGS" => '$(inherited)', "OTHER_LDFLAGS" => '$(inherited)', "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited)' }
     
     end
@@ -121,7 +121,7 @@ TODO: 用于公司的各个项目添加公共方法使用；每个项目都会�
     
     betteryanimationsdk.source_files = 'iOSCompanySDK/Classes/BetteryAnimationSDK/**/*'
     betteryanimationsdk.public_header_files = 'iOSCompanySDK/Classes/BetteryAnimationSDK/**/*.h'
-    betteryanimationsdk.dependency 'AFNetworking','3.2.1'
+    betteryanimationsdk.dependency 'AFNetworking','4.0.1'
     betteryanimationsdk.xcconfig = { "FRAMEWORK_SEARCH_PATHS" => '$(inherited)', "LIBRARY_SEARCH_PATHS" => '$(inherited)', "HEADER_SEARCH_PATHS" => '$(inherited)', "OTHER_CFLAGS" => '$(inherited)', "OTHER_LDFLAGS" => '$(inherited)', "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited)' }
     
     

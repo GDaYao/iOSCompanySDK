@@ -10,7 +10,6 @@
 @implementation UILabel (BASDK)
 
 
-#pragma mark - `UILabel` init method
 + (UILabel *)InitLabWithBGColor:(UIColor * _Nullable)bgColor textColor:(UIColor *)txColor fontName:(NSString *_Nullable)fontName isBold:(BOOL)isBold fontSize:(CGFloat)fontSize labText:(NSString *)labText txAlignment:(NSTextAlignment)txAlignment {
     UILabel *lab = [[UILabel alloc]init];
     if (bgColor == nil) {
@@ -29,6 +28,7 @@
     lab.textColor = txColor;
     lab.textAlignment = txAlignment;
     lab.numberOfLines = 0;
+    
     return lab;
 }
 
