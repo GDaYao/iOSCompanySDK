@@ -34,7 +34,9 @@
     if (isInternational == YES) {
         // 获取国际化名称
         NSString *appNameStr = [[NSBundle mainBundle] localizedStringForKey:@"CFBundleDisplayName" value:nil table:@"InfoPlist"];
-        return appNameStr;
+        if (appNameStr.length != 0) {
+            return appNameStr;
+        }
     }
     NSBundle *currentBundle = [NSBundle mainBundle];
     NSDictionary *infoDictionary = [currentBundle infoDictionary];
