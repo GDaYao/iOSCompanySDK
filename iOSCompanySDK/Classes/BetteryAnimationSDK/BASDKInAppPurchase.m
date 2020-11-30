@@ -101,15 +101,19 @@
             {
                 NSLog(@"内购产品购买成功");
                 
-                // no 二次验证
-                //[self completeTransaction:tran];
+                // 添加二次内购验证
+                [self completeTransaction:tran];
                 
-                NSString *productId = tran.payment.productIdentifier;
-                NSString *receiptString = [tran.transactionReceipt base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
-                if([self.deleagte respondsToSelector:@selector(completeTransactionWithProductId:transactionReceipt:transactionId:)]){
-                    [self.deleagte completeTransactionWithProductId:productId transactionReceipt:receiptString transactionId:tran.transactionIdentifier];
-                }
                 
+                //
+//                NSString *productId = tran.payment.productIdentifier;
+//                NSURL *receiptUrl=[[NSBundle mainBundle] appStoreReceiptURL];
+//                NSData *receiptData=[NSData dataWithContentsOfURL:receiptUrl];
+//                NSString *receiptString=[receiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];//转化为base64字符串
+//                if([self.deleagte respondsToSelector:@selector(completeTransactionWithProductId:transactionReceipt:transactionId:)]){
+//                    [self.deleagte completeTransactionWithProductId:productId transactionReceipt:receiptString transactionId:tran.transactionIdentifier];
+//                }
+//
                 
                 // 订阅特殊处理
                 if(tran.originalTransaction){
@@ -133,7 +137,9 @@
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];
                 
                 NSString *productId = tran.payment.productIdentifier;
-                NSString *receiptString = [tran.transactionReceipt base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
+                NSURL *receiptUrl=[[NSBundle mainBundle] appStoreReceiptURL];
+                NSData *receiptData=[NSData dataWithContentsOfURL:receiptUrl];
+                NSString *receiptString=[receiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];//转化为base64字符串
                 if ([self.deleagte respondsToSelector:@selector(restoreTransactionWithProductId:transactionReceipt:transactionId:)]) {
                     [self.deleagte restoreTransactionWithProductId:productId transactionReceipt:receiptString transactionId:tran.transactionIdentifier];
                 }
@@ -171,14 +177,14 @@
     NSString *receiptString=[receiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];//转化为base64字符串
     
     // 自动续订--需要共享密钥
-//    NSDictionary * bodyDic = @{
-//        @"receipt-data":receiptString,
-//        @"password":@"xxx"
-//    };
-//    NSString *bodyString = [self dictionaryToJson:bodyDic];
+    NSDictionary * bodyDic = @{
+        @"receipt-data":receiptString,
+        @"password":@"07983be2e8de4c5196495f512b23dd96"
+    };
+    NSString *bodyString = [self dictionaryToJson:bodyDic];
     
     // 其他
-    NSString *bodyString = [NSString stringWithFormat:@"{\"receipt-data\" : \"%@\"}", receiptString];//拼接请求数据
+    //NSString *bodyString = [NSString stringWithFormat:@"{\"receipt-data\" : \"%@\"}", receiptString];//拼接请求数据
 
     NSData *bodyData = [bodyString dataUsingEncoding:NSUTF8StringEncoding];
     NSURL *url=[NSURL URLWithString: @"https://buy.itunes.apple.com/verifyReceipt"];
@@ -188,20 +194,38 @@
     [[[NSURLSession sharedSession] dataTaskWithRequest:requestM completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             NSLog(@"验证购买过程中发生错误，错误信息：%@",error.localizedDescription);
+            
+            if ([self.deleagte respondsToSelector:@selector(IAPFailTransactionWithProductId:errorLocalizedDescription:)]) {
+                [self.deleagte IAPFailTransactionWithProductId:@"" errorLocalizedDescription:@"验证购买过程中发生错误"];
+            }
+            
             return;
         }
         NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
         NSLog(@"%@",dic);
         if([dic[@"status"] intValue]==0){
             //正式环境验证通过（说明是上线以后的用户购买）
-            NSLog(@"购买成功！");
+            NSLog(@"log-购买成功！");
+            
             //调用setVip接口
+            NSString *productId = transaction.payment.productIdentifier;
+            NSURL *receiptUrl=[[NSBundle mainBundle] appStoreReceiptURL];
+            NSData *receiptData=[NSData dataWithContentsOfURL:receiptUrl];
+            NSString *receiptString=[receiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];//转化为base64字符串
+            if([self.deleagte respondsToSelector:@selector(completeTransactionWithProductId:transactionReceipt:transactionId:)]){
+                [self.deleagte completeTransactionWithProductId:productId transactionReceipt:receiptString transactionId:transaction.transactionIdentifier];
+            }
             
         }else if([dic[@"status"] intValue]== 21007){
             //第二步，验证测试环境
-            [self verifyPurchaseWithTestEnvironment:bodyData receiptString:receiptString productIdentifer:productIdentifer];
+            [self verifyPurchaseWithTestEnvironment:bodyData receiptString:receiptString productIdentifer:productIdentifer transaction:transaction];
         }else {
             NSLog(@"验证失败,订单出错");
+            
+            NSString *productId = transaction.payment.productIdentifier;
+            if ([self.deleagte respondsToSelector:@selector(IAPFailTransactionWithProductId:errorLocalizedDescription:)]) {
+                [self.deleagte IAPFailTransactionWithProductId:productId errorLocalizedDescription:@"验证失败,订单出错"];
+            }
             
         }
         
@@ -210,7 +234,7 @@
 }
 
 // 创建请求到苹果官方进行购买验证（测试环境）
-- (void)verifyPurchaseWithTestEnvironment:(NSData *)bodyData receiptString:(NSString *)receiptString productIdentifer:(NSString *)productIdentifer  {
+- (void)verifyPurchaseWithTestEnvironment:(NSData *)bodyData receiptString:(NSString *)receiptString productIdentifer:(NSString *)productIdentifer transaction:(SKPaymentTransaction *)transaction  {
     dispatch_async(dispatch_get_main_queue(), ^{
     });
     NSURL *url=[NSURL URLWithString:@"https://sandbox.itunes.apple.com/verifyReceipt"];
@@ -220,23 +244,42 @@
     [[[NSURLSession sharedSession] dataTaskWithRequest:requestM completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             NSLog(@"验证购买过程中发生错误，错误信息：%@",error.localizedDescription);
+            
+            if ([self.deleagte respondsToSelector:@selector(IAPFailTransactionWithProductId:errorLocalizedDescription:)]) {
+                [self.deleagte IAPFailTransactionWithProductId:@"" errorLocalizedDescription:@"验证购买过程中发生错误"];
+            }
+            
             return;
         }
         NSDictionary *dic=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
         NSLog(@"%@",dic);
         if([dic[@"status"] intValue]==0){
             NSLog(@"购买成功！");
+            
             //调用setVip接口
+            NSString *productId = transaction.payment.productIdentifier;
+            NSURL *receiptUrl=[[NSBundle mainBundle] appStoreReceiptURL];
+            NSData *receiptData=[NSData dataWithContentsOfURL:receiptUrl];
+            NSString *receiptString=[receiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];//转化为base64字符串
+            if([self.deleagte respondsToSelector:@selector(completeTransactionWithProductId:transactionReceipt:transactionId:)]){
+                [self.deleagte completeTransactionWithProductId:productId transactionReceipt:receiptString transactionId:transaction.transactionIdentifier];
+            }
             
         }else {
             NSLog( @"验证失败,订单出错" );
+            
+            NSString *productId = transaction.payment.productIdentifier;
+            if ([self.deleagte respondsToSelector:@selector(IAPFailTransactionWithProductId:errorLocalizedDescription:)]) {
+                [self.deleagte IAPFailTransactionWithProductId:productId errorLocalizedDescription:@"验证失败,订单出错"];
+            }
+            
         }
         
     }] resume];
     
 }
 
-+ (NSString*)dictionaryToJson:(NSDictionary *)dic {
+- (NSString*)dictionaryToJson:(NSDictionary *)dic {
     NSError *paraseError = nil;
     NSData *jonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&paraseError];
     NSString *base =[[NSString alloc] initWithData:jonData encoding:NSUTF8StringEncoding];
