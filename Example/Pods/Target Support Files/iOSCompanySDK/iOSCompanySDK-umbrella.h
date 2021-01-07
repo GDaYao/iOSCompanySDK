@@ -89,6 +89,7 @@
 #import "Reachability.h"
 #import "UIButton+VRSDKBtn.h"
 #import "UILabel+VRSDKLab.h"
+#import "VRSDKInAppPurchase.h"
 #import "VRSDKKeychainItemWrapper.h"
 #import "VRSDKNetworkMgr.h"
 #import "VRSDKSubCollectionView.h"
