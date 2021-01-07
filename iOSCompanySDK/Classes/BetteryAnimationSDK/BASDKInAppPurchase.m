@@ -291,6 +291,17 @@
     return base;
 }
 
+/** AppStore发起IAP内购购买时
+ * 直接返回NO不在下单处理
+ *
+ */
+- (BOOL)paymentQueue:(SKPaymentQueue *)queue shouldAddStorePayment:(SKPayment *)payment forProduct:(SKProduct *)product {
+    return NO;
+}
+
+
+
+
 
 
 
