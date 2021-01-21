@@ -30,7 +30,7 @@
     NSDictionary *infoDictionary = [currentBundle infoDictionary];
     return [infoDictionary objectForKey:@"CFBundleIdentifier"];
 }
-+ (NSString *)getAppDisplayNameWithIsInternational:(BOOL)isInternational {
++ (NSString *)getAppDsisplayNameWithIsInternational:(BOOL)isInternational {
     if (isInternational == YES) {
         // 获取国际化名称
         NSString *appNameStr = [[NSBundle mainBundle] localizedStringForKey:@"CFBundleDisplayName" value:nil table:@"InfoPlist"];

@@ -108,7 +108,7 @@
     return nil;
 }
 
-// TODO: cell display+select
+// TODO: cell dsisplay+select
 
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{

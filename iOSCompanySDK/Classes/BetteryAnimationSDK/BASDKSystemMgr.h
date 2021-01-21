@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getAppBundleId;
 + (NSString *)getAppVersion;
 + (NSString *)getAppBuildVersion;
-+ (NSString *)getAppDisplayNameWithIsInternational:(BOOL)isInternational;
++ (NSString *)getAppDsisplayNameWithIsInternational:(BOOL)isInternational;
 + (NSString *)getDeviceOSVersion;
 + (NSString *)getDeviceBand;
 + (NSString *)getDeviceRegion;

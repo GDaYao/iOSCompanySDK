@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)getAppBundleId;
 
-+ (NSString *)getAppDisplayName;
++ (NSString *)getAppDsisplayName;
 
 
 #pragma mark - get device config
