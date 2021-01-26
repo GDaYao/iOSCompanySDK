@@ -22,6 +22,7 @@ PODS:
     - iOSCompanySDK/NewWallpapersFull (= 1.0.3)
     - iOSCompanySDK/RemoteControl (= 1.0.3)
     - iOSCompanySDK/VideoPlayerClip (= 1.0.3)
+    - iOSCompanySDK/VoiceChangerSDK (= 1.0.3)
     - iOSCompanySDK/VoiceRecoder (= 1.0.3)
   - iOSCompanySDK/AVAnimationSDK (1.0.3)
   - iOSCompanySDK/BetteryAnimationSDK (1.0.3):
@@ -35,6 +36,8 @@ PODS:
   - iOSCompanySDK/RemoteControl (1.0.3):
     - AFNetworking (= 4.0.1)
   - iOSCompanySDK/VideoPlayerClip (1.0.3):
+    - AFNetworking (= 4.0.1)
+  - iOSCompanySDK/VoiceChangerSDK (1.0.3):
     - AFNetworking (= 4.0.1)
   - iOSCompanySDK/VoiceRecoder (1.0.3):
     - AFNetworking (= 4.0.1)
@@ -52,7 +55,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
-  iOSCompanySDK: feb35850346f85f63ee514f45c14c048ad9d4257
+  iOSCompanySDK: 740ce55dbe7c5441a78cd9e19e717a4612bbd4be
 
 PODFILE CHECKSUM: 4112ca62c4c2a491a085b220390829773d616877
 
