@@ -19,4 +19,30 @@
     }
 }
 
+
++ (BOOL)VCSDKClassObjectIsNull:(id)judgeClassObject {
+    if ( (judgeClassObject==nil) || (judgeClassObject ==NULL) ) {
+        return YES;
+    }
+    
+    if ( [judgeClassObject isKindOfClass:[NSNull class] ] ) {
+        return YES;
+    }
+    
+    NSString *str = NSStringFromClass(judgeClassObject);
+    if ([str isEqualToString:@""]       ||
+        [str isEqualToString:@"null"]   ||
+        [str isEqualToString:@"<NULL>"] ||
+        [str isEqualToString:@"<null>"] ||
+        [str isEqualToString:@"NULL"]   ||
+        [str isEqualToString:@"nil"]    ||
+        [str isEqualToString:@"(null)"] ) {
+        return YES;
+    }
+    return NO;
+}
+
+
+
+
 @end

@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)VCSDKSafetyDictionaryObjectForKey:(NSString *)key;
 
+
++ (BOOL)VCSDKClassObjectIsNull:(id)judgeClassObject;
+
 @end
 
 NS_ASSUME_NONNULL_END
