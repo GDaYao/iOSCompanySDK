@@ -104,17 +104,17 @@
         return udidstr;
     }
 }
-// get current设备的idfa
+// get current设备的idfa -- 不用存储钥匙串
 + (NSString *)nwfGetDeviceIDFA {
-    NWFKeychainItemWrapper *keychain = [[NWFKeychainItemWrapper alloc]initWithIdentifier:kNwfInKeychainItemIndentifier accessGroup:nil];
-    NSString *idfaValue = [keychain objectForKey:(__bridge id)kSecAttrAccount];
-    if ( idfaValue.length != 0 ) {
-        return idfaValue;
-    }else{
+//    NWFKeychainItemWrapper *keychain = [[NWFKeychainItemWrapper alloc]initWithIdentifier:kNwfInKeychainItemIndentifier accessGroup:nil];
+//    NSString *idfaValue = [keychain objectForKey:(__bridge id)kSecAttrAccount];
+//    if ( idfaValue.length != 0 ) {
+//        return idfaValue;
+//    }else{
         NSString *idfastr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-        [keychain setObject:idfastr forKey:(__bridge id)kSecAttrAccount];
+        //[keychain setObject:idfastr forKey:(__bridge id)kSecAttrAccount];
         return idfastr;
-    }
+//    }
 }
 
 // 获取手机品牌
