@@ -44,7 +44,7 @@
 
 #pragma mark - UICollectionView delegate/datasource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
-    NSInteger numInt = self.vcsdkNumberSectionsInCV(collectionView);
+    NSInteger numInt = self.vcsdkNumberSections(collectionView);
     return numInt;
 }
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
@@ -101,18 +101,18 @@
     return YES;
 }
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-    if (self.vcsdkScrollViewWillBeginDraggingInCV) {
-        self.vcsdkScrollViewWillBeginDraggingInCV(scrollView);
+    if (self.vcsdkScrollViewWillBeginDragging) {
+        self.vcsdkScrollViewWillBeginDragging(scrollView);
     }
 }
 - (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView {
-    if (self.vcsdkScrollViewDidScrollToTopInCV) {
-        self.vcsdkScrollViewDidScrollToTopInCV(scrollView);
+    if (self.vcsdkScrollViewDidScrollToTop) {
+        self.vcsdkScrollViewDidScrollToTop(scrollView);
     }
 }
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if (self.vcsdkScrollViewDidScrollInCV) {
-        self.vcsdkScrollViewDidScrollInCV(scrollView);
+    if (self.vcsdkScrollViewDidScroll) {
+        self.vcsdkScrollViewDidScroll(scrollView);
     }
 }
 // scrollView
