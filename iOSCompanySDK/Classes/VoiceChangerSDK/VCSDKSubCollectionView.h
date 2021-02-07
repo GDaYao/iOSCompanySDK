@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VCSDKSubCollectionView : UICollectionView <UIScrollViewDelegate,UICollectionViewDataSource,UICollectionViewDelegate>
 
 
-@property (nonatomic,copy)NSInteger(^vcsdkNumberSectionsInCV)(UICollectionView *collectionView);
+@property (nonatomic,copy)NSInteger(^vcsdkNumberSections)(UICollectionView *collectionView);
 @property (nonatomic,copy)NSInteger(^vcsdkNumberItems)(UICollectionView *collectionView,NSInteger section);
 
 @property (nonatomic,copy)CGSize(^vcsdkSizeForItem)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSIndexPath *indexPath);
@@ -23,10 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy)BOOL(^vcsdkShouldSelectItem)(UICollectionView *collectionView,NSIndexPath *indexPath);
 @property (nonatomic,copy)UIEdgeInsets(^vcsdkInsetForSectionAtIndex)(UICollectionView *collectionView,UICollectionViewLayout *collectionViewLayout,NSInteger section);
 
-@property (nonatomic,copy) void(^vcsdkScrollViewDidScrollToTopInCV)(UIScrollView *scrollView);
+@property (nonatomic,copy) void(^vcsdkScrollViewDidScrollToTop)(UIScrollView *scrollView);
 @property (nonatomic,copy) void(^vcsdkScrollViewWillBegingDecelerating)(UIScrollView *scrollView);
-@property (nonatomic,copy) void(^vcsdkScrollViewWillBeginDraggingInCV)(UIScrollView *scrollView);
-@property (nonatomic,copy) void(^vcsdkScrollViewDidScrollInCV)(UIScrollView *scrollView);
+@property (nonatomic,copy) void(^vcsdkScrollViewWillBeginDragging)(UIScrollView *scrollView);
+@property (nonatomic,copy) void(^vcsdkScrollViewDidScroll)(UIScrollView *scrollView);
 @property (nonatomic,copy) void(^vcsdkScrollViewDidEndDecelerating)(UIScrollView *scrollView);
 @property (nonatomic,copy) void(^vcsdkScrollViewDidEndDragging)(UIScrollView *scrollView,BOOL decelerate);
 
@@ -45,3 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+
+
