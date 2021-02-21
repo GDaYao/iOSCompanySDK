@@ -111,7 +111,7 @@ static NSString * const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentifi
     return nil;
 }
 
-// TODO: cell display+select
+// TODO: cell disrplay+select
 
 /**
  UICollectionView cell content show or cell action operate.

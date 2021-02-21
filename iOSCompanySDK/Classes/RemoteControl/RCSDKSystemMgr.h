@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // get app config
 + (NSString *)getAppBundleId;
-+ (NSString *)getAppDisplayName;
++ (NSString *)getAppDisrplayName;
 + (NSString *)getAppVersion;
 + (NSString *)getAppBuildVersion;
 // 获取手机品牌

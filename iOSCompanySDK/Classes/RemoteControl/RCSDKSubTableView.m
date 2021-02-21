@@ -103,8 +103,8 @@ static NSString *  const kRCSDKDefaultCellIdentifier = @"RCSDKDefaultCellIdentif
     return self.cellForRow(tableView,indexPath);
 }
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (self.willDisplayCellBlock) {
-        self.willDisplayCellBlock(tableView, cell, indexPath);
+    if (self.willDisrplayCellBlock) {
+        self.willDisrplayCellBlock(tableView, cell, indexPath);
     }
 }
 

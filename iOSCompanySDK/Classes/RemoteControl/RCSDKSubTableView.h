@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 //
 @property(nonatomic,copy) UITableViewCell*_Nullable(^cellForRow)(UITableView *tableView,NSIndexPath *indexPath);
-@property(nonatomic,copy) void(^willDisplayCellBlock)(UITableView *tableView,UITableViewCell *cell,NSIndexPath *indexPath);
+@property(nonatomic,copy) void(^willDisrplayCellBlock)(UITableView *tableView,UITableViewCell *cell,NSIndexPath *indexPath);
 @property(nonatomic,copy) void(^didSelectInTV)(UITableView *tableView,NSIndexPath *indexPath);
 
 

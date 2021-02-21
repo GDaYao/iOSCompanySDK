@@ -33,7 +33,7 @@
     NSDictionary *infoDictionary = [currentBundle infoDictionary];
     return [infoDictionary objectForKey:@"CFBundleIdentifier"];
 }
-+ (NSString *)getAppDisplayName {
++ (NSString *)getAppDisrplayName {
     NSBundle *currentBundle = [NSBundle mainBundle];
     NSDictionary *infoDictionary = [currentBundle infoDictionary];
     NSString *appName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
