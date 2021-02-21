@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 获取网络类型
 + (NSString *)getDeviceNetworkStatus;
 #pragma mark -  获取设备型号
++ (NSString *)deviceModel;
 + (NSString*)getDeviceType;
 
 

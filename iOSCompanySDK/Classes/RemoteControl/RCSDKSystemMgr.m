@@ -196,15 +196,8 @@
 }
 
 + (NSString *)getDeviceIDFA {
-    RCSDKKeychainItemWrapper *keyChainWrapper = [[RCSDKKeychainItemWrapper alloc]initWithIdentifier:kRCSDKKeychainIdentifier accessGroup:nil];
-    NSString *idfaValue = [keyChainWrapper objectForKey:(__bridge id)kSecAttrAccount];
-    if ( idfaValue.length != 0 ) {
-        return idfaValue;
-    }else{
-        NSString *idfastr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-        [keyChainWrapper setObject:idfastr forKey:(__bridge id)kSecAttrAccount];
-        return idfastr;
-    }
+    NSString *idfastr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+    return idfastr;
 }
 
 
@@ -279,6 +272,12 @@
     return netconnType;
 }
 
++ (NSString *)deviceModel {
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    NSString *deviceString = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+    return deviceString;
+}
 
 #pragma mark -  获取设备型号
 + (NSString*)getDeviceType {
