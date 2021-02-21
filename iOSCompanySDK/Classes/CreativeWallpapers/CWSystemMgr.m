@@ -61,15 +61,8 @@
     }
 }
 + (NSString *)getIDFAValueFromKeychain {
-    CWKeychainItemWrapper *keyChainWrapper = [[CWKeychainItemWrapper alloc]initCWWithIdentifier:kCWKeychainItemIdentifier accessGroup:nil];
-    NSString *idfaValue = [keyChainWrapper cwObjectForKey:(__bridge id)kSecAttrAccount];
-    if ( idfaValue.length != 0 ) {
-        return idfaValue;
-    }else{
-        NSString *idfastr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-        [keyChainWrapper cwSetObject:idfastr forKey:(__bridge id)kSecAttrAccount];
-        return idfastr;
-    }
+    NSString *idfastr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+    return idfastr;
 }
 // save public service token
 + (void)setCwKeyChainPublicServiceTokenWithSaveObject:(NSString *)saveObject {
