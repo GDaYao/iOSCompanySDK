@@ -57,13 +57,27 @@
 
 
 //  download
-+ (void)VCSDKCreateDownloadTaskWithDownloadStr:(NSString *)downloadStr parameters:(id)parameters downloadSpecifilyPath:(NSString *)specifilyPath  httpHeaderTicket:(NSString *)ticketStr  downloadProgress:(void(^)(NSProgress * _Nonnull downloadProgress))progress destination:(void(^)(NSURL *targetPath))destination completionHandler:(void (^)(NSURL *filePath, NSError *error))completionHandler {
++ (void)VCSDKCreateDownloadTaskWithDownloadStr:(NSString *)downloadStr parameters:(NSDictionary *)parameters downloadSpecifilyPath:(NSString *)specifilyPath  httpHeaderTicket:(NSString *)ticketStr  downloadProgress:(void(^)(NSProgress * _Nonnull downloadProgress))progress destination:(void(^)(NSURL *targetPath))destination completionHandler:(void (^)(NSURL *filePath, NSError *error))completionHandler {
     
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+    
     if (parameters) {
-        downloadStr = [downloadStr stringByAppendingString:parameters];
+        // parameters-compose-get-respond
+        NSString *jsonString;
+        for (NSInteger i = 0; i < parameters.allKeys.count; i++) {
+            NSString *key = parameters.allKeys[i];
+            NSString *value = [parameters objectForKey:key];
+            if (i == 0) {
+                jsonString = [NSString stringWithFormat:@"%@=%@",key,value];
+            }else{
+                jsonString = [NSString stringWithFormat:@"%@&%@=%@",jsonString,key,value];
+            }
+        }
+        downloadStr = [NSString stringWithFormat:@"%@?%@",downloadStr,jsonString];
     }
+    
+    
     NSURLRequest *request = nil;
     if (ticketStr.length != 0) {
         manager.responseSerializer = [AFHTTPResponseSerializer serializer];
