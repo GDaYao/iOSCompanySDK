@@ -77,15 +77,8 @@
 }
 // idfa
 + (NSString *)getDeviceIDFA {
-    VCSDKKeychainItemWrapper *keyChainWrapper = [[VCSDKKeychainItemWrapper alloc]initWithIdentifier:kVCSDKKeychainIdentifier accessGroup:nil];
-    NSString *idfaValue = [keyChainWrapper objectForKey:(__bridge id)kSecAttrAccount];
-    if ( idfaValue.length != 0 ) {
-        return idfaValue;
-    }else{
-        NSString *idfastr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-        [keyChainWrapper setObject:idfastr forKey:(__bridge id)kSecAttrAccount];
-        return idfastr;
-    }
+    NSString *idfastr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];   
+    return idfastr;
 }
 
 // save or get
